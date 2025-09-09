@@ -4,7 +4,7 @@ import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Checkbox } from "@/ui/checkbox";
 import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+import GoogleLoginButton from "@/Auth/Google"; // Import your component
 
 export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSuccess: () => void }) {
   const [formData, setFormData] = useState({
@@ -120,17 +120,14 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
         </div>
 
         <div className="flex gap-3">
+          {/* Use the GoogleLoginButton component */}
+          <GoogleLoginButton />
+          
           <Button
             type="button"
             variant="outline"
-            className="flex-1 flex items-center gap-2 border border-gray-300">
-            <FcGoogle/> Google
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1 flex items-center gap-2 text-blue-600 border border-blue-600">
+            className="flex-1 flex items-center gap-2 text-blue-600 border border-blue-600"
+          >
             <FaFacebook className="text-blue-600" />Facebook
           </Button>
         </div>

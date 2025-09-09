@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { LogIn } from "./Login";
-import { SignUp } from "./SignUp";
-import { OtpInput } from "./Otp";
+import { LogIn } from "./LoginCard";
+import { SignUp } from "./SignupCard";
+import { OtpInput } from "./OtpCard";
 
 type AuthView = "login" | "signup" | "otp";
 
