@@ -3,9 +3,9 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Checkbox } from "@/ui/checkbox";
-import { FaFacebook } from "react-icons/fa";
 import GoogleLoginButton from "./Google"; // Import your component
 import axios from "axios";
+import FacebookLoginButton from "./FaceBook";
 
 export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSuccess: () => void }) {
   const [formData, setFormData] = useState({
@@ -154,14 +154,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
           {/* Use the GoogleLoginButton component */}
           <GoogleLoginButton />
           
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1 flex items-center gap-2 text-blue-600 border border-blue-600"
-            disabled={isLoading}
-          >
-            <FaFacebook className="text-blue-600" />Facebook
-          </Button>
+          <FacebookLoginButton />
         </div>
 
         <p className="text-sm text-center text-gray-600">

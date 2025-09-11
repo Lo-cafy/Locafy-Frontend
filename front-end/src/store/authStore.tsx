@@ -23,14 +23,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   // Set user after Google login
   setUser: (user: User) =>
     set(() => {
-      localStorage.setItem("googleUser", JSON.stringify(user));
+      localStorage.setItem("User", JSON.stringify(user));
       localStorage.setItem("isLoggedIn", "true");
       return { user, isLoggedIn: true };
     }),
 
   // Hydrate state from localStorage on page load
   hydrateFromStorage: () => {
-    const storedUser = localStorage.getItem("googleUser");
+    const storedUser = localStorage.getItem("User");
     const loggedInFlag = localStorage.getItem("isLoggedIn");
 
     if (storedUser && loggedInFlag === "true") {
@@ -41,7 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   // ✅ Proper logout
   logout: () =>
     set(() => {
-      localStorage.removeItem("googleUser");
+      localStorage.removeItem("User");
       localStorage.setItem("isLoggedIn", "false");
       return { user: null, isLoggedIn: false };
     }),
