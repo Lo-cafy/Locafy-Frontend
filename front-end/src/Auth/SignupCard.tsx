@@ -4,7 +4,8 @@ import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Checkbox } from "@/ui/checkbox";
 import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+import GoogleLoginButton from "./Google"; // Import your component
+import axios from "axios";
 
 export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSuccess: () => void }) {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
     agree: false,
   });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,15 +26,36 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
     if (checked) setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!formData.agree) {
       setError("You must agree to the terms & conditions.");
       return;
     }
+    
     setError("");
-    console.log("Form Data:", formData);
-    onSuccess();
+    setIsLoading(true);
+    
+    try {
+      // Send form data to the server
+      const response = await axios.post("http://localhost:5000/mailUsers", {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        age: formData.age,
+        agree: formData.agree,
+        signupDate: new Date().toISOString()
+      });
+      
+      console.log("Form Data submitted successfully:", response.data);
+      onSuccess();
+    } catch (error) {
+      console.error("Failed to submit form data:", error);
+      setError("Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,7 +72,9 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
             placeholder="Enter first name"
             value={formData.firstname}
             onChange={handleChange}
-            required/>
+            required
+            disabled={isLoading}
+          />
         </div>
 
         <div className="grid gap-2">
@@ -60,7 +85,9 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
             placeholder="Enter last name"
             value={formData.lastname}
             onChange={handleChange}
-            required/>
+            required
+            disabled={isLoading}
+          />
         </div>
 
         <div className="grid gap-2">
@@ -73,6 +100,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
             value={formData.email}
             onChange={handleChange}
             required
+            disabled={isLoading}
           />
         </div>
 
@@ -86,6 +114,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
             value={formData.age}
             onChange={handleChange}
             required
+            disabled={isLoading}
           />
         </div>
 
@@ -95,6 +124,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
               id="terms"
               checked={formData.agree}
               onCheckedChange={handleCheckbox}
+              disabled={isLoading}
             />
             <Label htmlFor="terms" className="text-sm text-gray-600">
               I agree to the{" "}
@@ -109,8 +139,9 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
         <Button
           type="submit"
           className="w-full bg-emerald-700 hover:bg-emerald-900 text-white"
+          disabled={isLoading}
         >
-          GET OTP
+          {isLoading ? "Processing..." : "GET OTP"}
         </Button>
 
         <div className="flex items-center gap-2 my-2">
@@ -120,17 +151,15 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
         </div>
 
         <div className="flex gap-3">
+          {/* Use the GoogleLoginButton component */}
+          <GoogleLoginButton />
+          
           <Button
             type="button"
             variant="outline"
-            className="flex-1 flex items-center gap-2 border border-gray-300">
-            <FcGoogle/> Google
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1 flex items-center gap-2 text-blue-600 border border-blue-600">
+            className="flex-1 flex items-center gap-2 text-blue-600 border border-blue-600"
+            disabled={isLoading}
+          >
             <FaFacebook className="text-blue-600" />Facebook
           </Button>
         </div>
@@ -141,6 +170,7 @@ export function SignUp({ onSwitch, onSuccess }: { onSwitch: () => void; onSucces
             type="button"
             onClick={onSwitch}
             className="text-emerald-600 hover:underline"
+            disabled={isLoading}
           >
             Log in
           </button>

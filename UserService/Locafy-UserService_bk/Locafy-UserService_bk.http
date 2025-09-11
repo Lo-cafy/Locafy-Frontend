@@ -1,6 +1,0 @@
-@Locafy_UserService_bk_HostAddress = http://localhost:5196
-
-GET {{Locafy_UserService_bk_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -1,21 +1,34 @@
-import { Search, Bell, User, Menu, MapPin } from "lucide-react";
+import { useEffect } from "react";
+import { Search, Bell, Menu, MapPin } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Badge } from "@/ui/badge";
-import { Dialog, DialogTrigger, DialogContent } from "@/ui/dialog";
-import { AuthDialog } from "@/Auth/Auth"; // 👈 the flip UI
+import { useAuthStore } from "@/store/authStore";
+import { SignUpButton } from "@/Auth/SignupButton";
+import { UserMenu } from "@/Auth/UserMenuButton";
 
 export function Navbar() {
+  const { isLoggedIn, hydrateFromStorage } = useAuthStore();
+
+  useEffect(() => {
+    hydrateFromStorage();
+  }, [hydrateFromStorage]);
+
+  
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left - Logo */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Menu">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label="Menu"
+            >
               <Menu className="h-5 w-5" />
             </Button>
-
             <div className="flex items-center space-x-3">
               <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">L</span>
@@ -48,29 +61,20 @@ export function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="relative hover:bg-emerald-50/50" aria-label="Notifications">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative hover:bg-emerald-50/50"
+              aria-label="Notifications"
+            >
               <Bell className="h-5 w-5" />
               <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-emerald-500 text-white text-xs">
                 3
               </Badge>
             </Button>
 
-            <Button variant="ghost" size="icon" className="relative hover:bg-emerald-50/50" aria-label="User menu">
-              <User className="h-5 w-5" />
-            </Button>
-
-            {/* Auth Dialog */}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
-                  Sign Up
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="p-0 bg-transparent border-none shadow-none">
-                {/* start on signup */}
-                <AuthDialog startOn="signup" />
-              </DialogContent>
-            </Dialog>
+            {/* Conditional: SignUp OR UserMenu */}
+            {isLoggedIn ? <UserMenu /> : <SignUpButton />}
           </div>
         </div>
       </div>
