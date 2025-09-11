@@ -6,7 +6,6 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function GoogleLoginButton() {
     const setUser = useAuthStore((state) => state.setUser);
-
     const handleGoogleLogin = async (tokenResponse: any) => {
         console.log("Google Token Response:", tokenResponse);
 
@@ -42,7 +41,7 @@ export default function GoogleLoginButton() {
             type="button"
             onClick={() => login()}
             variant="outline"
-            className="flex-1 flex items-center gap-2 border border-gray-300"
+            className="flex-1 flex items-center gap-2 border border-gray-300 hover:bg-green-800 hover:text-white"
         >
             <FcGoogle /> Google
         </Button>
