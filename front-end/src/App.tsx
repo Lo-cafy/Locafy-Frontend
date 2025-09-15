@@ -1,16 +1,22 @@
-import "./index.css";
-import Home from "./Pages/Home";
+// App.tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "@/Pages/LandingPage";
+import UserLayout from "./Pages/User/User";
 
 function App() {
   return (
+    <BrowserRouter>
+      <div>
+        <Routes>
+          {/* Landing page */}
+          <Route path="/" element={<Home />} />
 
-    <div className="bg-gradient-to-br from-emerald-50 to-green-0 min-h-screen pt-20">
-  
-      <Home/>
-    </div>
-
-     
-  )
+          {/* Dashboard layout */}
+          <Route path="/user/*" element={<UserLayout />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
 }
 
 export default App;
