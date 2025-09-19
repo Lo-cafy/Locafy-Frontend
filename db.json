@@ -54,6 +54,18 @@
       "name": "flow andflow",
       "email": "andflowf@gmail.com",
       "picture": "https://lh3.googleusercontent.com/a/ACg8ocK6YAW6pDkGKtrH3vxstmSnwpHwrYjJotwUlkL1IntApFVXiA=s96-c"
+    },
+    {
+      "id": "114438190217018092817",
+      "name": "Abdul Vajid",
+      "email": "vvajidz56@gmail.com",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocKbp7g6-TTWXGntPaNH8SeFA30k0khOnWHdiQzVw-hFP2ap_3c=s96-c"
+    },
+    {
+      "id": "112036099990798567425",
+      "name": "Abdul Vajid",
+      "email": "awghost2000@gmail.com",
+      "picture": "https://lh3.googleusercontent.com/a/ACg8ocJoplKs20DdfGQkjBd2v7FkVeBfejiccNxn7dqWtaxLF49WSx0=s96-c"
     }
   ],
   "mailUsers": [
@@ -92,6 +104,68 @@
       "name": "Abdul Vajid",
       "email": "awghost2000@gmail.com",
       "picture": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2025139621563987&height=50&width=50&ext=1760169462&hash=AT9T17jWKUFE9Gmfn2mjqMpo"
+    },
+    {
+      "id": "2025139621563987",
+      "name": "Abdul Vajid",
+      "email": "awghost2000@gmail.com",
+      "picture": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2025139621563987&height=50&width=50&ext=1760243701&hash=AT8GlHV5-SUBXg5hGssKOtU_"
+    },
+    {
+      "id": "2025139621563987",
+      "name": "Abdul Vajid",
+      "email": "awghost2000@gmail.com",
+      "picture": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2025139621563987&height=50&width=50&ext=1760243832&hash=AT_Zf9SlktIuXAOW618xmoV5"
+    },
+    {
+      "id": "2025139621563987",
+      "name": "Abdul Vajid",
+      "email": "awghost2000@gmail.com",
+      "picture": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2025139621563987&height=50&width=50&ext=1760340950&hash=AT_j97tN30QL7eUUDRXNU0lO"
     }
+  ],
+  "profile": {
+    "personalInfo": {
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "email": "sarah.johnson@email.com",
+      "phone": "+1 (555) 123-4567",
+      "address": "123 Main St, New York, NY 10001",
+      "bio": "I love discovering new services and supporting local businesses. Always looking for quality providers!",
+      "joinDate": "March 2023",
+      "rating": 4.9,
+      "verified": true,
+      "profileImage": "https://images.unsplash.com/photo-1659353220597-71b8c6a56259"
+    },
+    "preferences": {
+      "serviceRadius": "10",
+      "contactMethod": "Email & SMS",
+      "minBudget": "",
+      "maxBudget": "",
+      "selectedCategories": [
+        "Home Cleaning",
+        "Handyman",
+        "Pet Care"
+      ]
+    },
+    "kyc": {
+      "kycType": "",
+      "kycNumber": ""
+    },
+    "bankDetails": {
+      "bankName": "",
+      "accountNumber": "",
+      "ifscCode": ""
+    }
+  },
+  "serviceCategories": [
+    "Home Cleaning",
+    "Handyman",
+    "Pet Care",
+    "Beauty",
+    "Fitness",
+    "Tutoring",
+    "Tech Support",
+    "Photography"
   ]
 }

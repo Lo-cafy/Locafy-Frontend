@@ -69,7 +69,7 @@ export default function FacebookLoginButton() {
           variant="outline"
           className="flex-1 flex items-center gap-2 border border-gray-300 bg-blue-600 text-white hover:bg-blue-700"
         >
-          <FaFacebookF /> Continue with Facebook
+          <FaFacebookF />Facebook
         </Button>
       )}
     />

@@ -27,7 +27,8 @@ function Home() {
   }
 
   return (
-    <div>
+    <div  className="bg-gradient-to-br from-emerald-50 to-green-0 min-h-screen pt-20">
+      
       <Navbar />
       <HeroSection />
       <BrowseCategories />
@@ -35,6 +36,7 @@ function Home() {
       <FeaturedServices />
       <TrustedByThousands />
       <Footer />
+
     </div>
   );
 }
