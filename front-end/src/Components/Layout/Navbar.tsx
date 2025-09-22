@@ -3,7 +3,7 @@ import { Bell, MapPin, Search } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Badge } from "@/ui/badge";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/hooks/useAuthStore"; 
 import { SignUpButton } from "@/features/Auth/components/SignupButton";
 import { UserMenu } from "@/features/Auth/components/UserMenuButton";
 

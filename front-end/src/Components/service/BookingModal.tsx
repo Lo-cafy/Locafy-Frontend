@@ -13,7 +13,7 @@ type BookingModalProps = {
   onClose: () => void;
 };
 
-export function BookingModal({ service, onClose }: BookingModalProps) {
+export const BookingModal: React.FC<BookingModalProps> = ({ service, onClose }) => {
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -121,4 +121,4 @@ export function BookingModal({ service, onClose }: BookingModalProps) {
       </DialogContent>
     </Dialog>
   );
-}
+};

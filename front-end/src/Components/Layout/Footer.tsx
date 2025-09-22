@@ -9,7 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 
-export default function Footer() {
+export const Footer: React.FC = () => {
   return (
     <footer className="bg-white border-t pt-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, User, Settings, Home } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface BottomBarProps {
   activePage: string;

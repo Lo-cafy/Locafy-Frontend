@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, User, Settings, Package, Home } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface SidebarProps {
   activePage: string;
@@ -13,7 +13,7 @@ const sidebarItems = [
   { id: 'home', label: 'Home', icon: Home, path: '/' },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
   return (
     <div
       className="
@@ -69,5 +69,3 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
     </div>
   );
 };
-
-export default Sidebar;

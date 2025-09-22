@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import Sidebar from '@/Components/Layout/Sidebar';
+import {Sidebar} from '@/Components/Layout/Sidebar';
 import BottomBar from '@/Components/Layout/BottomBar';
 import Dashboard from '@/pages/Dashboard';
 import Profile from '@/pages/Profile';
