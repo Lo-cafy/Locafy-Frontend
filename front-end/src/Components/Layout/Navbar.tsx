@@ -4,8 +4,8 @@ import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Badge } from "@/ui/badge";
 import { useAuthStore } from "@/store/authStore";
-import { SignUpButton } from "@/Auth/SignupButton";
-import { UserMenu } from "@/Auth/UserMenuButton";
+import { SignUpButton } from "@/features/Auth/components/SignupButton";
+import { UserMenu } from "@/features/Auth/components/UserMenuButton";
 
 export function Navbar() {
   const { isLoggedIn, hydrateFromStorage } = useAuthStore();

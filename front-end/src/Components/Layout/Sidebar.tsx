@@ -1,20 +1,19 @@
 import React from 'react';
 import { LayoutDashboard, User, Settings, Package, Home } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   activePage: string;
-  setActivePage: (page: string) => void;
-  className?: string;
 }
 
 const sidebarItems = [
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'settings', label: 'Settings', icon: Settings },
-  { id: 'Home', label: 'Home', icon: Home },
+  { id: 'profile', label: 'Profile', icon: User, path: '/user/profile' },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/user/dashboard' },
+  { id: 'settings', label: 'Settings', icon: Settings, path: '/user/settings' },
+  { id: 'home', label: 'Home', icon: Home, path: '/' },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
   return (
     <div
       className="
@@ -39,9 +38,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
         {sidebarItems.map((item) => {
           const IconComponent = item.icon;
           return (
-            <button
+            <Link
               key={item.id}
-              onClick={() => setActivePage(item.id)}
+              to={item.path}
               className={`flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-white hover:text-black group relative ${
                 activePage === item.id ? 'bg-green-600' : ''
               }`}
@@ -50,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
               <span className="ml-4 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 truncate absolute left-12">
                 {item.label}
               </span>
-            </button>
+            </Link>
           );
         })}
       </nav>

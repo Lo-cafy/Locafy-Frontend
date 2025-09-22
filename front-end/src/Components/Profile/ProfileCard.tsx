@@ -4,7 +4,7 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { Input } from "../../ui/input";
-import { ImageWithFallback } from "../../Components/fallback";
+import { ImageWithFallback } from "../../pages/fallback";
 
 export default function ProfileCard() {
   const [isEditing, setIsEditing] = useState(false);
