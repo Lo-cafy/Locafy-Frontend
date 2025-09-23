@@ -6,8 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui/dialog';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
 import { MapPin, Star } from 'lucide-react';
-import { BookingModal } from '@/Components/service/BookingModal'
-import { ReviewList } from '../Review/ReviewList';
+import { BookingModals } from '@/Components/service/BookingModals'
+import { ReviewList } from '../review/ReviewList';
 
 export function ServiceDetailsModal() {
   const { serviceId } = useParams<{ serviceId: string }>();
@@ -122,7 +122,7 @@ export function ServiceDetailsModal() {
       </Dialog>
 
       {showBooking && selectedService && (
-        <BookingModal
+        <BookingModals
           service={selectedService}
           onClose={() => setShowBooking(false)}
         />

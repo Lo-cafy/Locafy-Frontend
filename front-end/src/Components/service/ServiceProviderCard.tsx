@@ -1,13 +1,13 @@
 import { User, Star, Shield, Phone, MessageCircle } from 'lucide-react';
 import { Card, CardContent } from '@/ui/card';
 import { Button } from '@/ui/button';
-import { ServiceProvider } from '@/types/service.types';
+import type { ServiceProvider } from '@/types/service.types';
 
-interface ServiceProviderCardProps {
+type ServiceProviderCardProps = {
   provider: ServiceProvider;
-}
+};
 
-export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
+export const ServiceProviderCard: React.FC<ServiceProviderCardProps> = ({ provider }) => {
   return (
     <Card>
       <CardContent className="p-6">

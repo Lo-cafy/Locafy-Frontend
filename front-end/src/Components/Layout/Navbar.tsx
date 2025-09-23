@@ -3,12 +3,12 @@ import { Bell, MapPin, Search } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Badge } from "@/ui/badge";
-import { useAuthStore } from "@/hooks/useAuthStore"; 
+import { useAuthStore } from "@/hooks/useAuth";
 import { SignUpButton } from "@/features/Auth/components/SignupButton";
 import { UserMenu } from "@/features/Auth/components/UserMenuButton";
 
 export function Navbar() {
-  const { isLoggedIn, hydrateFromStorage } = useAuthStore();
+ const { isLoggedIn, hydrateFromStorage } = useAuthStore();
 
   useEffect(() => {
     hydrateFromStorage();

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import BrowseCategories from "@/Components/Category";
-import { HeroSection } from "../Components/HeroSection";
-import { Navbar } from "../Components/Navbar";
-import WhyChooseLocafy from "@/Components/MiddleSection";
-import TrustedByThousands from "@/Components/TrustedyBy";
-import Footer from "@/Components/Footer";
-import FeaturedServices from "@/Components/ServiceSection";
+import BrowseCategories from "@/Components/Common/Category";
+import { HeroSection } from "../Components/Common/HeroSection";
+import { Navbar } from "../Components/Layout/Navbar";
+import WhyChooseLocafy from "@/Components/Common/MiddleSection";
+import TrustedByThousands from "@/Components/Common/TrustedyBy";
+import {Footer} from "@/Components/Layout/Footer";
+import FeaturedServices from "@/Components/Common/ServiceSection";
 
 function Home() {
   const [loading, setLoading] = useState(true);

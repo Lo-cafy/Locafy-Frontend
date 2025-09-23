@@ -1,21 +1,36 @@
-// App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "@/Pages/LandingPage";
-import UserLayout from "./Pages/User/User";
+import { Provider } from 'react-redux';
+import { store } from './store';
+import Home from "@/pages/LandingPage";
+import { Services } from "./features/serviceTemp/pages/Services";
+import { ServiceDetails } from "./features/serviceTemp/pages/ServiceDetails";
+import { AuthDialog } from "./features/Auth/pages/Auth";
+import DashboardLayout from "./Components/Layout/DashboardLayout";
+import './index.css';
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <div>
-        <Routes>
-          {/* Landing page */}
-          <Route path="/" element={<Home />} />
+    <Provider store={store}>
+      <BrowserRouter>
+        <div>
+          <Routes>
+           
+            <Route path="/" element={<Home />} />
+            
+      
+            <Route path="/auth" element={<AuthDialog />} />
+            
+ 
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/:serviceId" element={<ServiceDetails />} />
 
-          {/* Dashboard layout */}
-          <Route path="/user/*" element={<UserLayout />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+        
+            <Route path="/user/*" element={<DashboardLayout />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
