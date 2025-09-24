@@ -1,5 +1,6 @@
 "use client";
 import { MapPin, ShieldCheck, Clock, Phone, Star, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type Service = {
   id: number; category: string; price: string; image: string;
@@ -26,6 +27,8 @@ const Pill = ({ children, className }: { children: React.ReactNode; className?: 
   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${className}`}>{children}</span>;
 
 function ServiceCard({ s }: { s: Service }) {
+   
+
   return (
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col overflow-hidden">
       <div className="relative">
@@ -77,6 +80,7 @@ function ServiceCard({ s }: { s: Service }) {
 }
 
 export default function FeaturedServices() {
+  const navigate = useNavigate();
   return (
     <section className="py-12 px-4 md:px-8 lg:px-16 bg-emerald-50">
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
@@ -84,7 +88,12 @@ export default function FeaturedServices() {
           <h2 className="text-2xl font-bold">Featured Local Services</h2>
           <p className="text-gray-600 mt-2 max-w-xl">Hand-picked professionals with the highest ratings and customer satisfaction scores in your area.</p>
         </div>
-        <button className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700">Explore All Services</button>
+         <button
+      className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
+      onClick={() => navigate("/all-services")} // replace with your route
+    >
+      Explore All Services
+    </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map(s => <ServiceCard key={s.id} s={s} />)}
