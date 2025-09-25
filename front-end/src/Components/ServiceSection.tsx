@@ -1,34 +1,27 @@
 "use client";
 import { MapPin, ShieldCheck, Clock, Phone, Star, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 type Service = {
-  id: number; category: string; price: string; image: string;
-  title: string; provider: string; rating: number; reviews: number;
-  duration: string; location: string; verified?: boolean;
+  id: number; 
+  category: string; 
+  price: string; 
+  image: string;
+  title: string; 
+  provider: string; 
+  rating: number; 
+  reviews: number;
+  duration: string; 
+  location: string; 
+  verified?: boolean;
 };
-
-const services: Service[] = [
-  { id: 1, category: "Home Cleaning", price: "$120/session",
-    image:"https://images.unsplash.com/photo-1581579187181-d8f6e2d7a6f3?q=80&w=1400&auto=format&fit=crop",
-    title:"Professional Deep House Cleaning", provider:"SparklePro Cleaning Services",
-    rating:4.9, reviews:287, duration:"15 min", location:"Manhattan, NY", verified:true },
-  { id: 2, category:"HVAC Services", price:"$200/service",
-    image:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1400&auto=format&fit=crop",
-    title:"Emergency AC Repair & Installation", provider:"CoolAir Expert Technicians",
-    rating:4.8, reviews:156, duration:"30 min", location:"Brooklyn, NY", verified:true },
-  { id: 3, category:"Fitness & Health", price:"$80/session",
-    image:"https://images.unsplash.com/photo-1546484959-fc6a04d0d66a?q=80&w=1400&auto=format&fit=crop",
-    title:"Certified Personal Training Sessions", provider:"FitLife Pro Coaching",
-    rating:5.0, reviews:94, duration:"1 hour", location:"Queens, NY", verified:true }
-];
 
 const Pill = ({ children, className }: { children: React.ReactNode; className?: string }) =>
   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${className}`}>{children}</span>;
 
 function ServiceCard({ s }: { s: Service }) {
-   
-
   return (
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col overflow-hidden">
       <div className="relative">
@@ -81,6 +74,47 @@ function ServiceCard({ s }: { s: Service }) {
 
 export default function FeaturedServices() {
   const navigate = useNavigate();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:5000/api/services');
+        setServices(response.data);
+      } catch (err) {
+        setError('Failed to fetch services');
+        console.error('Error fetching services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-12 px-4 md:px-8 lg:px-16 bg-emerald-50">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600">Loading services...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-12 px-4 md:px-8 lg:px-16 bg-emerald-50">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-600">{error}</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-12 px-4 md:px-8 lg:px-16 bg-emerald-50">
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
@@ -88,12 +122,12 @@ export default function FeaturedServices() {
           <h2 className="text-2xl font-bold">Featured Local Services</h2>
           <p className="text-gray-600 mt-2 max-w-xl">Hand-picked professionals with the highest ratings and customer satisfaction scores in your area.</p>
         </div>
-         <button
-      className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
-      onClick={() => navigate("/all-services")} // replace with your route
-    >
-      Explore All Services
-    </button>
+        <button
+          className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
+          onClick={() => navigate("/all-services")}
+        >
+          Explore All Services
+        </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map(s => <ServiceCard key={s.id} s={s} />)}
