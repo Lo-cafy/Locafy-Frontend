@@ -1,8 +1,7 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "@/Components/Services/sidebar";
+import Sidebar from "@/Components/Services/sidebar"
 import ServiceCard from "@/Components/Services/serviceCard";
 import SearchBar from "@/Components/Services/searchBar";
 
@@ -34,8 +33,6 @@ export default function ServiceListingPage() {
     const fetchServices = async () => {
       try {
         setLoading(true);
-
-        // Step 1: Fetch services
         let url = "http://localhost:5000/api/services";
         if (filters.categoryId) {
           url = `http://localhost:5000/api/services/category/${filters.categoryId}`;
@@ -43,7 +40,7 @@ export default function ServiceListingPage() {
         const res = await axios.get(url);
         let apiServices = res.data.services || res.data;
 
-        // Step 2: Fetch images for each service
+        // Fetch images for each service
         const servicesWithImages = await Promise.all(
           apiServices.map(async (service: any) => {
             try {
@@ -51,9 +48,7 @@ export default function ServiceListingPage() {
                 `http://localhost:5000/api/photoservices/${service.id}/photos`
               );
               const photos = photoRes.data.data.photos || [];
-
-              const primaryPhoto =
-                photos.find((p: any) => p.is_primary) || photos[0];
+              const primaryPhoto = photos.find((p: any) => p.is_primary) || photos[0];
 
               return {
                 ...service,
@@ -66,7 +61,7 @@ export default function ServiceListingPage() {
           })
         );
 
-        // Step 3: Apply price and rating filters
+        // Apply filters
         let filteredServices = servicesWithImages.filter((s: any) => {
           const price = Number(s.price);
           const rating = Number(s.rating);
@@ -76,7 +71,7 @@ export default function ServiceListingPage() {
           return true;
         });
 
-        // Step 4: Apply search text filter
+        // Apply search text filter
         if (searchText.trim()) {
           const text = searchText.toLowerCase();
           filteredServices = filteredServices.filter(
@@ -97,30 +92,75 @@ export default function ServiceListingPage() {
       }
     };
 
-    fetchServices();
+    // Add debounce to search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      fetchServices();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [filters, searchText]);
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="container mx-auto px-4 py-8 flex gap-6">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8 flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Sidebar */}
         <Sidebar filters={filters} setFilters={setFilters} />
 
-        {/* Main */}
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-4">Services</h1>
+        {/* Main Content */}
+        <div className="flex-1 min-w-0"> {/* min-w-0 prevents flex overflow */}
+          {/* Header */}
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Services</h1>
+            
+            {/* Search bar */}
+            <SearchBar searchText={searchText} setSearchText={setSearchText} />
+          </div>
 
-          {/* Search bar */}
-          <SearchBar searchText={searchText} setSearchText={setSearchText} />
+          {/* Results Info */}
+          {!loading && !error && (
+            <div className="mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600">
+                Showing {services.length} service{services.length !== 1 ? 's' : ''}
+                {searchText && (
+                  <span> for "<strong>{searchText}</strong>"</span>
+                )}
+              </p>
+            </div>
+          )}
 
+          {/* Loading, Error, and Results */}
           {loading ? (
-            <p>Loading services...</p>
+            <div className="flex justify-center items-center py-8 sm:py-16">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-green-600"></div>
+            </div>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 text-center">
+              <p className="text-red-600 font-medium">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
           ) : services.length === 0 ? (
-            <p>No services found</p>
+            <div className="bg-white rounded-xl shadow-sm border p-6 sm:p-8 text-center">
+              <div className="text-gray-400 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No services found</h3>
+              <p className="text-gray-500 mb-4">Try adjusting your filters or search terms</p>
+              <button 
+                onClick={() => { setFilters({}); setSearchText(""); }}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Clear All Filters
+              </button>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {services.map((s) => (
                 <ServiceCard
                   key={s.id}
@@ -128,7 +168,7 @@ export default function ServiceListingPage() {
                   location={s.location || "Unknown location"}
                   price={Number(s.price)}
                   rating={Number(s.rating)}
-                  image={s.image}      // <-- show fetched image
+                  image={s.image}
                   isFeatured={s.isFeatured}
                 />
               ))}

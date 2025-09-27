@@ -1,7 +1,6 @@
 "use client";
 
 import { Star, MapPin, Heart } from "lucide-react";
-import { useState } from "react";
 
 interface ServiceCardProps {
   name: string;
@@ -20,73 +19,53 @@ export default function ServiceCard({
   image, 
   isFeatured 
 }: ServiceCardProps) {
-  const [liked, setLiked] = useState(false);
-
-  // Helper: render star rating
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-3.5 w-3.5 ${
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-slate-300"
-        }`}
-      />
-    ));
-  };
-
   return (
-    <div className="group bg-white rounded-xl shadow-md hover:shadow-lg hover:shadow-slate-200 transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200">
+    <div className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200 w-full sm:w-[300px] md:w-[340px] lg:w-[360px]">
       {/* Image Section */}
-      <div className="relative h-44 overflow-hidden">
+      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
         <img 
           src={image || "/api/placeholder/400/300"} 
           alt={name} 
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
         
         {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent" />
         
-        {/* Badges + Like */}
-        <div className="absolute top-3 left-3 right-3 flex justify-between items-center">
+        {/* Badges */}
+        <div className="absolute top-2 left-2 right-2 flex justify-between">
           {isFeatured && (
-            <span className="backdrop-blur-sm bg-amber-500/80 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-md">
+            <span className="bg-amber-500 text-white px-2 py-1 rounded-md text-xs font-bold sm:text-sm">
               FEATURED
             </span>
           )}
-          <button 
-            onClick={() => setLiked(!liked)} 
-            className={`p-1.5 rounded-full transition-all ${
-              liked 
-                ? "bg-red-500 text-white" 
-                : "bg-white/90 hover:bg-white text-slate-700"
-            }`}
-          >
-            <Heart className="h-4 w-4" />
+          <button className="bg-white/80 hover:bg-white text-slate-700 p-1.5 rounded-full transition-all sm:p-2">
+            <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-slate-800 text-base line-clamp-1 flex-1 mr-2">
+          <h3 className="font-semibold text-slate-800 text-sm sm:text-base line-clamp-1 flex-1 mr-2">
             {name}
           </h3>
-          <div className="flex">{renderStars(rating)}</div>
+          <div className="flex items-center bg-slate-100 px-2 py-1 rounded-full">
+            <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-xs sm:text-sm font-bold ml-1">{rating}</span>
+          </div>
         </div>
 
-        <div className="flex items-center text-slate-600 text-sm mb-3">
-          <MapPin className="h-4 w-4 mr-1 text-slate-400" />
+        <div className="flex items-center text-slate-600 text-xs sm:text-sm mb-3">
+          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
           <span className="line-clamp-1">{location}</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-blue-600">
-            ${price.toLocaleString()}
-          </span>
-          <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:scale-105 hover:from-green-600 hover:to-green-700 transition-all text-sm font-semibold shadow">
-            Book Now
+          <span className="text-sm sm:text-lg font-bold text-blue-600">${price}</span>
+          <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all text-xs sm:text-sm font-semibold">
+            Book
           </button>
         </div>
       </div>

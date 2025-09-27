@@ -5,17 +5,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 type Service = {
-  id: number; 
-  category: string; 
-  price: string; 
+  id: number;
+  category: string;
+  price: string;
   image: string;
-  title: string; 
-  provider: string; 
-  rating: number; 
+  title: string;
+  provider: string;
+  rating: number;
   reviews: number;
-  duration: string; 
-  location: string; 
+  duration: string;
+  location: string;
   verified?: boolean;
+  photos?: string[]; // 👈 store all photos
 };
 
 const Pill = ({ children, className }: { children: React.ReactNode; className?: string }) =>
@@ -82,11 +83,36 @@ export default function FeaturedServices() {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/services');
-        setServices(response.data);
+        const response = await axios.get("http://localhost:5000/api/services");
+        const servicesData: Service[] = response.data;
+
+        // ✅ Fetch photos for each service
+        const servicesWithPhotos = await Promise.all(
+          servicesData.map(async (service) => {
+            try {
+              const photosRes = await axios.get(
+                `http://localhost:5000/api/photoservices/${service.id}/photos`
+              );
+
+              // Access nested data
+              const photos = photosRes.data.data.photos.map((p: any) => p.photo_url);
+
+              return {
+                ...service,
+                photos,
+                image: photos[0] || service.image, // use first photo
+              };
+            } catch (err) {
+              console.error(`Failed to fetch photos for service ${service.id}`, err);
+              return service;
+            }
+          })
+        );
+
+        setServices(servicesWithPhotos);
       } catch (err) {
-        setError('Failed to fetch services');
-        console.error('Error fetching services:', err);
+        setError("Failed to fetch services");
+        console.error("Error fetching services:", err);
       } finally {
         setLoading(false);
       }
@@ -120,7 +146,9 @@ export default function FeaturedServices() {
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
         <div>
           <h2 className="text-2xl font-bold">Featured Local Services</h2>
-          <p className="text-gray-600 mt-2 max-w-xl">Hand-picked professionals with the highest ratings and customer satisfaction scores in your area.</p>
+          <p className="text-gray-600 mt-2 max-w-xl">
+            Hand-picked professionals with the highest ratings and customer satisfaction scores in your area.
+          </p>
         </div>
         <button
           className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
@@ -130,7 +158,9 @@ export default function FeaturedServices() {
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {services.map(s => <ServiceCard key={s.id} s={s} />)}
+        {services.map((s) => (
+          <ServiceCard key={s.id} s={s} />
+        ))}
       </div>
     </section>
   );

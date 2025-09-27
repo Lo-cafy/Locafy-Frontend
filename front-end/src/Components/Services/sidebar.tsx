@@ -1,120 +1,185 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
 import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
 import RatingFilter from "./RatingFilter";
 
-interface Category {
+interface Props {
+  filters: any;
+  setFilters: (filters: any) => void;
+}
+interface ApiCategory {
   category_id: number;
   name: string;
 }
-
-interface Filters {
-  categoryId?: number;
-  minPrice?: number;
-  maxPrice?: number;
-  minRating?: number;
+interface Category {
+  id: number;
+  name: string;
 }
-
-interface Props {
-  filters: Filters;
-  setFilters: (filters: Filters) => void;
-}
-
 export default function Sidebar({ filters, setFilters }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState("");
+  const [categoryServices, setCategoryServices] = useState<any[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
+  const [servicesError, setServicesError] = useState("");
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        setLoading(true);
+        setCategoriesLoading(true);
         const res = await axios.get("http://localhost:5000/api/categories");
-        setCategories(res.data.categories || []);
+        setCategories(
+          res.data.categories.map((cat: ApiCategory) => ({
+            id: cat.category_id,
+            name: cat.name,
+          }))
+        );
       } catch (err) {
-        console.error(err);
-        setError("Failed to load categories");
+        setCategoriesError("Failed to load categories. Please try again.");
+        setCategories([]);
       } finally {
-        setLoading(false);
+        setCategoriesLoading(false);
       }
     };
     fetchCategories();
   }, []);
+  // Fetch services by category
+  useEffect(() => {
+    const fetchServicesByCategory = async () => {
+      if (!filters.categoryId) return setCategoryServices([]);
+      try {
+        setServicesLoading(true);
+        const res = await axios.get(
+          `http://localhost:5000/api/services/category/${filters.categoryId}`
+        );
+        setCategoryServices(res.data);
+      } catch (err) {
+        setServicesError("Failed to load services. Please try again.");
+        setCategoryServices([]);
+      } finally {
+        setServicesLoading(false);
+      }
+    };
+    fetchServicesByCategory();
+  }, [filters.categoryId]);
 
   const clearAll = () => setFilters({});
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.getElementById("mobile-sidebar");
+      const toggle = document.getElementById("mobile-toggle");
+      if (
+        isMobileOpen &&
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        toggle &&
+        !toggle.contains(event.target as Node)
+      ) {
+        setIsMobileOpen(false);
+      }
+    };
 
-  const content = (
-    <div>
-      {loading ? (
-        <p>Loading categories...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <>
-          <CategoryFilter categories={categories} filters={filters} setFilters={setFilters} />
-          <PriceFilter filters={filters} setFilters={setFilters} />
-          <RatingFilter filters={filters} setFilters={setFilters} />
-        </>
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMobileOpen]);
+
+  // ✅ Reusable FilterContent block
+  const FilterContent = () => (
+    <>
+      <CategoryFilter
+        categories={categories}
+        filters={filters}
+        setFilters={setFilters}
+        isLoading={categoriesLoading}
+        error={categoriesError}
+      />
+      <PriceFilter filters={filters} setFilters={setFilters} />
+      <RatingFilter filters={filters} setFilters={setFilters} />
+      {servicesLoading && <p className="mt-4 text-sm text-gray-500">Loading services...</p>}
+      {servicesError && <p className="mt-4 text-sm text-red-500">{servicesError}</p>}
+      {categoryServices.length > 0 && (
+        <p className="mt-4 text-sm text-green-600">
+          {categoryServices.length} services found in this category
+        </p>
       )}
-
-      <button
-        onClick={clearAll}
-        className="mt-4 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold"
-      >
-        Reset Filters
-      </button>
-    </div>
+    </>
   );
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block p-6 bg-slate-50 border rounded-xl shadow w-72 flex-shrink-0">
-        <h2 className="text-xl font-bold mb-4">Filters</h2>
-        {content}
-      </div>
-
-      {/* Mobile Icon Button */}
-      <div className="lg:hidden fixed bottom-6 right-6 z-50">
+      {/* Mobile Toggle Button */}
+      <div className="lg:hidden sticky top-4 z-40 mb-4 px-4">
         <button
-          onClick={() => setIsMobileOpen(true)}
-          className="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center shadow-lg hover:bg-green-700 transition"
-          aria-label="Open filters"
+          id="mobile-toggle"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg"
         >
-          <SlidersHorizontal className="h-6 w-6" />
+          <SlidersHorizontal className="h-5 w-5" />
+          Filters
+          {isMobileOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
       </div>
 
-      {/* Mobile Modal Dialog */}
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:p-6 lg:bg-slate-50 lg:border lg:rounded-xl lg:shadow flex-shrink-0 sticky top-4 h-fit">
+        <h2 className="text-xl font-bold mb-4">Filters</h2>
+        <FilterContent />
+        <button
+          onClick={clearAll}
+          className="mt-4 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
+        >
+          Reset Filters
+        </button>
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-lg overflow-y-auto max-h-[90vh] p-6 relative">
-            {/* Close button */}
-            <button
-              onClick={() => setIsMobileOpen(false)}
-              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full p-2 transition"
-              aria-label="Close filters"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <h2 className="text-xl font-bold mb-4">Filters</h2>
-            {content}
-
-            <button
-              onClick={() => setIsMobileOpen(false)}
-              className="mt-6 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold"
-            >
-              Apply Filters
-            </button>
-          </div>
-        </div>
+        <div
+          className="fixed inset-0 bg-transparent bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
       )}
+
+      {/* Mobile Sidebar */}
+      <div
+        id="mobile-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        } bg-white w-4/5 max-w-xs shadow-xl flex flex-col`}
+      >
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-xl font-bold">Filters</h2>
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        {/* Shared Filter Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <FilterContent />
+        </div>
+        {/* Buttons */}
+        <div className="p-4 border-t bg-white">
+          <button
+            onClick={clearAll}
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold mb-2 hover:bg-gray-200 transition-colors"
+          >
+            Reset Filters
+          </button>
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
+          >
+            Show Results
+          </button>
+        </div>
+      </div>
     </>
   );
 }
