@@ -1,35 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/ui/button';
+import React from 'react';
 import { Download, Plus } from 'lucide-react';
 import StatsCards from '@/Components/Admin/Dashboard/StatsCards';
 import RevenueChart from '@/Components/Admin/Dashboard/RevenueChart';
 import ServiceDistribution from '@/Components/Admin/Dashboard/ServiceDistribution';
 import QuickStats from '@/Components/Admin/Dashboard/QuickStats';
-import RecentActivity from '@/Components/Admin/RecentActivity';
-import { adminService } from '@/services/admin.service';
-import type { DashboardStats } from '@/types/admin.types';
+import { mockDashboardStats } from '@/Components/Admin/data/mockData';
 
 const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
-
-  const fetchDashboardStats = async () => {
-    try {
-      const response = await adminService.getDashboardStats();
-      if (response.success) {
-        setStats(response.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch dashboard stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const revenueData = [
     { month: 'Jan', revenue: 125000 },
     { month: 'Feb', revenue: 142000 },
@@ -49,44 +26,45 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <>
+      {/* Dashboard Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">Dashboard Overview</h1>
-          <p className="text-gray-400 text-base sm:text-lg mt-1">
-            Welcome back! Here's what's happening today.
-          </p>
+          <h2 className="text-3xl font-bold text-white">Dashboard Overview</h2>
+          <p className="text-gray-400 mt-1">Welcome back! Here's what's happening today.</p>
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <Button variant="outline" className="bg-gray-800/30 backdrop-blur border-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-700/50 flex-1 sm:flex-initial">
+        <div className="flex space-x-3 mt-4 sm:mt-0">
+          <button className="flex items-center px-4 py-2 text-sm font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 transition-colors">
             <Download className="w-4 h-4 mr-2" />
             Export
-          </Button>
-          <Button className="bg-blue-600/80 backdrop-blur hover:bg-blue-700/80 text-white shadow-sm flex-1 sm:flex-initial">
+          </button>
+          <button className="flex items-center px-4 py-2 text-sm font-semibold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition-colors">
             <Plus className="w-4 h-4 mr-2" />
             Quick Action
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <QuickStats />
+      {/* Row 1: Stat Cards */}
+      <div className="mb-8">
+        <StatsCards stats={mockDashboardStats} />
+      </div>
 
-      {/* Main Stats Cards */}
-      <StatsCards stats={stats} />
+      {/* Row 2: Summary Cards */}
+      <div className="mb-8">
+        <QuickStats />
+      </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Row 3: Charts/Trends */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <RevenueChart data={revenueData} />
         </div>
-        <ServiceDistribution data={serviceTypeData} />
+        <div className="lg:col-span-1">
+          <ServiceDistribution data={serviceTypeData} />
+        </div>
       </div>
-
-      {/* Recent Activity */}
-      <RecentActivity />
-    </div>
+    </>
   );
 };
 

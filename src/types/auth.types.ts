@@ -1,18 +1,17 @@
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  isVerified: boolean;
-  status: UserStatus;
-  createdAt: string;
-  updatedAt: string;
-  lastLogin?: string;
-  profileImage?: string;
-};
+export type UserStatus = 'Active' | 'Inactive' | 'Pending';
+export type UserRole = 'Admin' | 'Provider' | 'Customer';
 
-export type UserRole = 'admin' | 'user' | 'provider';
-export type UserStatus = 'active' | 'inactive' | 'suspended';
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: UserRole;
+  status: UserStatus;
+  joinDate: string;
+  phone?: string;
+  address?: string;
+}
 
 export type LoginRequest = {
   email: string;

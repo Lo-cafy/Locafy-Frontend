@@ -1,123 +1,90 @@
-// src/Pages/Admin/AdminUsers.tsx
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/ui/button';
+import React, { useState, useMemo } from 'react';
 import { Download, Plus } from 'lucide-react';
 import UserTable from '@/Components/Admin/Users/UserTable';
 import UserFilters from '@/Components/Admin/Users/UsersFilters';
 import UserStats from '@/Components/Admin/Users/UserStats';
-import { adminService } from '@/services/admin.service';
-import type { User } from '@/types/auth.types';
+import { mockUsers } from '@/Components/Admin/data/mockData';
 
 const AdminUsers: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, searchQuery, roleFilter, statusFilter]);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await adminService.getUsers({
-        page: currentPage,
-        limit: 10,
-        search: searchQuery || undefined,
-        role: roleFilter !== 'all' ? roleFilter : undefined,
-        status: statusFilter !== 'all' ? statusFilter : undefined
-      });
+  // Filter users based on search and filters
+  const filteredUsers = useMemo(() => {
+    return mockUsers.filter(user => {
+      const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+      const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
       
-      if (response.success) {
-        setUsers(response.data.data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (userId: string, isActive: boolean) => {
-    try {
-      const response = await adminService.updateUserStatus(userId, isActive);
-      if (response.success) {
-        fetchUsers();
-      }
-    } catch (error) {
-      console.error('Failed to update user status:', error);
-    }
-  };
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [searchQuery, roleFilter, statusFilter]);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <>
+      {/* User Management Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">User Management</h1>
-          <p className="text-gray-400 text-base sm:text-lg">Manage customers and service providers</p>
+          <h2 className="text-3xl font-bold text-white">User Management</h2>
+          <p className="text-gray-400 mt-1">Manage customers and service providers</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <Button variant="outline" className="bg-gray-800/30 backdrop-blur border-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-700/50 flex-1 sm:flex-initial">
-            <Download className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Export</span>
-          </Button>
-          <Button className="bg-blue-600/80 backdrop-blur hover:bg-blue-700/80 text-white flex-1 sm:flex-initial">
-            <Plus className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Add User</span>
-          </Button>
+        <div className="flex space-x-3 mt-4 sm:mt-0">
+          <button className="flex items-center px-4 py-2 text-sm font-semibold text-white bg-gray-800 rounded-xl hover:bg-gray-700 border border-gray-700 transition-colors">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </button>
+          <button className="flex items-center px-4 py-2 text-sm font-semibold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition-colors">
+            <Plus className="w-4 h-4 mr-2" />
+            Add User
+          </button>
         </div>
       </div>
 
-      {/* User Stats */}
-      <UserStats />
+      {/* Row 1: User Stat Cards */}
+      <div className="mb-8">
+        <UserStats />
+      </div>
 
-      {/* Filters */}
-      <UserFilters 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        roleFilter={roleFilter}
-        setRoleFilter={setRoleFilter}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-      />
+      {/* User Filtering and Search */}
+      <div className="mb-8">
+        <UserFilters 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          roleFilter={roleFilter}
+          setRoleFilter={setRoleFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
+      </div>
 
-      {/* Users Table */}
-      {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading users...</div>
-      ) : (
-        <UserTable users={users} onStatusUpdate={handleStatusUpdate} />
-      )}
+      {/* User Table */}
+      <UserTable users={filteredUsers} />
 
-      {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-lg p-4">
-        <p className="text-sm text-gray-400 text-center sm:text-left">
-          Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, users.length)} of {users.length} users
+      {/* Table Footer/Pagination */}
+      <div className="flex flex-col sm:flex-row justify-between items-center pt-4 mt-4">
+        <p className="text-sm text-gray-400 mb-2 sm:mb-0">
+          Showing 1 to {filteredUsers.length} of {filteredUsers.length} users
         </p>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+        <div className="flex">
+          <button 
+            className="px-4 py-2 text-sm text-gray-400 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors mr-2 disabled:opacity-50" 
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
-            className="bg-gray-700/30 backdrop-blur border-gray-600/50 text-gray-300 hover:text-white hover:bg-gray-700/50"
           >
             Previous
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
+          </button>
+          <button 
+            className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition-colors"
             onClick={() => setCurrentPage(currentPage + 1)}
-            className="bg-gray-700/30 backdrop-blur border-gray-600/50 text-gray-300 hover:text-white hover:bg-gray-700/50"
           >
             Next
-          </Button>
+          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

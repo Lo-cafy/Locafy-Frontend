@@ -1,32 +1,54 @@
 import React from 'react';
-import { Card, CardContent } from '@/ui/card';
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, Users, Package, CalendarCheck } from 'lucide-react';
+import type { QuickStatData } from '@/types/admin.types';
 
 const QuickStats: React.FC = () => {
-  const quickStats = [
-    { label: 'Avg. Response Time', value: '2.4 min', change: '-12%', positive: true },
-    { label: 'Service Completion', value: '94.2%', change: '+2.1%', positive: true },
-    { label: 'Customer Retention', value: '89.5%', change: '+5.2%', positive: true },
-    { label: 'Provider Rating', value: '4.8/5', change: '+0.1', positive: true }
+  const summaryData: QuickStatData[] = [
+    {
+      title: 'Total Revenue',
+      value: '$0',
+      details: '+0% from last month',
+      icon: DollarSign,
+      iconColor: 'text-emerald-400',
+    },
+    {
+      title: 'Active Users',
+      value: '0',
+      details: '+0 new this month',
+      icon: Users,
+      iconColor: 'text-green-400',
+    },
+    {
+      title: 'Active Services',
+      value: '0',
+      details: '0 pending approval',
+      icon: Package,
+      iconColor: 'text-purple-400',
+    },
+    {
+      title: 'Monthly Bookings',
+      value: '0',
+      details: '0 completed',
+      icon: CalendarCheck,
+      iconColor: 'text-orange-400',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      {quickStats.map((stat, index) => (
-        <Card key={index} className="bg-gray-800/30 backdrop-blur-xl border-gray-700/50 hover:bg-gray-800/40 transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm text-gray-400">{stat.label}</p>
-                <p className="text-base sm:text-lg font-semibold text-white">{stat.value}</p>
-              </div>
-              <div className={`flex items-center text-xs sm:text-sm ${stat.positive ? 'text-green-400' : 'text-red-400'}`}>
-                {stat.positive ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-                {stat.change}
-              </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {summaryData.map((summary, index) => (
+        <div key={index} className="bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-700 flex flex-col justify-between">
+          <div className="flex justify-between items-start">
+            <p className="text-sm text-gray-400 font-medium">{summary.title}</p>
+            <div className={`p-2 rounded-full bg-opacity-20 ${summary.iconColor}`}>
+              <summary.icon className="w-5 h-5" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <p className="text-3xl font-bold text-white mt-2">{summary.value}</p>
+          <p className={`text-xs mt-2 ${summary.title === 'Total Revenue' ? 'text-emerald-400' : 'text-gray-400'}`}>
+            {summary.details}
+          </p>
+        </div>
       ))}
     </div>
   );

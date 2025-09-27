@@ -1,15 +1,16 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Badge } from '@/ui/badge';
 import { 
-  LayoutDashboard, 
-  Users, 
-  Briefcase, 
-  Calendar, 
-  BarChart3, 
-  Settings,
-  Wrench
+  LayoutGrid, Users, Settings, Calendar, BarChart, 
+  Package, MoreHorizontal, AlignJustify
 } from 'lucide-react';
+
+interface NavItemData {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  badge?: string;
+}
 
 interface AdminSidebarProps {
   onItemClick?: () => void;
@@ -19,13 +20,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const menuItems = [
-    { key: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
-    { key: '/admin/users', label: 'Users', icon: Users, badge: '2.4k' },
-    { key: '/admin/services', label: 'Services', icon: Briefcase, badge: null },
-    { key: '/admin/bookings', label: 'Bookings', icon: Calendar, badge: '12' },
-    { key: '/admin/reports', label: 'Analytics', icon: BarChart3, badge: null },
-    { key: '/admin/settings', label: 'Settings', icon: Settings, badge: null }
+  const navItems: NavItemData[] = [
+    { id: '/admin/dashboard', icon: LayoutGrid, label: 'Dashboard' },
+    { id: '/admin/users', icon: Users, label: 'Users', badge: '2.4k' },
+    { id: '/admin/services', icon: AlignJustify, label: 'Services' },
+    { id: '/admin/bookings', icon: Calendar, label: 'Bookings', badge: '12' },
+    { id: '/admin/reports', icon: BarChart, label: 'Analytics' },
+    { id: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
   const handleNavigation = (path: string) => {
@@ -34,48 +35,40 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onItemClick }) => {
   };
 
   return (
-    <div className="flex flex-col h-full glass">
-      {/* Logo */}
-      <div className="p-6 border-b border-white/20">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
-              <Wrench className="w-5 h-5 text-white" />
-            </div>
-          </div>
-          <div>
-            <span className="font-bold text-lg text-gray-800">ServiceHub</span>
-            <p className="text-xs text-gray-600">Admin Dashboard</p>
-          </div>
+    <div className="flex flex-col h-full bg-gray-900">
+      {/* Header/Logo */}
+      <div className="flex items-center p-4 border-b border-gray-800">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-500 mr-3 text-white">
+          <Package className="w-5 h-5" />
         </div>
+        <h1 className="text-xl font-bold text-white">ServiceHub</h1>
       </div>
 
-      {/* Menu Items */}
-      <div className="flex-1 px-4 py-2">
-        <nav className="space-y-1">
-          {menuItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => handleNavigation(item.key)}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition ${
-                location.pathname === item.key 
-                  ? 'bg-gradient-to-r from-blue-100 to-purple-100 border-l-2 border-blue-400 text-gray-900' 
-                  : 'text-gray-700 hover:bg-white/40'
-              }`}
-            >
-              <item.icon className={`w-5 h-5 ${
-                location.pathname === item.key ? 'text-blue-500' : 'text-gray-500'
-              }`} />
-              <span className="flex-1 text-left text-sm">{item.label}</span>
-              {item.badge && (
-                <Badge className="ml-auto text-xs bg-blue-500/10 text-blue-600 border-blue-400/30">
-                  {item.badge}
-                </Badge>
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        <p className="text-xs uppercase text-gray-500 font-semibold mb-2 ml-3">Admin Dashboard</p>
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => handleNavigation(item.id)}
+            className={`w-full flex items-center p-3 rounded-xl transition-colors ${
+              location.pathname === item.id 
+                ? 'bg-indigo-500 bg-opacity-20 text-indigo-500 font-semibold' 
+                : 'text-gray-400 hover:bg-gray-700'
+            }`}
+          >
+            <item.icon className="w-5 h-5 mr-3" />
+            <span className="flex-1 text-left">{item.label}</span>
+            {item.badge && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                location.pathname === item.id ? 'bg-indigo-500' : 'bg-gray-600'
+              } text-white`}>
+                {item.badge}
+              </span>
+            )}
+          </button>
+        ))}
+      </nav>
     </div>
   );
 };

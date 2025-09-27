@@ -1,5 +1,22 @@
-import type { Booking } from '@/types/Bookings.types';
+// src/Components/Admin/data/mockData.ts
 
+import type { Booking } from '@/types/Bookings.types';
+import type { DashboardStats } from '@/types/admin.types';
+import type { User } from '@/types/auth.types';
+
+// Mock Dashboard Stats
+export const mockDashboardStats: DashboardStats = {
+  totalRevenue: 125000,
+  activeUsers: 2450,
+  activeServices: 180,
+  monthlyBookings: 850,
+  avgResponseTime: '2.4 min',
+  serviceCompletion: 94.2,
+  customerRetention: 89.5,
+  providerRating: 4.8
+};
+
+// Mock Bookings
 export const mockBookings: Booking[] = [
   {
     id: 'BK001',
@@ -70,5 +87,49 @@ export const mockBookings: Booking[] = [
     amount: 150,
     location: 'Bronx, NY',
     paymentStatus: 'refunded'
+  }
+];
+
+// Mock Users
+export const mockUsers: User[] = [
+  { 
+    id: '1', 
+    name: 'John Doe', 
+    email: 'john.d@example.com', 
+    role: 'Admin', 
+    status: 'Active', 
+    joinDate: '2023-01-15' 
+  },
+  { 
+    id: '2', 
+    name: 'Jane Smith', 
+    email: 'jane.s@example.com', 
+    role: 'Provider', 
+    status: 'Active', 
+    joinDate: '2023-02-20' 
+  },
+  { 
+    id: '3', 
+    name: 'Mike Johnson', 
+    email: 'mike.j@example.com', 
+    role: 'Customer', 
+    status: 'Inactive', 
+    joinDate: '2023-03-10' 
+  },
+  { 
+    id: '4', 
+    name: 'Emily Brown', 
+    email: 'emily.b@example.com', 
+    role: 'Customer', 
+    status: 'Active', 
+    joinDate: '2023-04-05' 
+  },
+  { 
+    id: '5', 
+    name: 'Chris Lee', 
+    email: 'chris.l@example.com', 
+    role: 'Provider', 
+    status: 'Pending', 
+    joinDate: '2023-05-21' 
   }
 ];

@@ -1,18 +1,5 @@
 import React from 'react';
-import { Button } from '@/ui/button';
-import { Input } from '@/ui/input';
-import { Avatar, AvatarFallback } from '@/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/ui/dropdown-menu';
-import { 
-  Search,
-  Bell,
-  RefreshCw,
-  User,
-  Settings,
-  LogOut,
-  Menu
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Bell, Menu } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 interface AdminHeaderProps {
@@ -20,70 +7,36 @@ interface AdminHeaderProps {
 }
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
-  const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
+  const { user } = useAuthStore();
+  
   return (
-    <header className="bg-gray-800/50 backdrop-blur-xl border-b border-gray-700 px-4 sm:px-6 py-4 sticky top-0 z-10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4 flex-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMenuClick}
-            className="lg:hidden text-gray-400 hover:text-white"
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-          
-          <div className="relative group hidden sm:block flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input 
-              placeholder="Search..." 
-              className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
-            />
-          </div>
-        </div>
+    <header className="sticky top-0 z-20 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800 p-4 flex items-center justify-between">
+      <div className="flex items-center flex-grow max-w-2xl">
+        <button 
+          onClick={onMenuClick} 
+          className="lg:hidden mr-3 p-2 text-gray-400 hover:text-white rounded-xl bg-gray-800 transition-colors"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
         
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white">
-            <Bell className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </Button>
-          
-          <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hidden sm:flex">
-            <RefreshCw className="w-5 h-5" />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer w-8 h-8 sm:w-10 sm:h-10">
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                  {user?.name?.charAt(0) || 'A'}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-gray-800 border border-gray-700">
-              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="text-gray-300 hover:bg-gray-700 hover:text-white">
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="text-gray-300 hover:bg-gray-700 hover:text-white">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
-              <DropdownMenuItem onClick={handleLogout} className="text-gray-300 hover:bg-gray-700 hover:text-white">
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <input
+            type="search"
+            placeholder="Search..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-800 text-white placeholder-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-transparent focus:border-indigo-500 transition-all duration-200"
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-4 ml-4">
+        <button className="p-2 text-gray-400 hover:text-indigo-400 rounded-full transition-colors relative">
+          <Bell className="w-6 h-6" />
+          <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full ring-2 ring-gray-900"></span>
+        </button>
+        
+        <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold cursor-pointer hover:ring-2 ring-indigo-500 transition-shadow">
+          {user?.name?.charAt(0) || 'A'}
         </div>
       </div>
     </header>
