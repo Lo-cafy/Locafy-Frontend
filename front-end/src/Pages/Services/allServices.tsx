@@ -4,6 +4,7 @@ import axios from "axios";
 import Sidebar from "@/Components/Services/sidebar"
 import ServiceCard from "@/Components/Services/serviceCard";
 import SearchBar from "@/Components/Services/searchBar";
+import { ArrowLeft } from "lucide-react";
 
 interface Service {
   id: number;
@@ -13,10 +14,9 @@ interface Service {
   rating: number;
   category_id: number;
   location?: string;
-  image?: string;  
+  image?: string;
   isFeatured?: boolean;
 }
-
 export default function ServiceListingPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [filters, setFilters] = useState<{
@@ -25,10 +25,13 @@ export default function ServiceListingPage() {
     maxPrice?: number;
     minRating?: number;
   }>({});
-  const [searchText, setSearchText] = useState(""); 
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  // Function to go back to previous page
+  const handleGoBack = () => {
+    window.history.back();
+  };
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -70,7 +73,6 @@ export default function ServiceListingPage() {
           if (filters.minRating && rating < filters.minRating) return false;
           return true;
         });
-
         // Apply search text filter
         if (searchText.trim()) {
           const text = searchText.toLowerCase();
@@ -108,10 +110,19 @@ export default function ServiceListingPage() {
 
         {/* Main Content */}
         <div className="flex-1 min-w-0"> {/* min-w-0 prevents flex overflow */}
-          {/* Header */}
+          {/* Header with Back Button */}
           <div className="mb-4 sm:mb-6">
+            {/* Back Button */}
+            <button
+              onClick={handleGoBack}
+              className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-3 sm:mb-4 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back</span>
+            </button>
+
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Services</h1>
-            
+
             {/* Search bar */}
             <SearchBar searchText={searchText} setSearchText={setSearchText} />
           </div>
@@ -127,7 +138,6 @@ export default function ServiceListingPage() {
               </p>
             </div>
           )}
-
           {/* Loading, Error, and Results */}
           {loading ? (
             <div className="flex justify-center items-center py-8 sm:py-16">
@@ -136,7 +146,7 @@ export default function ServiceListingPage() {
           ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 text-center">
               <p className="text-red-600 font-medium">{error}</p>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
               >
@@ -152,7 +162,7 @@ export default function ServiceListingPage() {
               </div>
               <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No services found</h3>
               <p className="text-gray-500 mb-4">Try adjusting your filters or search terms</p>
-              <button 
+              <button
                 onClick={() => { setFilters({}); setSearchText(""); }}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
@@ -164,6 +174,7 @@ export default function ServiceListingPage() {
               {services.map((s) => (
                 <ServiceCard
                   key={s.id}
+                  id={s.id} // <-- Pass the id here
                   name={s.title}
                   location={s.location || "Unknown location"}
                   price={Number(s.price)}
@@ -173,6 +184,7 @@ export default function ServiceListingPage() {
                 />
               ))}
             </div>
+
           )}
         </div>
       </div>

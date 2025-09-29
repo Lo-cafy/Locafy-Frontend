@@ -1,8 +1,10 @@
 "use client";
 
 import { Star, MapPin, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ServiceCardProps {
+  id: number; // Add id to navigate
   name: string;
   location: string;
   price: number;
@@ -12,6 +14,7 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ 
+  id,
   name, 
   location, 
   price, 
@@ -19,8 +22,13 @@ export default function ServiceCard({
   image, 
   isFeatured 
 }: ServiceCardProps) {
+  const navigate = useNavigate();
+
   return (
-    <div className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200 w-full sm:w-[300px] md:w-[340px] lg:w-[360px]">
+    <div 
+      onClick={() => navigate(`/services/${id}`)} // Navigate on card click
+      className="cursor-pointer group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200 w-full sm:w-[300px] md:w-[340px] lg:w-[360px]"
+    >
       {/* Image Section */}
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
         <img 
@@ -39,7 +47,10 @@ export default function ServiceCard({
               FEATURED
             </span>
           )}
-          <button className="bg-white/80 hover:bg-white text-slate-700 p-1.5 rounded-full transition-all sm:p-2">
+          <button 
+            onClick={(e) => e.stopPropagation()} // Prevent card click when clicking heart
+            className="bg-white/80 hover:bg-white text-slate-700 p-1.5 rounded-full transition-all sm:p-2"
+          >
             <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         </div>
@@ -64,7 +75,13 @@ export default function ServiceCard({
 
         <div className="flex items-center justify-between">
           <span className="text-sm sm:text-lg font-bold text-blue-600">${price}</span>
-          <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all text-xs sm:text-sm font-semibold">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click
+              navigate(`/services/${id}`);
+            }}
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all text-xs sm:text-sm font-semibold"
+          >
             Book
           </button>
         </div>
