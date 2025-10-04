@@ -1,114 +1,162 @@
 "use client";
-import { MapPin, ShieldCheck, Clock, Phone, Star, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-type Service = {
+import { Star, MapPin, Heart } from "lucide-react";
+interface ServiceCardProps {
   id: number;
-  category: string;
-  price: string;
-  image: string;
-  title: string;
-  provider: string;
-  rating: number;
-  reviews: number;
-  duration: string;
+  name: string;
   location: string;
-  verified?: boolean;
-  photos?: string[]; // 👈 store all photos
-};
-
-const Pill = ({ children, className }: { children: React.ReactNode; className?: string }) =>
-  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${className}`}>{children}</span>;
-
-function ServiceCard({ s }: { s: Service }) {
+  price: number;
+  rating: number;
+  image?: string;
+  isFeatured?: boolean;
+}
+function ServiceCard({ id, name, location, price, rating, image, isFeatured }: ServiceCardProps) {
+  const navigate = useNavigate();
   return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col overflow-hidden">
-      <div className="relative">
-        <img src={s.image} alt={s.title} className="w-full h-48 object-cover" />
-        <Pill className="absolute top-3 left-3 bg-emerald-700 text-white">{s.category}</Pill>
-        <Pill className="absolute top-3 right-3 bg-white shadow text-gray-800">{s.price}</Pill>
-        <button className="absolute right-3 bottom-3 w-9 h-9 bg-white shadow rounded-full flex justify-center items-center hover:bg-gray-100">
-          <Heart className="w-4 h-4 text-gray-500" />
-        </button>
-        {s.verified && (
-          <div className="absolute left-3 bottom-3 bg-white/90 px-2 py-1 rounded-full flex items-center gap-1 text-xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Verified
-          </div>
-        )}
-      </div>
+    <div
+      onClick={() => navigate(`/services/${id}`)}
+      className="cursor-pointer group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200 w-full sm:w-[300px] md:w-[340px] lg:w-[360px]"
+    >
+      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
+        <img
+          src={image || "/api/placeholder/400/300"}
+          alt={name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent" />
 
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="text-lg font-semibold mb-1">{s.title}</h3>
-        <p className="text-sm text-gray-600 mb-3">{s.provider}</p>
-
-        <div className="flex justify-between text-sm mb-3">
-          <div className="flex items-center gap-1.5">
-            <Star className="w-4 h-4 text-yellow-400" /><span>{s.rating}</span>
-            <span className="text-gray-500">({s.reviews})</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-gray-500">
-            <Clock className="w-4 h-4" /> {s.duration}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 text-sm text-gray-600 mb-4">
-          <MapPin className="w-4 h-4 text-emerald-600" /> {s.location}
-        </div>
-
-        <div className="text-xs text-gray-500 flex gap-2 mb-6">
-          <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-emerald-600"/> Background checked</span>
-          | <span>Insured & Bonded</span>
-        </div>
-
-        <div className="mt-auto flex gap-3">
-          <button className="flex-1 h-11 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Book Now</button>
-          <button className="w-11 h-11 border rounded-lg flex justify-center items-center hover:bg-gray-50">
-            <Phone className="w-5 h-5 text-emerald-600" />
+        <div className="absolute top-2 left-2 right-2 flex justify-between">
+          {isFeatured && (
+            <span className="bg-amber-500 text-white px-2 py-1 rounded-md text-xs font-bold sm:text-sm">
+              FEATURED
+            </span>
+          )}
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white/80 hover:bg-white text-slate-700 p-1.5 rounded-full transition-all sm:p-2"
+          >
+            <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>
-    </article>
+      <div className="p-3 sm:p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-semibold text-slate-800 text-sm sm:text-base line-clamp-1 flex-1 mr-2">
+            {name}
+          </h3>
+          <div className="flex items-center bg-slate-100 px-2 py-1 rounded-full">
+            <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-xs sm:text-sm font-bold ml-1">{rating}</span>
+          </div>
+        </div>
+        <div className="flex items-center text-slate-600 text-xs sm:text-sm mb-3">
+          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <span className="line-clamp-1">{location}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm sm:text-lg font-bold text-blue-600">${price}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/services/${id}`);
+            }}
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all text-xs sm:text-sm font-semibold">
+            Book
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
-
+type Service = {
+  id: number;
+  title: string;
+  location: string;
+  price: string;
+  rating: number;
+  image: string;
+  isFeatured?: boolean;
+};
 export default function FeaturedServices() {
-  const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/services");
-        const servicesData: Service[] = response.data;
+        const response = await axios.get("https://back-end-service-listing.onrender.com/api/services");
+        let servicesData = response.data;
+        if (!Array.isArray(servicesData)) {
+          if (servicesData.data && Array.isArray(servicesData.data)) {
+            servicesData = servicesData.data;
+          } else if (servicesData.services && Array.isArray(servicesData.services)) {
+            servicesData = servicesData.services;
+          } else if (servicesData.results && Array.isArray(servicesData.results)) {
+            servicesData = servicesData.results;
+          } else {
+            console.error("No array found in response:", servicesData);
+            setError("No services data found");
+            setServices([]);
+            return;
+          }
+        }
+        if (!Array.isArray(servicesData)) {
+          console.error("servicesData is not an array:", servicesData);
+          setError("Invalid data format received");
+          setServices([]);
+          return;
+        }
 
-        // ✅ Fetch photos for each service
+        console.log("First service data:", servicesData[0]); 
+
         const servicesWithPhotos = await Promise.all(
           servicesData.map(async (service) => {
-            try {
-              const photosRes = await axios.get(
-                `http://localhost:5000/api/photoservices/${service.id}/photos`
-              );
-
-              // Access nested data
-              const photos = photosRes.data.data.photos.map((p: any) => p.photo_url);
-
+            const serviceId = service.service_id || service.id;
+            if (!serviceId) {
+              console.error("Service missing ID:", service);
               return {
                 ...service,
-                photos,
-                image: photos[0] || service.image, // use first photo
+                id: serviceId,
+                location: service.location_text || service.location,
+                image: service.image || "/api/placeholder/400/300",
+                isFeatured: Math.random() > 0.7,
+              };
+            }
+            try {
+              const photosRes = await axios.get(
+                `http://localhost:5000/api/photoservices/${serviceId}/photos`
+              );
+              let photos: string[] = [];
+              if (photosRes.data && photosRes.data.data && photosRes.data.data.photos) {
+                photos = photosRes.data.data.photos.map((p: any) => p.photo_url);
+              } else if (Array.isArray(photosRes.data)) {
+                photos = photosRes.data.map((p: any) => p.photo_url || p.url);
+              } else if (photosRes.data.photos && Array.isArray(photosRes.data.photos)) {
+                photos = photosRes.data.photos.map((p: any) => p.photo_url || p.url);
+              }
+              return {
+                ...service,
+                id: serviceId, // Map service_id to id for the component
+                location: service.location_text || service.location, // Map location_text to location
+                image: photos[0] || service.image || "/api/placeholder/400/300",
+                isFeatured: Math.random() > 0.7,
               };
             } catch (err) {
-              console.error(`Failed to fetch photos for service ${service.id}`, err);
-              return service;
+              console.error(`Failed to fetch photos for service ${serviceId}`, err);
+              return {
+                ...service,
+                id: serviceId,
+                location: service.location_text || service.location,
+                image: service.image || "/api/placeholder/400/300",
+                isFeatured: Math.random() > 0.7,
+              };
             }
           })
         );
-
         setServices(servicesWithPhotos);
       } catch (err) {
         setError("Failed to fetch services");
@@ -117,7 +165,6 @@ export default function FeaturedServices() {
         setLoading(false);
       }
     };
-
     fetchServices();
   }, []);
 
@@ -157,9 +204,19 @@ export default function FeaturedServices() {
           Explore All Services
         </button>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((s) => (
-          <ServiceCard key={s.id} s={s} />
+          <ServiceCard
+            key={s.id}
+            id={s.id}
+            name={s.title}
+            location={s.location || "Unknown location"}
+            price={parseFloat(s.price)}
+            rating={s.rating}
+            image={s.image}
+            isFeatured={s.isFeatured}
+          />
         ))}
       </div>
     </section>

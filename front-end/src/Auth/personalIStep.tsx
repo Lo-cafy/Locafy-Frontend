@@ -94,9 +94,6 @@ export function PersonalInfoStep({ formData, handleChange, handleCheckbox, nextS
               <GoogleLoginButton />
               <FacebookLoginButton />
             </div>
-
-
-
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
