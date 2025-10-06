@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "@/Components/Services/sidebar";
 import ServiceCard from "@/Components/Services/serviceCard";
 import SearchBar from "@/Components/Services/searchBar";
-import { ArrowLeft, ChevronRight, Home } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface Service {
   id: number;
@@ -27,7 +26,6 @@ interface Filters {
 }
 
 export default function ServiceListingPage() {
-  const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [searchText, setSearchText] = useState("");
@@ -135,25 +133,6 @@ export default function ServiceListingPage() {
       );
     }
 
-    // Apply sorting
-    if (filters.sort) {
-      switch (filters.sort) {
-        case "price-low":
-          filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
-          break;
-        case "price-high":
-          filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
-          break;
-        case "rating":
-          filtered.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
-          break;
-        case "newest":
-          // Assuming there's a created_at or similar field
-          filtered.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
-          break;
-      }
-    }
-
     return filtered;
   };
 
@@ -173,44 +152,14 @@ export default function ServiceListingPage() {
         
         <div className="flex-1 min-w-0">
           <div className="mb-4 sm:mb-6">
-            {/* Breadcrumbs */}
-            <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
-              <button 
-                onClick={() => navigate("/")}
-                className="flex items-center hover:text-green-600 transition-colors"
-              >
-                <Home className="h-4 w-4 mr-1" />
-                Home
-              </button>
-              <ChevronRight className="h-4 w-4" />
-              <span className="text-gray-900 font-medium">Services</span>
-              {filters.categoryId && (
-                <>
-                  <ChevronRight className="h-4 w-4" />
-                  <span className="text-green-600 font-medium">Category</span>
-                </>
-              )}
-            </nav>
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Services</h1>
-                {searchText && (
-                  <p className="text-gray-600 mt-1">
-                    Search results for "<span className="font-medium text-green-600">{searchText}</span>"
-                  </p>
-                )}
-              </div>
-              <button 
-                onClick={handleGoBack} 
-                className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5" />
-                <span className="font-medium hidden sm:inline">Back</span>
-              </button>
-            </div>
-            
+            <button 
+              onClick={handleGoBack} 
+              className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-3 sm:mb-4 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back</span>
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Services</h1>
             <SearchBar searchText={searchText} setSearchText={setSearchText} />
           </div>
 
@@ -254,26 +203,18 @@ export default function ServiceListingPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
-              {services.map((s, index) => (
-                <div 
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+              {services.map((s) => (
+                <ServiceCard
                   key={s.id}
-                  className="animate-in fade-in-0 slide-in-from-bottom-4 mb-2"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <ServiceCard
-                    id={s.id}
-                    name={s.title}
-                    location={s.location || "Unknown location"}
-                    price={Number(s.price)}
-                    rating={Number(s.rating)}
-                    image={s.image}
-                    isFeatured={s.isFeatured}
-                    providerName={`${s.title.split(' ')[0]}'s Services`}
-                    reviewCount={Math.floor(Math.random() * 100) + 10}
-                    completionTime={`${Math.floor(Math.random() * 3) + 1}-${Math.floor(Math.random() * 5) + 2} days`}
-                  />
-                </div>
+                  id={s.id}
+                  name={s.title}
+                  location={s.location || "Unknown location"}
+                  price={Number(s.price)}
+                  rating={Number(s.rating)}
+                  image={s.image}
+                  isFeatured={s.isFeatured}
+                />
               ))}
             </div>
           )}

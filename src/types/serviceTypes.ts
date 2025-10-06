@@ -11,3 +11,17 @@ export interface Service {
   duration?: string;
   isFeatured?: boolean;
 }
+
+
+export interface ServiceCard {
+  id: number;
+  name: string;
+  location: string;
+  price: number;
+  rating: number;
+  image?: string;
+  providerName?: string;
+  reviewCount?: number;
+  completionTime?: string;
+  isFeatured?: boolean;
+}

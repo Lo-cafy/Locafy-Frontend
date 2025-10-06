@@ -1,22 +1,11 @@
 "use client";
 
-import { Star, MapPin, Heart, User, Clock, Shield } from "lucide-react";
+import { Star, MapPin, User, Clock, Shield, Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import QuickBookModal from "./QuickBookModal";
+import type { ServiceCard } from "@/types/serviceTypes";
 
-interface ServiceCardProps {
-  id: number;
-  name: string;
-  location: string;
-  price: number;
-  rating: number;
-  image?: string;
-  isFeatured?: boolean;
-  providerName?: string;
-  reviewCount?: number;
-  completionTime?: string;
-}
+
 
 export default function ServiceCard({ 
   id,
@@ -29,25 +18,14 @@ export default function ServiceCard({
   providerName = "Local Provider",
   reviewCount = 0,
   completionTime = "2-3 days"
-}: ServiceCardProps) {
+}: ServiceCard) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [showQuickBook, setShowQuickBook] = useState(false);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
-  };
-
-  const handleQuickBook = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowQuickBook(true);
-  };
-
-  const handleBookingConfirmed = () => {
-    // Handle successful booking
-    console.log("Booking confirmed!");
   };
 
   return (
@@ -78,7 +56,7 @@ export default function ServiceCard({
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         
-        {/* Badges */}
+        {/* Badges & Save Icon */}
         <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
           <div className="flex gap-2">
             {isFeatured && (
@@ -99,7 +77,7 @@ export default function ServiceCard({
                 : "bg-white/90 hover:bg-white text-gray-600 hover:text-red-500"
             }`}
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+            <Bookmark className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
           </button>
         </div>
       </div>
@@ -137,36 +115,23 @@ export default function ServiceCard({
           </div>
         </div>
 
-        {/* Price and Book Button */}
+        {/* Price and Book Now Button */}
         <div className="flex items-center justify-between">
           <div>
             <span className="text-lg sm:text-xl font-bold text-green-600">${price}</span>
             <span className="text-xs text-slate-500 ml-1">starting from</span>
           </div>
           <button 
-            onClick={handleQuickBook}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/services/${id}`);
+            }}
             className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
           >
-            Quick Book
+            Book Now
           </button>
         </div>
       </div>
-
-      {/* Quick Book Modal */}
-      <QuickBookModal
-        isOpen={showQuickBook}
-        onClose={() => setShowQuickBook(false)}
-        service={{
-          id,
-          name,
-          price,
-          rating,
-          image,
-          providerName,
-          reviewCount
-        }}
-        onConfirm={handleBookingConfirmed}
-      />
     </div>
   );
 }
