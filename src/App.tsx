@@ -1,4 +1,4 @@
-// App.tsx
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/Pages/LandingPage";
 import UserLayout from "./Pages/Provider/User";
@@ -10,6 +10,8 @@ import Services from "@/Pages/Admin/Services";
 import Reports from "@/Pages/Admin/Reports";
 import Settings from "@/Pages/Admin/Settings";
 import Bookings from "@/Pages/Admin/Bookings";
+import ServiceDetailPage from "./Pages/Services/Servicedetail";
+import BookingPage from "./Pages/Services/Booking";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user/*" element={<UserLayout />} />
         <Route path="/all-services" element={<AllServicesPage />} />
+         <Route path="/services/:id" element={<ServiceDetailPage />} />
+          <Route path="/services/:id/booking" element={<BookingPage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -36,4 +40,5 @@ function App() {
 }
 
 export default App;
+
 
