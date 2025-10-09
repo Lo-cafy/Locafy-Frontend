@@ -17,6 +17,7 @@ export function EmailSentNotification({ email, onSwitch }: EmailSentProps) {
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const cardStyles = "bg-white rounded-2xl shadow-lg p-6 w-[320px] min-h-[520px]";
 
   useEffect(() => {
     if (!canResend && countdown > 0) {
@@ -39,7 +40,7 @@ export function EmailSentNotification({ email, onSwitch }: EmailSentProps) {
       setMessage("A new verification link has been sent.");
       toast.success(res.message)
       setCanResend(false);
-      setCountdown(120);
+      setCountdown(60);
      }else{
         toast.error(res.message)
      }
@@ -52,8 +53,8 @@ export function EmailSentNotification({ email, onSwitch }: EmailSentProps) {
   };
 
   return (
-  <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center gap-4 h-full justify-center">
-      <MailCheck className="h-16 w-16 text-emerald-500" />
+<div className={`${cardStyles} flex flex-col items-center text-center justify-center gap-4`}>
+    <MailCheck className="h-16 w-16 text-emerald-500" />
       <h2 className="text-xl font-semibold text-gray-800">Check Your Email</h2>
       <p className="text-sm text-gray-600">
         We've sent a verification link to <br />

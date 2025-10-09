@@ -16,6 +16,7 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const cardStyles = "bg-white rounded-2xl shadow-lg p-6 w-[320px] min-h-[520px]";
   
   // Get the setUser function from your auth store
   const setUser = useAuthStore((state) => state.setUser);
@@ -57,8 +58,8 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 w-[320px]">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Login</h2>
+  <div className={cardStyles}>  
+    <h2 className="text-xl font-bold text-gray-800 mb-4">Login</h2>
 
       <form onSubmit={handleLogin} className="space-y-3">
         <Input 
