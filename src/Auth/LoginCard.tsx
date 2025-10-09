@@ -4,8 +4,9 @@ import { Button } from "@/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
 import GoogleLoginButton from "./Google"; 
-import axios from "axios";
 import { useAuthStore } from "@/store/authStore"; // Import your auth store
+import api from "@/Api/baseurl";
+import { toast } from "react-toastify";
 
 export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,32 +32,23 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
 
     try {
       // Fetch all users from the server
-      const response = await axios.get("https://back-end-service-listing.onrender.com/mailUsers");
-      const users = response.data;
-
-      // Check if user exists with matching email and password
-      const user = users.find((user: any) => 
-        user.email === loginData.email && user.password === loginData.password
-      );
-
-      if (user) {
-        console.log("Login successful:", user);
-        
-        // Save user to auth store (which will also save to localStorage)
+      const response = (await api.post("/Auth/login",loginData)).data;
+    if(response.sucess){
+      toast.success(response.message)
+              console.log("Login successful:", response.data);
         const userData = {
-          id: user.id || user.email, // Use email as ID if no id field
-          name: `${user.firstname} ${user.lastname}`,
-          email: user.email,
-          picture: user.picture // Add if available
+          id: response.id || response.email, // Use email as ID if no id field
+          name: `${response.firstname} ${response.lastname}`,
+          email: response.email,
         };
-        
-        setUser(userData); // This will save to both Zustand and localStorage
-        
+         setUser(userData); // This will save to both Zustand and localStorage
+
       } else {
-        setError("Invalid email or password");
-        console.error("Login failed: Invalid credentials");
+        console.log(response);
+        
+        toast.error(response.message)
       }
-    } catch (error) {
+    } catch (error:any) {
       setError("Login failed. Please try again.");
       console.error("Login error:", error);
     } finally {

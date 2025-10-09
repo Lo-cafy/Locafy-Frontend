@@ -12,8 +12,16 @@ import Settings from "@/Pages/Admin/Settings";
 import Bookings from "@/Pages/Admin/Bookings";
 import ServiceDetailPage from "./Pages/Services/Servicedetail";
 import BookingPage from "./Pages/Services/Booking";
+import { UrlVerification } from "./Auth/UrlVerification";
+  import { ToastContainer } from 'react-toastify';
 
 function App() {
+
+   const handleVerificationSuccess = () => {
+    // Logic to redirect the user to the login page
+    window.location.href = '/'; 
+  };
+
   return (
     <BrowserRouter>
       <Routes>
@@ -23,6 +31,10 @@ function App() {
         <Route path="/all-services" element={<AllServicesPage />} />
          <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/services/:id/booking" element={<BookingPage />} />
+           <Route 
+          path="/finalize-registration" 
+          element={<UrlVerification onSuccess={handleVerificationSuccess} />} 
+        />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -35,6 +47,7 @@ function App() {
           <Route path="bookings" element={<Bookings />} />
         </Route>
       </Routes>
+      <ToastContainer/>
     </BrowserRouter>
   );
 }
