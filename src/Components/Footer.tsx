@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Mail,
   Phone,
@@ -44,30 +45,21 @@ export default function Footer() {
             </ul>
 
             <div className="flex gap-3 mt-4">
-              <a
-                href="#"
-                className="w-9 h-9 rounded-md border flex items-center justify-center hover:bg-emerald-600 hover:text-white text-emerald-600 transition"
-              >
-                <Facebook size={16} />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-md border flex items-center justify-center hover:bg-emerald-600 hover:text-white text-emerald-600 transition"
-              >
-                <Twitter size={16} />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-md border flex items-center justify-center hover:bg-emerald-600 hover:text-white text-emerald-600 transition"
-              >
-                <Instagram size={16} />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-md border flex items-center justify-center hover:bg-emerald-600 hover:text-white text-emerald-600 transition"
-              >
-                <Linkedin size={16} />
-              </a>
+              {[
+                { href: "#", Icon: Facebook, label: "Facebook" },
+                { href: "#", Icon: Twitter, label: "Twitter" },
+                { href: "#", Icon: Instagram, label: "Instagram" },
+                { href: "#", Icon: Linkedin, label: "LinkedIn" },
+              ].map(({ href, Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="w-9 h-9 rounded-md border flex items-center justify-center hover:bg-emerald-600 hover:text-white text-emerald-600 transition"
+                >
+                  <Icon size={16} />
+                </a>
+              ))}
             </div>
           </div>
           <div>

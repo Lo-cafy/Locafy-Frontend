@@ -5,8 +5,10 @@ import { SlidersHorizontal, X, ChevronDown, ChevronUp, ChevronRight } from "luci
 import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
 import RatingFilter from "./RatingFilter";
+import type { Filters } from "@/types/filters";
+import { BASE_URL, API_ENDPOINTS } from "@/api/baseUrl";
 
-interface Props { filters: any; setFilters: (filters: any) => void; }
+interface Props { filters: Filters; setFilters: (filters: Filters) => void; }
 interface Category { id: number; name: string; }
 
 export default function Sidebar({ filters, setFilters }: Props) {
@@ -31,7 +33,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setCategoriesLoading(true);
         setCategoriesError("");
-        const res = await axios.get("https://back-end-service-listing.onrender.com/api/categories");
+        const res = await axios.get(`${BASE_URL}${API_ENDPOINTS.CATEGORIES}`);
         let categoriesData = res.data;
         
         if (res.data.categories && Array.isArray(res.data.categories)) categoriesData = res.data.categories;
@@ -63,7 +65,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setServicesLoading(true);
         setServicesError("");
-        const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`);
+        const res = await axios.get(`${BASE_URL}${API_ENDPOINTS.SERVICES_BY_CATEGORY(filters.categoryId)}`);
         let servicesData = res.data;
         if (res.data.services && Array.isArray(res.data.services)) servicesData = res.data.services;
         else if (res.data.data && Array.isArray(res.data.data)) servicesData = res.data.data;

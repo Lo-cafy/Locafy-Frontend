@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Bell, MapPin, Search } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -6,13 +6,43 @@ import { Badge } from "@/ui/badge";
 import { useAuthStore } from "@/store/authStore";
 import { SignUpButton } from "@/Auth/SignupButton";
 import { UserMenu } from "@/Auth/UserMenuButton";
+import { useState } from "react";
+import { useDebounce } from "@/hooks/debouncing";
 
-export function Navbar() {
+import type { NavbarProps } from "@/types/ui";
+
+export function Navbar({ showSearch = true, searchText = "", onSearchTextChange, locationText = "", onLocationTextChange }: NavbarProps) {
   const { isLoggedIn, hydrateFromStorage } = useAuthStore();
+  const [localSearchText, setLocalSearchText] = useState(searchText);
+  const [localLocationText, setLocalLocationText] = useState(locationText);
+  const debouncedSearchText = useDebounce(localSearchText, 300);
+  const debouncedLocationText = useDebounce(localLocationText, 300);
 
   useEffect(() => {
     hydrateFromStorage();
   }, [hydrateFromStorage]);
+
+  // Sync with parent props
+  useEffect(() => {
+    setLocalSearchText(searchText);
+  }, [searchText]);
+
+  useEffect(() => {
+    setLocalLocationText(locationText);
+  }, [locationText]);
+
+  // Notify parent of debounced changes
+  useEffect(() => {
+    if (onSearchTextChange && debouncedSearchText !== searchText) {
+      onSearchTextChange(debouncedSearchText);
+    }
+  }, [debouncedSearchText, searchText, onSearchTextChange]);
+
+  useEffect(() => {
+    if (onLocationTextChange && debouncedLocationText !== locationText) {
+      onLocationTextChange(debouncedLocationText);
+    }
+  }, [debouncedLocationText, locationText, onLocationTextChange]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20">
@@ -35,19 +65,28 @@ export function Navbar() {
           </div>
 
           {/* Middle - Search (only md+) */}
-          <div className="hidden md:flex items-center space-x-2 flex-1 max-w-2xl mx-8">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search for services..."
-                className="pl-10 bg-white/20 border-white/30 backdrop-blur-sm text-gray-700 placeholder-gray-500 focus:border-emerald-300 focus:ring-emerald-200"
-              />
+          {showSearch && (
+            <div className="flex items-center space-x-2 flex-1 max-w-2xl mx-2 md:mx-8">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search for services..."
+                  value={localSearchText}
+                  onChange={(e) => setLocalSearchText(e.target.value)}
+                  className="pl-10 bg-white/20 border-white/30 backdrop-blur-sm text-gray-700 placeholder-gray-500 focus:border-emerald-300 focus:ring-emerald-200"
+                />
+              </div>
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
+                <MapPin className="h-4 w-4 text-emerald-600" />
+                <Input
+                  placeholder="Location"
+                  value={localLocationText}
+                  onChange={(e) => setLocalLocationText(e.target.value)}
+                  className="bg-transparent border-0 focus-visible:ring-0 p-0 text-gray-700 placeholder-gray-500 w-32"
+                />
+              </div>
             </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-600 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
-              <MapPin className="h-4 w-4 text-emerald-600" />
-              <span>New York</span>
-            </div>
-          </div>
+          )}
 
           {/* Right side */}
           <div className="flex items-center space-x-4">

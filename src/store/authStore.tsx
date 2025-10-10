@@ -1,20 +1,6 @@
 // src/store/useAuthStore.ts
 import { create } from "zustand";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  picture?: string;
-}
-
-interface AuthState {
-  user: User | null;
-  isLoggedIn: boolean;
-  setUser: (user: User) => void;
-  hydrateFromStorage: () => void;
-  logout: () => void;   // ✅ add logout method
-}
+import type { User, AuthState } from "@/types/auth";
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,

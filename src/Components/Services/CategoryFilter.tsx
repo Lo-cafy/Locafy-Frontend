@@ -1,5 +1,6 @@
 import { Checkbox } from "@/ui/checkbox";
 import { Label } from "@/ui/label";
+import type { Filters } from "@/types/filters";
 import { 
   Paintbrush, 
   Hammer, 
@@ -20,8 +21,8 @@ import {
 
 interface Props {
   categories: { id: number; name: string }[];
-  filters: any;
-  setFilters: (filters: any) => void;
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
   isLoading?: boolean;
   error?: string;
 }

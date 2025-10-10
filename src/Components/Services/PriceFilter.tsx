@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Filters } from "@/types/filters";
 
 interface Props {
-  filters: any;
-  setFilters: (filters: any) => void;
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
 }
 
 export default function PriceFilter({ filters, setFilters }: Props) {

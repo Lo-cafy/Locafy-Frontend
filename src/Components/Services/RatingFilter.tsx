@@ -1,9 +1,10 @@
 import { Checkbox } from "@/ui/checkbox";
 import { Label } from "@/ui/label";
+import type { Filters } from "@/types/filters";
 
 interface Props {
-  filters: any;
-  setFilters: (filters: any) => void;
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
 }
 
 export default function RatingFilter({ filters, setFilters }: Props) {

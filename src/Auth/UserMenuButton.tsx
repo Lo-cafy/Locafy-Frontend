@@ -29,7 +29,7 @@ export function UserMenu() {
     </div>
   )}
   {/* Greeting text - always visible */}
-  <span className="text-sm font-medium text-gray-700">
+  <span className="hidden md:inline text-sm font-medium text-gray-700">
     Hi, {user.name}
   </span>
 </div>
@@ -67,7 +67,10 @@ export function UserMenu() {
 
           {/* Logout */}
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              navigate("/", { replace: true });
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut className="h-4 w-4" />
