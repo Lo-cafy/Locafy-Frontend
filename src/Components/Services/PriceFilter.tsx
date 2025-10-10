@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { Filters } from "@/types/filters";
+import { useState } from "react";
+import type { Filters } from "@/types/services/filters";
 
 interface Props {
   filters: Filters;
@@ -15,14 +15,14 @@ export default function PriceFilter({ filters, setFilters }: Props) {
   const handleMinPriceChange = (value: number) => {
     if (value <= maxPrice && value !== minPrice) {
       setMinPrice(value);
-      setFilters(prev => ({ ...prev, minPrice: value, maxPrice }));
+      setFilters({ ...filters, minPrice: value, maxPrice });
     }
   };
 
   const handleMaxPriceChange = (value: number) => {
     if (value >= minPrice && value !== maxPrice) {
       setMaxPrice(value);
-      setFilters(prev => ({ ...prev, minPrice, maxPrice: value }));
+      setFilters({ ...filters, minPrice, maxPrice: value });
     }
   };
 
@@ -38,7 +38,7 @@ export default function PriceFilter({ filters, setFilters }: Props) {
       {/* Dual Range Slider */}
       <div className="relative px-2">
         <div className="h-2 bg-gray-200 rounded-lg relative">
-          <div 
+          <div
             className="absolute h-2 bg-green-600 rounded-lg"
             style={{
               left: `${(minPrice / 1000) * 100}%`,
@@ -106,7 +106,7 @@ export default function PriceFilter({ filters, setFilters }: Props) {
               if (minPrice !== range.min || maxPrice !== range.max) {
                 setMinPrice(range.min);
                 setMaxPrice(range.max);
-                setFilters(prev => ({ ...prev, minPrice: range.min, maxPrice: range.max }));
+                setFilters({ ...filters, minPrice: range.min, maxPrice: range.max });
               }
             }}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${

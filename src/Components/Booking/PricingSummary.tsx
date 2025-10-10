@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, Timer, Star } from "lucide-react";
 
 interface PricingSummaryProps {
@@ -27,34 +26,34 @@ export default function PricingSummary({ pricing }: PricingSummaryProps) {
       {/* Pricing Breakdown */}
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-black mb-4">Pricing Breakdown</h2>
-        
+
         <div className="space-y-3">
           <div className="flex justify-between">
             <span className="text-gray-600">Base Price</span>
             <span className="text-black">${pricing.basePrice}</span>
           </div>
-          
+
           {pricing.addonPrice > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Add-ons</span>
               <span className="text-black">+${pricing.addonPrice}</span>
             </div>
           )}
-          
+
           {pricing.expressPrice > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Express Fee</span>
               <span className="text-black">+${pricing.expressPrice}</span>
             </div>
           )}
-          
+
           <div className="flex justify-between">
             <span className="text-gray-600">Taxes & Fees</span>
             <span className="text-black">${pricing.tax.toFixed(2)}</span>
           </div>
-          
+
           <hr className="border-gray-200" />
-          
+
           <div className="flex justify-between text-lg font-bold">
             <span className="text-black">Total</span>
             <span className="text-green-600">${pricing.total.toFixed(2)}</span>

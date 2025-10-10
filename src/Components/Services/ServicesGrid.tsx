@@ -7,7 +7,6 @@ interface ServicesGridProps {
   error: string;
   onRetry: () => void;
   onClearFilters: () => void;
-  searchText: string;
 }
 
 export default function ServicesGrid({ 
@@ -15,8 +14,7 @@ export default function ServicesGrid({
   loading, 
   error, 
   onRetry, 
-  onClearFilters, 
-  searchText 
+  onClearFilters
 }: ServicesGridProps) {
   if (loading) {
     return (

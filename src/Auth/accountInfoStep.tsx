@@ -15,7 +15,7 @@ interface Props {
   onSwitch: () => void;
 }
 
-export function AccountInfoStep({ formData, handleChange, handleCheckbox, handleSubmit, error, isLoading, onSwitch }: Props) {
+export function AccountInfoStep({ formData, handleChange, handleCheckbox, error, isLoading, onSwitch }: Props) {
   return (
     <div className="w-full flex-shrink-0 space-y-4 pl-4">
       <div className="grid gap-2">

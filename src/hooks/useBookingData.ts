@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL, API_ENDPOINTS } from "@/api/baseUrl";
+import { BASE_URL } from "@/api/baseUrl";
 
 export interface BookingData {
   selectedDate: string;

@@ -1,31 +1,5 @@
 import type { ServiceType } from "@/types/services";
 import type { ApiService, ApiPhoto } from "@/types/api";
-import { BASE_URL, API_ENDPOINTS } from "@/api/baseUrl";
-
-export interface ApiService {
-  service_id?: number;
-  id?: number;
-  title?: string;
-  name?: string;
-  price?: number | string;
-  rating?: number | string;
-  description?: string;
-  location_text?: string;
-  location?: string;
-  category_id?: number;
-  categoryId?: number;
-  isFeatured?: boolean;
-  providerName?: string;
-  reviews?: number;
-  duration?: string;
-  image?: string;
-}
-
-export interface ApiPhoto {
-  is_primary?: boolean;
-  photo_url?: string;
-  url?: string;
-}
 
 export function extractArray<T = any>(root: any, candidates: string[]): T[] {
   if (Array.isArray(root)) return root as T[];
@@ -56,25 +30,23 @@ export function extractPhotosArray(data: any): ApiPhoto[] {
 export function getPrimaryPhoto(photos: ApiPhoto[]): string {
   if (!Array.isArray(photos) || photos.length === 0) return "";
   const primary = photos.find(p => p.is_primary) ?? photos[0];
-  return primary?.photo_url || primary?.url || "";
+  return primary?.photo_url || "";
 }
 
 export function normalizeService(api: ApiService): ServiceType {
   const id = api.service_id ?? api.id ?? 0;
   return {
     id,
-    title: String(api.title ?? api.name ?? "Untitled Service"),
-    location: String(api.location_text ?? api.location ?? "Unknown location"),
+    title: String(api.title ?? "Untitled Service"),
+    location: String(api.location_text ?? "Unknown location"),
     price: Number(api.price ?? 0),
     rating: Number(api.rating ?? 0),
-    image: api.image,
-    categoryId: api.category_id ?? api.categoryId,
+    image: api.image_url,
+    categoryId: undefined,
     description: api.description,
-    reviews: api.reviews,
-    duration: api.duration,
-    isFeatured: api.isFeatured,
-    providerName: api.providerName,
+    reviews: api.review_count,
+    duration: api.completion_time,
+    isFeatured: api.is_featured,
+    providerName: api.provider_name,
   };
 }
-
-

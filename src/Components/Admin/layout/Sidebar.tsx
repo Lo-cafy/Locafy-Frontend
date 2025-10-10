@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  LayoutGrid, Users, Settings, Calendar, BarChart, 
-  Package, MoreHorizontal, AlignJustify
+import {
+  LayoutGrid, Users, Settings, Calendar, BarChart,
+  Package, AlignJustify
 } from 'lucide-react';
 
 interface NavItemData {
@@ -56,7 +56,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onItemClick }) => {
               onClick={() => handleNavigation(item.id)}
               className={`w-full flex items-center p-3 rounded-xl transition-colors ${
                 isActive
-                  ? 'bg-indigo-500 text-white font-semibold shadow-lg' 
+                  ? 'bg-indigo-500 text-white font-semibold shadow-lg'
                   : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Bell, MapPin, Search } from "lucide-react";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 
 interface UserFiltersProps {
   searchQuery: string;
@@ -18,10 +18,10 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   statusFilter,
   setStatusFilter
 }) => {
-  const Dropdown: React.FC<{ label: string; value: string; onChange: (value: string) => void; options: { value: string; label: string }[] }> = ({ 
-    label, value, onChange, options 
+  const Dropdown: React.FC<{ value: string; onChange: (value: string) => void; options: { value: string; label: string }[] }> = ({
+    value, onChange, options
   }) => (
-    <select 
+    <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="flex items-center px-4 py-2 bg-gray-700 text-white rounded-xl text-sm font-medium hover:bg-gray-600 transition-colors appearance-none cursor-pointer"
@@ -49,8 +49,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
 
         {/* Dropdowns */}
         <div className="flex flex-wrap gap-4 ml-auto">
-          <Dropdown 
-            label="All Roles" 
+          <Dropdown
             value={roleFilter}
             onChange={setRoleFilter}
             options={[
@@ -60,8 +59,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
               { value: 'Customer', label: 'Customer' }
             ]}
           />
-          <Dropdown 
-            label="All Status" 
+          <Dropdown
             value={statusFilter}
             onChange={setStatusFilter}
             options={[

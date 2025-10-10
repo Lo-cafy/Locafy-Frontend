@@ -6,7 +6,6 @@ import FilterModal from "@/Components/Services/FilterModal";
 import ServicesGrid from "@/Components/Services/ServicesGrid";
 import type { Filters } from "@/types/services";
 import { useDebounce } from "@/hooks/debouncing";
-import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/Components/Navbar";
 import { useAuthStore } from "@/store/authStore";
 import { useServicesData } from "@/hooks/services/useServicesData";
@@ -20,8 +19,7 @@ export default function ServiceListingPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const debouncedSearch = useDebounce(searchText, 300);
   const debouncedLocation = useDebounce(locationText, 300);
-  const navigate = useNavigate();
-  const { isLoggedIn, hydrateFromStorage } = useAuthStore();
+  const { hydrateFromStorage } = useAuthStore();
 
   // Custom hooks
   const { services, loading, error, refetch } = useServicesData(filters, debouncedSearch, debouncedLocation);
@@ -74,13 +72,12 @@ export default function ServiceListingPage() {
             </div>
           )}
 
-          <ServicesGrid 
+          <ServicesGrid
             services={filteredServices}
             loading={loading}
             error={error}
             onRetry={refetch}
             onClearFilters={clearAllFilters}
-            searchText={searchText}
           />
         </div>
       </div>

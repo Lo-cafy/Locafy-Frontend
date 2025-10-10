@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { CreditCard, Smartphone, Wallet, Truck } from "lucide-react";
 
 interface PaymentMethodProps {
@@ -36,7 +36,7 @@ export default function PaymentMethod({
         <CreditCard className="w-5 h-5 mr-2 text-green-600" />
         Payment Method
       </h2>
-      
+
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
         {paymentMethods.map((method) => (
           <button
@@ -69,7 +69,7 @@ export default function PaymentMethod({
           Apply
         </button>
       </div>
-      
+
       {showPromoSuccess && (
         <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800">
           Promo code applied! 20% discount added.

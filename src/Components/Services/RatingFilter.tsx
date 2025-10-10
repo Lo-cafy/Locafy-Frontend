@@ -1,6 +1,6 @@
 import { Checkbox } from "@/ui/checkbox";
 import { Label } from "@/ui/label";
-import type { Filters } from "@/types/filters";
+import type { Filters } from "@/types/services/filters";
 
 interface Props {
   filters: Filters;

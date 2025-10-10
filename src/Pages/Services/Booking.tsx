@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import ServiceSummary from "@/Components/Booking/ServiceSummary";
 import DateAndTimeSelection from "@/Components/Booking/DateAndTimeSelection";
 import AddressAndLocation from "@/Components/Booking/AddressAndLocation";
@@ -45,32 +44,32 @@ export default function BookingPage() {
           {/* Left Column - Booking Form */}
           <div className="xl:col-span-3 space-y-6">
             <ServiceSummary service={service} />
-            
-            <DateAndTimeSelection 
+
+            <DateAndTimeSelection
               selectedDate={bookingData.selectedDate}
               selectedTimeSlot={bookingData.selectedTimeSlot}
               onDateChange={(date) => updateBookingData("selectedDate", date)}
               onTimeSlotChange={(slot) => updateBookingData("selectedTimeSlot", slot)}
             />
 
-            <AddressAndLocation 
+            <AddressAndLocation
               selectedAddress={bookingData.selectedAddress}
               onAddressChange={(address) => updateBookingData("selectedAddress", address)}
             />
 
-            <CustomerInformation 
+            <CustomerInformation
               customerInfo={bookingData.customerInfo}
               specialInstructions={bookingData.specialInstructions}
               onCustomerInfoChange={updateCustomerInfo}
               onSpecialInstructionsChange={(instructions) => updateBookingData("specialInstructions", instructions)}
             />
 
-            <ExtrasAndAddons 
+            <ExtrasAndAddons
               selectedAddons={bookingData.selectedAddons}
               onAddonsChange={(addons) => updateBookingData("selectedAddons", addons)}
             />
 
-            <PaymentMethod 
+            <PaymentMethod
               paymentMethod={bookingData.paymentMethod}
               promoCode={bookingData.promoCode}
               onPaymentMethodChange={(method) => updateBookingData("paymentMethod", method)}
@@ -80,7 +79,7 @@ export default function BookingPage() {
 
           {/* Right Column - Pricing Summary */}
           <div className="xl:col-span-1">
-            <PricingSummary 
+            <PricingSummary
               pricing={pricing}
               service={service}
               selectedAddons={bookingData.selectedAddons}
@@ -90,13 +89,13 @@ export default function BookingPage() {
         </div>
 
         {/* Sticky Bottom CTA */}
-        <BookingCTA 
+        <BookingCTA
           pricing={pricing}
           isBooking={isBooking}
           onBooking={handleBooking}
           isDisabled={!bookingData.selectedTimeSlot}
         />
-        
+
         <div className="h-24"></div>
       </div>
     </div>
