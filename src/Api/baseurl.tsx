@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://locafy-apigateway-production.up.railway.app/api',
+  baseURL: ' https://locafy-apigateway-production-b9cb.up.railway.app/api',
+ 
   headers: {
     'Content-Type': 'application/json',
   },
