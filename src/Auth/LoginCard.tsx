@@ -7,6 +7,7 @@ import GoogleLoginButton from "./Google";
 import { useAuthStore } from "@/store/authStore"; // Import your auth store
 import api from "@/Api/baseurl";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,7 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const cardStyles = "bg-white rounded-2xl shadow-lg p-6 w-[320px] min-h-[520px]";
   
   // Get the setUser function from your auth store
@@ -35,14 +37,14 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
       // Fetch all users from the server
       const response = (await api.post("/Auth/login",loginData)).data;
     if(response.sucess){
-      toast.success(response.message)
-              console.log("Login successful:", response.data);
+      toast.success("Login successful")
         const userData = {
-          id: response.id || response.email, // Use email as ID if no id field
+          id: response.user.userId || response.user.email, // Use email as ID if no id field
           name: `${response.firstname} ${response.lastname}`,
-          email: response.email,
+          email: response.user.email,
         };
          setUser(userData); // This will save to both Zustand and localStorage
+         navigate("/")
 
       } else {
         console.log(response);
