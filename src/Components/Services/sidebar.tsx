@@ -6,7 +6,19 @@ import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
 import RatingFilter from "./RatingFilter";
 
-interface Props { filters: any; setFilters: (filters: any) => void; }
+interface FilterState {
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
+  sort?: string;
+}
+
+interface Props {
+  filters: FilterState;
+  setFilters: (filters: FilterState | ((prev: FilterState) => FilterState)) => void;
+}
+
 interface Category { id: number; name: string; }
 
 export default function Sidebar({ filters, setFilters }: Props) {
@@ -17,8 +29,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
   const [categoryServices, setCategoryServices] = useState<any[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [servicesError, setServicesError] = useState("");
-  
-  // Collapsible sections state
+
   const [collapsedSections, setCollapsedSections] = useState({
     categories: false,
     price: false,
@@ -33,11 +44,11 @@ export default function Sidebar({ filters, setFilters }: Props) {
         setCategoriesError("");
         const res = await axios.get("https://back-end-service-listing.onrender.com/api/categories");
         let categoriesData = res.data;
-        
+
         if (res.data.categories && Array.isArray(res.data.categories)) categoriesData = res.data.categories;
         else if (res.data.data && Array.isArray(res.data.data)) categoriesData = res.data.data;
         else if (res.data.results && Array.isArray(res.data.results)) categoriesData = res.data.results;
-        
+
         if (!Array.isArray(categoriesData)) {
           setCategoriesError("Invalid categories data format");
           return setCategories([]);
@@ -97,7 +108,6 @@ export default function Sidebar({ filters, setFilters }: Props) {
     }));
   };
 
-  // Sort options
   const sortOptions = [
     { value: "price-low", label: "Price: Low to High" },
     { value: "price-high", label: "Price: High to Low" },
@@ -137,10 +147,9 @@ export default function Sidebar({ filters, setFilters }: Props) {
 
   const FilterContent = () => (
     <>
-      {/* Quick Sort */}
-      <CollapsibleSection 
-        title="Sort By" 
-        isCollapsed={collapsedSections.sort} 
+      <CollapsibleSection
+        title="Sort By"
+        isCollapsed={collapsedSections.sort}
         onToggle={() => toggleSection('sort')}
       >
         <select
@@ -157,40 +166,36 @@ export default function Sidebar({ filters, setFilters }: Props) {
         </select>
       </CollapsibleSection>
 
-      {/* Categories */}
-      <CollapsibleSection 
-        title="Categories" 
-        isCollapsed={collapsedSections.categories} 
+      <CollapsibleSection
+        title="Categories"
+        isCollapsed={collapsedSections.categories}
         onToggle={() => toggleSection('categories')}
       >
-        <CategoryFilter 
-          categories={categories} 
-          filters={filters} 
-          setFilters={setFilters} 
-          isLoading={categoriesLoading} 
-          error={categoriesError} 
+        <CategoryFilter
+          categories={categories}
+          filters={filters}
+          setFilters={setFilters}
+          isLoading={categoriesLoading}
+          error={categoriesError}
         />
       </CollapsibleSection>
 
-      {/* Price Range */}
-      <CollapsibleSection 
-        title="Price Range" 
-        isCollapsed={collapsedSections.price} 
+      <CollapsibleSection
+        title="Price Range"
+        isCollapsed={collapsedSections.price}
         onToggle={() => toggleSection('price')}
       >
         <PriceFilter filters={filters} setFilters={setFilters} />
       </CollapsibleSection>
 
-      {/* Rating */}
-      <CollapsibleSection 
-        title="Minimum Rating" 
-        isCollapsed={collapsedSections.rating} 
+      <CollapsibleSection
+        title="Minimum Rating"
+        isCollapsed={collapsedSections.rating}
         onToggle={() => toggleSection('rating')}
       >
         <RatingFilter filters={filters} setFilters={setFilters} />
       </CollapsibleSection>
 
-      {/* Status Messages */}
       {servicesLoading && <p className="mt-4 text-sm text-gray-500">Loading services...</p>}
       {servicesError && <p className="mt-4 text-sm text-red-500">{servicesError}</p>}
       {categoryServices.length > 0 && <p className="mt-4 text-sm text-green-600">{categoryServices.length} services found in this category</p>}

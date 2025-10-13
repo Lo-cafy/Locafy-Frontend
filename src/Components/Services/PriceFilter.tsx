@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+interface FilterState {
+  minPrice?: number;
+  maxPrice?: number;
+  [key: string]: any;
+}
 
 interface Props {
-  filters: any;
-  setFilters: (filters: any) => void;
+  filters: FilterState;
+  setFilters: (updater: (prev: FilterState) => FilterState) => void;
 }
 
 export default function PriceFilter({ filters, setFilters }: Props) {
@@ -27,17 +33,15 @@ export default function PriceFilter({ filters, setFilters }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Price Range Display */}
       <div className="flex items-center justify-between text-sm font-medium px-1">
         <span className="text-green-600 font-semibold">${minPrice}</span>
         <span className="text-gray-500">to</span>
         <span className="text-green-600 font-semibold">${maxPrice}</span>
       </div>
 
-      {/* Dual Range Slider */}
       <div className="relative px-2">
         <div className="h-2 bg-gray-200 rounded-lg relative">
-          <div 
+          <div
             className="absolute h-2 bg-green-600 rounded-lg"
             style={{
               left: `${(minPrice / 1000) * 100}%`,
@@ -65,7 +69,6 @@ export default function PriceFilter({ filters, setFilters }: Props) {
         />
       </div>
 
-      {/* Manual Input Fields */}
       <div className="grid grid-cols-2 gap-3 mt-6">
         <div>
           <label className="block text-xs text-gray-600 mb-1">Min Price</label>
@@ -91,7 +94,6 @@ export default function PriceFilter({ filters, setFilters }: Props) {
         </div>
       </div>
 
-      {/* Quick Price Buttons */}
       <div className="flex flex-wrap gap-3 mt-6">
         {[
           { label: "Under $50", min: 0, max: 50 },
@@ -118,7 +120,6 @@ export default function PriceFilter({ filters, setFilters }: Props) {
           </button>
         ))}
       </div>
-
     </div>
   );
 }

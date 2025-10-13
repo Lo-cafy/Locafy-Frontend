@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { CreditCard, Smartphone, Wallet, Truck } from "lucide-react";
 
 interface PaymentMethodProps {

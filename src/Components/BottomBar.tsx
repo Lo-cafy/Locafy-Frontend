@@ -1,6 +1,6 @@
  
 import React from 'react';
-import { LayoutDashboard, User, Settings, Home, Wrench, CalendarCheck } from 'lucide-react';
+import { LayoutDashboard, User, Home,CalendarCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface BottomBarProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter} from 'lucide-react';
 
 interface UserFiltersProps {
   searchQuery: string;
@@ -19,7 +19,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   setStatusFilter
 }) => {
   const Dropdown: React.FC<{ label: string; value: string; onChange: (value: string) => void; options: { value: string; label: string }[] }> = ({ 
-    label, value, onChange, options 
+     value, onChange, options 
   }) => (
     <select 
       value={value}
