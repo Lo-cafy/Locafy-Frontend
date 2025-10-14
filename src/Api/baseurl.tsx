@@ -9,7 +9,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-
 api.interceptors.request.use(
   (config) => {
    
@@ -34,3 +33,11 @@ api.interceptors.response.use(
 );
 
 export default api;
+export const BASE_URL = "https://back-end-servicelisting.onrender.com";
+
+export const API_ENDPOINTS = {
+  SERVICES: "/api/services",
+  SERVICES_BY_CATEGORY: (categoryId: number) => `/api/services/category/${categoryId}`,
+  CATEGORIES: "/api/categories",
+  PHOTOS: (serviceId: number) => `/api/photoservices/${serviceId}/photos`,
+} as const;
