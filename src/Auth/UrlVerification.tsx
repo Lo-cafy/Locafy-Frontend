@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom"; 
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/ui/button";
 import { Loader2, CircleCheck, CircleX } from "lucide-react";
 import api from "@/Api/baseurl";
 
-interface UrlVerificationProps {
-  onSuccess: () => void; 
-}
-
-export function UrlVerification({ onSuccess }: UrlVerificationProps) {
-
+export function UrlVerification() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
-  const [message, setMessage] = useState("Verifying your account, please wait...");
+  const [status, setStatus] = useState<"verifying" | "success" | "error">(
+    "verifying"
+  );
+  const [message, setMessage] = useState(
+    "Verifying your account, please wait..."
+  );
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -27,50 +27,79 @@ export function UrlVerification({ onSuccess }: UrlVerificationProps) {
 
     const verifyToken = async () => {
       try {
-        await api.post("/finalize-registration", { token });
-        
-        setStatus("success");
-        setMessage("Your account has been successfully verified!");
+        const res = (await api.post("/users/finalize-registration", { token })).data;
+        if (res.success) {
+          setStatus("success");
+          setMessage("Your account has been successfully verified!");
+        } else {
+          setStatus("error");
+          setMessage(res.message || "An unexpected error occurred.");
+        }
       } catch (err: any) {
         setStatus("error");
-        setMessage(err.response?.data?.message || "Verification failed. The link may be invalid or expired.");
+        setMessage(
+          err.response?.data?.message ||
+            "Verification failed. The link may be invalid or expired."
+        );
       }
     };
 
     verifyToken();
-  }, []);
+  }, [searchParams]);
 
-  if (status === "verifying") {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-[350px] flex flex-col items-center gap-4 text-center">
-        <Loader2 className="h-12 w-12 text-emerald-600 animate-spin" />
-        <h2 className="text-lg font-semibold text-gray-800">Verifying...</h2>
-        <p className="text-sm text-gray-600">{message}</p>
-      </div>
-    );
-  }
-
-  if (status === "success") {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-[350px] flex flex-col items-center gap-4 text-center">
-        <CircleCheck className="h-12 w-12 text-emerald-600" />
-        <h2 className="text-lg font-semibold text-gray-800">Verification Successful!</h2>
-        <p className="text-sm text-gray-600">{message}</p>
-        <Button onClick={onSuccess} className="w-full bg-emerald-600 text-white hover:bg-emerald-700 mt-2">
-          Continue to Login
-        </Button>
-      </div>
-    );
-  }
+  const renderContent = () => {
+    switch (status) {
+      case "verifying":
+        return (
+          <>
+            <Loader2 className="h-16 w-16 text-blue-600 animate-spin" />
+            <h2 className="text-2xl font-bold text-slate-800">Verifying...</h2>
+            <p className="text-base text-slate-600">{message}</p>
+          </>
+        );
+      case "success":
+        return (
+          <>
+            <CircleCheck className="h-16 w-16 text-emerald-600" />
+            <h2 className="text-2xl font-bold text-slate-800">
+              Verification Successful!
+            </h2>
+            <p className="text-base text-slate-600">{message}</p>
+            <Button
+              onClick={() => navigate("/login")}
+              className="w-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 mt-4 py-3 rounded-lg transition-all hover:shadow-lg hover:-translate-y-1"
+            >
+              Continue to Login
+            </Button>
+          </>
+        );
+      case "error":
+        return (
+          <>
+            <CircleX className="h-16 w-16 text-red-500" />
+            <h2 className="text-2xl font-bold text-slate-800">
+              Verification Failed
+            </h2>
+            <p className="text-base text-red-600">{message}</p>
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="w-full mt-4 py-3 font-semibold rounded-lg transition-all hover:bg-slate-50"
+            >
+              Go to Homepage
+            </Button>
+          </>
+        );
+    }
+  };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 w-[350px] flex flex-col items-center gap-4 text-center">
-      <CircleX className="h-12 w-12 text-red-500" />
-      <h2 className="text-lg font-semibold text-gray-800">Verification Failed</h2>
-      <p className="text-sm text-red-600">{message}</p>
-      <Button onClick={onSuccess} variant="outline" className="w-full mt-2">
-        Go to Homepage
-      </Button>
+    // The parent div now has a subtle gradient background
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-sky-50 to-blue-100 p-4">
+      {/* The card has enhanced shadow, padding, and transitions */}
+      <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-sm flex flex-col items-center gap-5 text-center transition-all">
+        {renderContent()}
+      </div>
     </div>
   );
 }
