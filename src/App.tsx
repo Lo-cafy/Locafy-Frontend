@@ -26,8 +26,7 @@ function App() {
         <Route path="/all-services" element={<AllServicesPage />} />
          <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/services/:id/booking" element={<BookingPage />} />
-           <Route 
-          path="/finalize-registration" element={<UrlVerification/>}/>
+           <Route path="/finalize-registration" element={<UrlVerification/>}/>
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
