@@ -6,11 +6,8 @@ import { Button } from "@/ui/button";
 import { Loader2, CircleCheck, CircleX } from "lucide-react";
 import api from "@/Api/baseurl";
 
-interface UrlVerificationProps {
-  onSuccess: () => void;
-}
 
-export function UrlVerification({ onSuccess }: UrlVerificationProps) {
+export function UrlVerification() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
@@ -71,7 +68,7 @@ export function UrlVerification({ onSuccess }: UrlVerificationProps) {
             </h2>
             <p className="text-base text-slate-600">{message}</p>
             <Button
-              onClick={onSuccess}
+              onClick={()=>navigate('/')}
               className="w-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 mt-4 py-3 rounded-lg transition-all hover:shadow-lg hover:-translate-y-1"
             >
               Continue

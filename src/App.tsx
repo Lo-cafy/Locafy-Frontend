@@ -17,11 +17,6 @@ import { UrlVerification } from "./Auth/UrlVerification";
 
 function App() {
 
-   const handleVerificationSuccess = () => {
-   
-    window.location.href = '/'; 
-  };
-
   return (
     <BrowserRouter>
       <Routes>
@@ -32,9 +27,7 @@ function App() {
          <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/services/:id/booking" element={<BookingPage />} />
            <Route 
-          path="/finalize-registration" 
-          element={<UrlVerification onSuccess={handleVerificationSuccess} />} 
-        />
+          path="/finalize-registration" element={<UrlVerification/>}/>
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
