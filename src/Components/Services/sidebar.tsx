@@ -1,13 +1,37 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import axios from "axios";
-import { SlidersHorizontal, X, ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
+import {
+  SlidersHorizontal,
+  X,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+} from "lucide-react";
 import CategoryFilter from "./CategoryFilter";
 import PriceFilter from "./PriceFilter";
 import RatingFilter from "./RatingFilter";
 
-interface Props { filters: any; setFilters: (filters: any) => void; }
-interface Category { id: number; name: string; }
+// Define a specific type for the filters object
+type Filters = {
+  sort?: string;
+  categoryId?: number | null;
+  minPrice?: number;
+  maxPrice?: number;
+  rating?: number | null;
+  [key: string]: any; // Allows for other potential filter properties
+};
+
+// Use the correct React types for the state setter
+interface Props {
+  filters: Filters;
+  setFilters: Dispatch<SetStateAction<Filters>>;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 export default function Sidebar({ filters, setFilters }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -17,13 +41,13 @@ export default function Sidebar({ filters, setFilters }: Props) {
   const [categoryServices, setCategoryServices] = useState<any[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [servicesError, setServicesError] = useState("");
-  
+
   // Collapsible sections state
   const [collapsedSections, setCollapsedSections] = useState({
     categories: false,
     price: false,
     rating: false,
-    sort: false
+    sort: false,
   });
 
   useEffect(() => {
@@ -31,22 +55,29 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setCategoriesLoading(true);
         setCategoriesError("");
-        const res = await axios.get("https://back-end-service-listing.onrender.com/api/categories");
+        const res = await axios.get(
+          "https://back-end-service-listing.onrender.com/api/categories"
+        );
         let categoriesData = res.data;
-        
-        if (res.data.categories && Array.isArray(res.data.categories)) categoriesData = res.data.categories;
-        else if (res.data.data && Array.isArray(res.data.data)) categoriesData = res.data.data;
-        else if (res.data.results && Array.isArray(res.data.results)) categoriesData = res.data.results;
-        
+
+        if (res.data.categories && Array.isArray(res.data.categories))
+          categoriesData = res.data.categories;
+        else if (res.data.data && Array.isArray(res.data.data))
+          categoriesData = res.data.data;
+        else if (res.data.results && Array.isArray(res.data.results))
+          categoriesData = res.data.results;
+
         if (!Array.isArray(categoriesData)) {
           setCategoriesError("Invalid categories data format");
           return setCategories([]);
         }
 
-        setCategories(categoriesData.map((cat: any) => ({
-          id: cat.category_id || cat.id,
-          name: cat.name || cat.category_name || "Unnamed Category",
-        })));
+        setCategories(
+          categoriesData.map((cat: any) => ({
+            id: cat.category_id || cat.id,
+            name: cat.name || cat.category_name || "Unnamed Category",
+          }))
+        );
       } catch (err: any) {
         setCategoriesError(`Failed to load categories: ${err.message}`);
         setCategories([]);
@@ -63,10 +94,14 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setServicesLoading(true);
         setServicesError("");
-        const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`);
+        const res = await axios.get(
+          `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
+        );
         let servicesData = res.data;
-        if (res.data.services && Array.isArray(res.data.services)) servicesData = res.data.services;
-        else if (res.data.data && Array.isArray(res.data.data)) servicesData = res.data.data;
+        if (res.data.services && Array.isArray(res.data.services))
+          servicesData = res.data.services;
+        else if (res.data.data && Array.isArray(res.data.data))
+          servicesData = res.data.data;
         setCategoryServices(Array.isArray(servicesData) ? servicesData : []);
       } catch (err: any) {
         setServicesError(`Failed to load services: ${err.message}`);
@@ -82,7 +117,13 @@ export default function Sidebar({ filters, setFilters }: Props) {
     const handleClickOutside = (event: MouseEvent) => {
       const sidebar = document.getElementById("mobile-sidebar");
       const toggle = document.getElementById("mobile-toggle");
-      if (isMobileOpen && sidebar && !sidebar.contains(event.target as Node) && toggle && !toggle.contains(event.target as Node)) {
+      if (
+        isMobileOpen &&
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        toggle &&
+        !toggle.contains(event.target as Node)
+      ) {
         setIsMobileOpen(false);
       }
     };
@@ -91,9 +132,9 @@ export default function Sidebar({ filters, setFilters }: Props) {
   }, [isMobileOpen]);
 
   const toggleSection = (section: keyof typeof collapsedSections) => {
-    setCollapsedSections(prev => ({
+    setCollapsedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -102,14 +143,19 @@ export default function Sidebar({ filters, setFilters }: Props) {
     { value: "price-low", label: "Price: Low to High" },
     { value: "price-high", label: "Price: High to Low" },
     { value: "rating", label: "Highest Rated" },
-    { value: "newest", label: "Newest First" }
+    { value: "newest", label: "Newest First" },
   ];
 
   const handleSortChange = (sortValue: string) => {
-    setFilters(prev => ({ ...prev, sort: sortValue }));
+    setFilters((prev) => ({ ...prev, sort: sortValue }));
   };
 
-  const CollapsibleSection = ({ title, isCollapsed, onToggle, children }: {
+  const CollapsibleSection = ({
+    title,
+    isCollapsed,
+    onToggle,
+    children,
+  }: {
     title: string;
     isCollapsed: boolean;
     onToggle: () => void;
@@ -138,10 +184,10 @@ export default function Sidebar({ filters, setFilters }: Props) {
   const FilterContent = () => (
     <>
       {/* Quick Sort */}
-      <CollapsibleSection 
-        title="Sort By" 
-        isCollapsed={collapsedSections.sort} 
-        onToggle={() => toggleSection('sort')}
+      <CollapsibleSection
+        title="Sort By"
+        isCollapsed={collapsedSections.sort}
+        onToggle={() => toggleSection("sort")}
       >
         <select
           value={filters.sort || ""}
@@ -149,7 +195,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
         >
           <option value="">Default</option>
-          {sortOptions.map(option => (
+          {sortOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -158,42 +204,50 @@ export default function Sidebar({ filters, setFilters }: Props) {
       </CollapsibleSection>
 
       {/* Categories */}
-      <CollapsibleSection 
-        title="Categories" 
-        isCollapsed={collapsedSections.categories} 
-        onToggle={() => toggleSection('categories')}
+      <CollapsibleSection
+        title="Categories"
+        isCollapsed={collapsedSections.categories}
+        onToggle={() => toggleSection("categories")}
       >
-        <CategoryFilter 
-          categories={categories} 
-          filters={filters} 
-          setFilters={setFilters} 
-          isLoading={categoriesLoading} 
-          error={categoriesError} 
+        <CategoryFilter
+          categories={categories}
+          filters={filters}
+          setFilters={setFilters}
+          isLoading={categoriesLoading}
+          error={categoriesError}
         />
       </CollapsibleSection>
 
       {/* Price Range */}
-      <CollapsibleSection 
-        title="Price Range" 
-        isCollapsed={collapsedSections.price} 
-        onToggle={() => toggleSection('price')}
+      <CollapsibleSection
+        title="Price Range"
+        isCollapsed={collapsedSections.price}
+        onToggle={() => toggleSection("price")}
       >
         <PriceFilter filters={filters} setFilters={setFilters} />
       </CollapsibleSection>
 
       {/* Rating */}
-      <CollapsibleSection 
-        title="Minimum Rating" 
-        isCollapsed={collapsedSections.rating} 
-        onToggle={() => toggleSection('rating')}
+      <CollapsibleSection
+        title="Minimum Rating"
+        isCollapsed={collapsedSections.rating}
+        onToggle={() => toggleSection("rating")}
       >
         <RatingFilter filters={filters} setFilters={setFilters} />
       </CollapsibleSection>
 
       {/* Status Messages */}
-      {servicesLoading && <p className="mt-4 text-sm text-gray-500">Loading services...</p>}
-      {servicesError && <p className="mt-4 text-sm text-red-500">{servicesError}</p>}
-      {categoryServices.length > 0 && <p className="mt-4 text-sm text-green-600">{categoryServices.length} services found in this category</p>}
+      {servicesLoading && (
+        <p className="mt-4 text-sm text-gray-500">Loading services...</p>
+      )}
+      {servicesError && (
+        <p className="mt-4 text-sm text-red-500">{servicesError}</p>
+      )}
+      {categoryServices.length > 0 && (
+        <p className="mt-4 text-sm text-green-600">
+          {categoryServices.length} services found in this category
+        </p>
+      )}
       {categoriesError && (
         <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-600 font-medium">Categories Error:</p>
@@ -206,36 +260,68 @@ export default function Sidebar({ filters, setFilters }: Props) {
   return (
     <>
       <div className="lg:hidden sticky top-4 z-40 mb-4 px-4">
-        <button id="mobile-toggle" onClick={() => setIsMobileOpen(!isMobileOpen)} className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg">
+        <button
+          id="mobile-toggle"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg"
+        >
           <SlidersHorizontal className="h-5 w-5" />
           Filters
-          {isMobileOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          {isMobileOpen ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
         </button>
       </div>
 
       <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:p-6 lg:bg-slate-50 lg:border lg:rounded-xl lg:shadow flex-shrink-0 sticky top-4 h-fit">
         <h2 className="text-xl font-bold mb-4">Filters</h2>
         <FilterContent />
-        <button onClick={() => setFilters({})} className="mt-4 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors">
+        <button
+          onClick={() => setFilters({})}
+          className="mt-4 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
+        >
           Reset Filters
         </button>
       </aside>
 
-      {isMobileOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setIsMobileOpen(false)} />}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
 
-      <div id="mobile-sidebar" className={`fixed inset-y-0 left-0 z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} bg-white w-4/5 max-w-xs shadow-xl flex flex-col`}>
+      <div
+        id="mobile-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        } bg-white w-4/5 max-w-xs shadow-xl flex flex-col`}
+      >
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-bold">Filters</h2>
-          <button onClick={() => setIsMobileOpen(false)} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4"><FilterContent /></div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <FilterContent />
+        </div>
         <div className="p-4 border-t bg-white">
-          <button onClick={() => setFilters({})} className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold mb-2 hover:bg-gray-200 transition-colors">
+          <button
+            onClick={() => setFilters({})}
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold mb-2 hover:bg-gray-200 transition-colors"
+          >
             Reset Filters
           </button>
-          <button onClick={() => setIsMobileOpen(false)} className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors">
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
+          >
             Show Results
           </button>
         </div>

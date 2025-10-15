@@ -6,7 +6,11 @@ import { Button } from "@/ui/button";
 import { Loader2, CircleCheck, CircleX } from "lucide-react";
 import api from "@/Api/baseurl";
 
-export function UrlVerification() {
+interface UrlVerificationProps {
+  onSuccess: () => void;
+}
+
+export function UrlVerification({ onSuccess }: UrlVerificationProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
@@ -27,7 +31,8 @@ export function UrlVerification() {
 
     const verifyToken = async () => {
       try {
-        const res = (await api.post("/users/finalize-registration", { token })).data;
+        const res = (await api.post("/users/finalize-registration", { token }))
+          .data;
         if (res.success) {
           setStatus("success");
           setMessage("Your account has been successfully verified!");
@@ -66,10 +71,10 @@ export function UrlVerification() {
             </h2>
             <p className="text-base text-slate-600">{message}</p>
             <Button
-              onClick={() => navigate("/login")}
+              onClick={onSuccess}
               className="w-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 mt-4 py-3 rounded-lg transition-all hover:shadow-lg hover:-translate-y-1"
             >
-              Continue to Login
+              Continue
             </Button>
           </>
         );
@@ -94,9 +99,7 @@ export function UrlVerification() {
   };
 
   return (
-    // The parent div now has a subtle gradient background
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-sky-50 to-blue-100 p-4">
-      {/* The card has enhanced shadow, padding, and transitions */}
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-sm flex flex-col items-center gap-5 text-center transition-all">
         {renderContent()}
       </div>

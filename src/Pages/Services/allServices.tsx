@@ -18,12 +18,14 @@ interface Service {
   isFeatured?: boolean;
 }
 
-interface Filters {
-  categoryId?: number;
+// Use a consistent and more comprehensive Filters type
+type Filters = {
+  categoryId?: number | null;
   minPrice?: number;
   maxPrice?: number;
-  minRating?: number;
-}
+  rating?: number | null;
+  sort?: string;
+};
 
 export default function ServiceListingPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -36,10 +38,10 @@ export default function ServiceListingPage() {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        let url = filters.categoryId 
+        let url = filters.categoryId
           ? `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
           : "https://back-end-service-listing.onrender.com/api/services";
-        
+
         const res = await axios.get(url);
         let apiServices = extractServicesArray(res.data);
 
@@ -53,18 +55,21 @@ export default function ServiceListingPage() {
           apiServices.map(async (service: any) => {
             const serviceId = service.service_id;
             if (!serviceId) {
-              return { 
-                ...service, 
-                id: serviceId, 
-                location: service.location_text, 
-                image: "" 
+              return {
+                ...service,
+                id: serviceId,
+                location: service.location_text,
+                image: "",
               };
             }
 
             try {
-              const photoRes = await axios.get(`https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`);
+              const photoRes = await axios.get(
+                `https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`
+              );
               const photos = extractPhotosArray(photoRes.data);
-              const primaryPhoto = photos.find((p: any) => p.is_primary) || photos[0];
+              const primaryPhoto =
+                photos.find((p: any) => p.is_primary) || photos[0];
 
               return {
                 ...service,
@@ -73,17 +78,21 @@ export default function ServiceListingPage() {
                 image: primaryPhoto?.photo_url || "",
               };
             } catch (err) {
-              return { 
-                ...service, 
-                id: serviceId, 
-                location: service.location_text, 
-                image: "" 
+              return {
+                ...service,
+                id: serviceId,
+                location: service.location_text,
+                image: "",
               };
             }
           })
         );
 
-        const filteredServices = applyFilters(servicesWithImages, filters, searchText);
+        const filteredServices = applyFilters(
+          servicesWithImages,
+          filters,
+          searchText
+        );
         setServices(filteredServices);
         setError("");
       } catch (err) {
@@ -107,29 +116,36 @@ export default function ServiceListingPage() {
   };
 
   const extractPhotosArray = (data: any): any[] => {
-    if (data?.data?.photos && Array.isArray(data.data.photos)) return data.data.photos;
+    if (data?.data?.photos && Array.isArray(data.data.photos))
+      return data.data.photos;
     if (data?.data && Array.isArray(data.data)) return data.data;
     if (Array.isArray(data)) return data;
     if (data?.photos && Array.isArray(data.photos)) return data.photos;
     return [];
   };
 
-  const applyFilters = (services: any[], filters: Filters, searchText: string) => {
+  const applyFilters = (
+    services: any[],
+    filters: Filters,
+    searchText: string
+  ) => {
     let filtered = services.filter((s: any) => {
       const price = Number(s.price) || 0;
       const rating = Number(s.rating) || 0;
-      
+
       if (filters.minPrice && price < filters.minPrice) return false;
       if (filters.maxPrice && price > filters.maxPrice) return false;
-      if (filters.minRating && rating < filters.minRating) return false;
+      // Changed filters.minRating to filters.rating
+      if (filters.rating && rating < filters.rating) return false;
       return true;
     });
 
     if (searchText.trim()) {
       const text = searchText.toLowerCase();
-      filtered = filtered.filter((s: any) =>
-        (s.title && s.title.toLowerCase().includes(text)) || 
-        (s.description && s.description.toLowerCase().includes(text))
+      filtered = filtered.filter(
+        (s: any) =>
+          (s.title && s.title.toLowerCase().includes(text)) ||
+          (s.description && s.description.toLowerCase().includes(text))
       );
     }
 
@@ -149,25 +165,32 @@ export default function ServiceListingPage() {
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8 flex flex-col lg:flex-row gap-4 sm:gap-6">
         <Sidebar filters={filters} setFilters={setFilters} />
-        
+
         <div className="flex-1 min-w-0">
           <div className="mb-4 sm:mb-6">
-            <button 
-              onClick={handleGoBack} 
+            <button
+              onClick={handleGoBack}
               className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-3 sm:mb-4 transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
               <span className="font-medium">Back</span>
             </button>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Services</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
+              Services
+            </h1>
             <SearchBar searchText={searchText} setSearchText={setSearchText} />
           </div>
 
           {!loading && !error && (
             <div className="mb-4 sm:mb-6">
               <p className="text-sm sm:text-base text-gray-600">
-                Showing {services.length} service{services.length !== 1 ? 's' : ''}
-                {searchText && <span> for "<strong>{searchText}</strong>"</span>}
+                Showing {services.length} service{services.length !== 1 ? "s" : ""}
+                {searchText && (
+                  <span>
+                    {" "}
+                    for "<strong>{searchText}</strong>"
+                  </span>
+                )}
               </p>
             </div>
           )}
@@ -179,8 +202,8 @@ export default function ServiceListingPage() {
           ) : error ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 text-center">
               <p className="text-red-600 font-medium">{error}</p>
-              <button 
-                onClick={() => window.location.reload()} 
+              <button
+                onClick={() => window.location.reload()}
                 className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
               >
                 Try Again
@@ -189,14 +212,28 @@ export default function ServiceListingPage() {
           ) : services.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm border p-6 sm:p-8 text-center">
               <div className="text-gray-400 mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-16 h-16 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No services found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your filters or search terms</p>
-              <button 
-                onClick={clearAllFilters} 
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
+                No services found
+              </h3>
+              <p className="text-gray-500 mb-4">
+                Try adjusting your filters or search terms
+              </p>
+              <button
+                onClick={clearAllFilters}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Clear All Filters

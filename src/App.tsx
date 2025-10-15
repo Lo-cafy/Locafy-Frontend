@@ -18,7 +18,7 @@ import { UrlVerification } from "./Auth/UrlVerification";
 function App() {
 
    const handleVerificationSuccess = () => {
-    // Logic to redirect the user to the login page
+   
     window.location.href = '/'; 
   };
 
