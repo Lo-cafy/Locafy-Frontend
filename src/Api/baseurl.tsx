@@ -1,4 +1,6 @@
 import axios from 'axios';
+- import axios from "axios";
++ import api from "@/lib/api";    
 
 const api = axios.create({
   baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
@@ -34,3 +36,17 @@ api.interceptors.response.use(
 );
 
 export default api;
+ 
+
+ 
+- const { data } = await axios.get(
+-   "https://back-end-service-listing.onrender.com/api/services"
+- );
++ const { data } = await api.get("/api/services");
+ 
+- const { data: photosData } = await axios.get(
+-   "https://back-end-service-listing.onrender.com/api/photoservices/${id}/photos"
+- );
++ const { data: photosData } = await api.get(
++   /api/photoservices/${id}/photos
++ );
