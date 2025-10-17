@@ -1,6 +1,6 @@
 "use client";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 import { useEffect, useState } from "react";
 import { Star, MapPin, Heart, Sparkles } from "lucide-react";
 import type { Service, ServiceCard } from "@/types/serviceTypes"; // ✅ type-only import
@@ -102,8 +102,8 @@ export default function FeaturedServices() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(
-          "https://back-end-service-listing.onrender.com/api/services"
+        const { data } = await api.get(
+          "/api/services"
         );
 
         const arr = Array.isArray(data)
@@ -118,8 +118,8 @@ export default function FeaturedServices() {
             let image = service.image || "/api/placeholder/400/300";
 
             try {
-              const { data: photosData } = await axios.get(
-                `https://back-end-service-listing.onrender.com/api/photoservices/${id}/photos`
+              const { data: photosData } = await api.get(
+                `/api/photoservices/${id}/photos`
               );
               const photos =
                 photosData?.data?.photos ||

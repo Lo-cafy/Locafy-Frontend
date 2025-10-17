@@ -10,7 +10,7 @@ import ExtrasAndAddons from "@/Components/Booking/ExtrasAndAddons";
 import PaymentMethod from "@/Components/Booking/PaymentMethod";
 import PricingSummary from "@/Components/Booking/PricingSummary";
 import { ArrowLeft, Check } from "lucide-react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 
 export interface BookingData {
   selectedDate: string;
@@ -78,7 +78,7 @@ export default function BookingPage() {
       const fetchService = async () => {
         try {
           setLoading(true);
-          const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/${id}`);
+          const res = await api.get(`/api/services/${id}`);
           const data = res.data.service || res.data.data || res.data;
           setService(data);
         } catch (err) {

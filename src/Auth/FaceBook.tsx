@@ -1,5 +1,5 @@
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import axios from "axios";
+import api from "@/Api/baseurl";
 import { useAuthStore } from "@/store/authStore";
 import { FaFacebookF } from "react-icons/fa";
 import { Button } from "@/ui/button";
@@ -46,7 +46,7 @@ export default function FacebookLoginButton() {
       setUser(userData);
 
       // Save user data to backend
-      await axios.post("https://back-end-service-listing.onrender.com/facebookUsers", userData);
+      await api.post("/facebookUsers", userData);
     } catch (error) {
       console.error("Error during Facebook authentication:", error);
     }

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 import Sidebar from "@/Components/Services/sidebar";
 import ServiceCard from "@/Components/Services/serviceCard";
 import SearchBar from "@/Components/Services/searchBar";
@@ -39,10 +39,10 @@ export default function ServiceListingPage() {
       try {
         setLoading(true);
         let url = filters.categoryId
-          ? `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
-          : "https://back-end-service-listing.onrender.com/api/services";
+          ? `/api/services/category/${filters.categoryId}`
+          : "/api/services";
 
-        const res = await axios.get(url);
+        const res = await api.get(url);
         let apiServices = extractServicesArray(res.data);
 
         if (!Array.isArray(apiServices)) {
@@ -64,8 +64,8 @@ export default function ServiceListingPage() {
             }
 
             try {
-              const photoRes = await axios.get(
-                `https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`
+              const photoRes = await api.get(
+                `/api/photoservices/${serviceId}/photos`
               );
               const photos = extractPhotosArray(photoRes.data);
               const primaryPhoto =

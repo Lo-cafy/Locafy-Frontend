@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// API Gateway client (default)
 const api = axios.create({
   baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
   headers: {
@@ -7,6 +8,15 @@ const api = axios.create({
   },
   withCredentials: true,
   
+});
+
+// Service Listing microservice client
+export const listingApi = axios.create({
+  baseURL: 'https://back-end-servicelisting.onrender.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
 });
 
 

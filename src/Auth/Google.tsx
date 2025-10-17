@@ -1,5 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import api from "@/Api/baseurl";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/ui/button";
 import { FcGoogle } from "react-icons/fc";
@@ -25,7 +25,7 @@ export default function GoogleLoginButton() {
         console.log("Google signup successful:", userObj);
 
         // Save to db.json
-        axios.post("https://back-end-service-listing.onrender.com/googleUsers", userObj)
+        api.post("/googleUsers", userObj)
             .then((r) => console.log("Saved to db.json:", r.data))
             .catch((err) => console.error("Failed to save to db.json:", err));
     };

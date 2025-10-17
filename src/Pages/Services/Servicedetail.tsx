@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 
 import Footer from "@/Components/Footer";
 import ImageCarousel from "@/Components/ServiceDetails/ImageCarousel";
@@ -25,7 +25,7 @@ export default function ServiceDetailPage() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/${id}`);
+        const res = await api.get(`/api/services/${id}`);
         
         // Handle different response structures
         let data = res.data.service || res.data.data || res.data;
@@ -46,8 +46,8 @@ export default function ServiceDetailPage() {
         }
 
         // Fetch service photos
-        const photoRes = await axios.get(
-          `https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`
+        const photoRes = await api.get(
+          `/api/photoservices/${serviceId}/photos`
         );
         
         // Handle different photo response structures
@@ -66,8 +66,8 @@ export default function ServiceDetailPage() {
         const categoryId = data.category_id;
         if (categoryId) {
           try {
-            const relatedRes = await axios.get(
-              `https://back-end-service-listing.onrender.com/api/services/category/${categoryId}`
+            const relatedRes = await api.get(
+              `/api/services/category/${categoryId}`
             );
             
             // Handle different related services response structures

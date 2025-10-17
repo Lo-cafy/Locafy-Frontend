@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 import {
   SlidersHorizontal,
   X,
@@ -55,8 +55,8 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setCategoriesLoading(true);
         setCategoriesError("");
-        const res = await axios.get(
-          "https://back-end-service-listing.onrender.com/api/categories"
+        const res = await api.get(
+          "/api/categories"
         );
         let categoriesData = res.data;
 
@@ -94,8 +94,8 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setServicesLoading(true);
         setServicesError("");
-        const res = await axios.get(
-          `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
+        const res = await api.get(
+          `/api/services/category/${filters.categoryId}`
         );
         let servicesData = res.data;
         if (res.data.services && Array.isArray(res.data.services))
