@@ -8,7 +8,7 @@ interface UserTableProps {
   onStatusUpdate?: (userId: string, isActive: boolean) => void;
 }
 
-const UserTable: React.FC<UserTableProps> = ({ users = []}) => {
+const UserTable: React.FC<UserTableProps> = ({ users = [] }) => {
   // Helper function for status chip styling remains the same
   const getStatusChipClass = (status: User['status']) => {
     switch(status) {

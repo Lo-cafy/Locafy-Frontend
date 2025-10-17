@@ -103,7 +103,7 @@ export default function FeaturedServices() {
     (async () => {
       try {
         const { data } = await axios.get(
-          "https://back-end-service-listing.onrender.com/api/services"
+          "https://back-end-servicelisting.onrender.com/api/services"
         );
 
         const arr = Array.isArray(data)

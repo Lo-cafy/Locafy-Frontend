@@ -1,19 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { Download, Plus } from 'lucide-react';
+import { Download } from 'lucide-react';
 import UserTable from '@/Components/Admin/Users/UserTable';
 import UserFilters from '@/Components/Admin/Users/UsersFilters';
 import UserStats from '@/Components/Admin/Users/UserStats';
+import AddUserModal from '@/Components/Admin/Users/AddUserModal';
 import { mockUsers } from '@/Components/Admin/data/mockData';
+import type { User } from '@/types/auth.types';
 
 const AdminUsers: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [users, setUsers] = useState<User[]>(mockUsers);
 
  
   const filteredUsers = useMemo(() => {
-    return mockUsers.filter(user => {
+    return users.filter(user => {
       const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           user.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRole = roleFilter === 'all' || user.role === roleFilter;
@@ -21,7 +24,11 @@ const AdminUsers: React.FC = () => {
       
       return matchesSearch && matchesRole && matchesStatus;
     });
-  }, [searchQuery, roleFilter, statusFilter]);
+  }, [users, searchQuery, roleFilter, statusFilter]);
+
+  const handleUserAdded = (newUser: User) => {
+    setUsers(prev => [newUser, ...prev]);
+  };
 
   return (
     <>
@@ -36,10 +43,7 @@ const AdminUsers: React.FC = () => {
             <Download className="w-4 h-4 mr-2" />
             Export
           </button>
-          <button className="flex items-center px-4 py-2 text-sm font-semibold text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition-colors">
-            <Plus className="w-4 h-4 mr-2" />
-            Add User
-          </button>
+          <AddUserModal onUserAdded={handleUserAdded} />
         </div>
       </div>
 

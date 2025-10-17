@@ -1,10 +1,11 @@
  
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/ui/button';
-import { Download, Plus, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw } from 'lucide-react';
 import ServiceStats from '@/Components/Admin/Services/ServiceStats';
 import ServiceFilters from '@/Components/Admin/Services/ServiceFilters';
 import ServiceGrid from '@/Components/Admin/Services/ServiceGrid';
+import AddServiceModal from '@/Components/Admin/Services/AddServiceModal';
 import { adminService } from '@/services/admin.service';
 import type { Service } from '@/types/service.types';
 
@@ -60,6 +61,10 @@ const AdminServices: React.FC = () => {
     }
   };
 
+  const handleServiceAdded = (newService: Service) => {
+    setServices(prev => [newService, ...prev]);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -73,10 +78,7 @@ const AdminServices: React.FC = () => {
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-blue-600/80 backdrop-blur hover:bg-blue-700/80 text-white shadow-sm flex-1 sm:flex-initial">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Service
-          </Button>
+          <AddServiceModal onServiceAdded={handleServiceAdded} />
         </div>
       </div>
 

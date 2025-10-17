@@ -1,16 +1,13 @@
 import axios from 'axios';
-- import axios from "axios";
-+ import api from "@/lib/api";    
 
 const api = axios.create({
-  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
+  baseURL: ' https://locafy-apigateway-production-b9cb.up.railway.app/api',
+ 
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
-  
 });
-
 
 api.interceptors.request.use(
   (config) => {
@@ -36,17 +33,11 @@ api.interceptors.response.use(
 );
 
 export default api;
- 
+export const BASE_URL = "https://back-end-servicelisting.onrender.com";
 
- 
-- const { data } = await axios.get(
--   "https://back-end-service-listing.onrender.com/api/services"
-- );
-+ const { data } = await api.get("/api/services");
- 
-- const { data: photosData } = await axios.get(
--   "https://back-end-service-listing.onrender.com/api/photoservices/${id}/photos"
-- );
-+ const { data: photosData } = await api.get(
-+   /api/photoservices/${id}/photos
-+ );
+export const API_ENDPOINTS = {
+  SERVICES: "/api/services",
+  SERVICES_BY_CATEGORY: (categoryId: number) => `/api/services/category/${categoryId}`,
+  CATEGORIES: "/api/categories",
+  PHOTOS: (serviceId: number) => `/api/photoservices/${serviceId}/photos`,
+} as const;
