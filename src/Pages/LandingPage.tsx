@@ -26,19 +26,15 @@ function Home() {
     if (isLoggedIn && user) {
       navigate("/provider");
     } else {
-      // For testing purposes, create a test user and log them in
+      // Test login as a basic user
       const testUser = {
         id: "test-user-123",
-        name: "Test Provider",
-        email: "test@provider.com",
-        role: "provider" as const
+        name: "Test User",
+        email: "test@user.com",
+        role: "user" as const,
       };
-      
-      // Set the test user in the auth store
       const { setUser } = useAuthStore.getState();
       setUser(testUser);
-      
-      // Navigate to provider dashboard
       navigate("/provider");
     }
   };
@@ -55,7 +51,8 @@ function Home() {
     <div  className="bg-gradient-to-br from-emerald-50 to-green-0 min-h-screen pt-20">
       
       <Navbar />
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col sm:flex-row gap-2">
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col sm:flex-row gap-2 items-end">
+        <span className="text-xs text-gray-600 px-2 py-1 bg-white/70 rounded">Just for testing</span>
         <Button 
           onClick={handleProviderDashboardClick}
           variant="outline" 
