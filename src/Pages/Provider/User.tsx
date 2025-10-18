@@ -7,13 +7,14 @@ import Profile from './Profile';
 import Settings from './Settings';
 import Services from './Services';
 import Bookings from './Bookings';
+import Chat from './Chat';
 import BottomBar from '../../Components/BottomBar';
 
 interface UserLayoutProps {
   initialPage?: string;
 }
 
-const UserLayout: React.FC<UserLayoutProps> = ({ initialPage = 'profile' }) => {
+const UserLayout: React.FC<UserLayoutProps> = ({ initialPage = 'dashboard' }) => {
   const [activePage, setActivePage] = useState(initialPage);
 
   const renderPage = () => {
@@ -26,6 +27,8 @@ const UserLayout: React.FC<UserLayoutProps> = ({ initialPage = 'profile' }) => {
         return <Services />;
       case 'bookings':
         return <Bookings />;
+      case 'chat':
+        return <Chat />;
       case 'settings':
         return <Settings />;
       default:
@@ -38,7 +41,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ initialPage = 'profile' }) => {
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
   
-      <main className="flex-1 transition-all duration-300 md:ml-20 peer-hover:md:ml-64">
+      <main className="flex-1 transition-all duration-300 md:ml-20 peer-hover:md:ml-64 peer-hover:md:[&_button[aria-label=Notifications]]:opacity-0 peer-hover:md:[&_button[aria-label=Notifications]]:pointer-events-none">
         
        
         <div className="md:hidden">

@@ -10,7 +10,7 @@ import ExtrasAndAddons from "@/Components/Booking/ExtrasAndAddons";
 import PaymentMethod from "@/Components/Booking/PaymentMethod";
 import PricingSummary from "@/Components/Booking/PricingSummary";
 import { ArrowLeft, Check } from "lucide-react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 
 export interface BookingData {
   selectedDate: string;
@@ -33,7 +33,7 @@ export default function BookingPage() {
   const location = useLocation();
   const serviceData = location.state?.service;
 
-  const [service, setService] = useState<any>(serviceData);
+  const [service, setService] = useState<Record<string, unknown> | null>(serviceData ?? null);
   const [loading, setLoading] = useState(!serviceData);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -55,7 +55,7 @@ export default function BookingPage() {
   });
 
   // Update individual booking data fields
-  const updateBookingData = (field: keyof BookingData, value: any) => {
+  const updateBookingData = (field: keyof BookingData, value: BookingData[keyof BookingData]) => {
     setBookingData(prev => ({
       ...prev,
       [field]: value
@@ -68,7 +68,7 @@ export default function BookingPage() {
       ...prev,
       customerInfo: {
         ...prev.customerInfo,
-        [field]: value
+        [field as keyof BookingData['customerInfo']]: value
       }
     }));
   };
@@ -78,7 +78,7 @@ export default function BookingPage() {
       const fetchService = async () => {
         try {
           setLoading(true);
-          const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/${id}`);
+          const res = await api.get(`/api/services/${id}`);
           const data = res.data.service || res.data.data || res.data;
           setService(data);
         } catch (err) {

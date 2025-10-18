@@ -1,12 +1,17 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import api from "@/Api/baseurl";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/ui/button";
 import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
+
+interface GoogleTokenResponse {
+    access_token: string;
+}
 
 export default function GoogleLoginButton() {
     const setUser = useAuthStore((state) => state.setUser);
-    const handleGoogleLogin = async (tokenResponse: any) => {
+    const handleGoogleLogin = async (tokenResponse: GoogleTokenResponse) => {
         console.log("Google Token Response:", tokenResponse);
 
         // get user info from Google API using the access_token
@@ -25,7 +30,7 @@ export default function GoogleLoginButton() {
         console.log("Google signup successful:", userObj);
 
         // Save to db.json
-        axios.post("https://back-end-service-listing.onrender.com/googleUsers", userObj)
+        api.post("/googleUsers", userObj)
             .then((r) => console.log("Saved to db.json:", r.data))
             .catch((err) => console.error("Failed to save to db.json:", err));
     };

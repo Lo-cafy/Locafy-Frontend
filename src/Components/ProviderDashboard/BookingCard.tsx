@@ -2,10 +2,10 @@
 import { Card } from "@/ui/card";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
-import { Calendar, Clock, DollarSign, User } from "lucide-react";
+import { Calendar, Clock, DollarSign, User, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import BookingDetailsModal from "./BookingDetailsModal";
-
+import ChatModal from "./ChatModal";
 
 // Define the structure of a booking
 export interface Booking {
@@ -36,6 +36,7 @@ const getStatusStyles = (status: Booking['status']) => {
 
 export default function BookingCard({ booking }: BookingCardProps) {
 	const [detailsOpen, setDetailsOpen] = useState(false);
+	const [chatOpen, setChatOpen] = useState(false);
 
 	return (
 		// A clean, simple card design
@@ -75,12 +76,15 @@ export default function BookingCard({ booking }: BookingCardProps) {
 
 			{/* Action Buttons */}
 			<div className="flex justify-end gap-2 mt-2">
+				<Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-100" onClick={() => setChatOpen(true)}>
+					<MessageSquare className="w-4 h-4 mr-1" /> Chat
+				</Button>
 				<Button variant="outline" size="sm" className="border-gray-300 hover:bg-gray-100" onClick={() => setDetailsOpen(true)}>View Details</Button>
 				{booking.status === 'Upcoming' && <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">Reschedule</Button>}
 			</div>
 
 			<BookingDetailsModal open={detailsOpen} onOpenChange={setDetailsOpen} booking={booking} />
+			<ChatModal open={chatOpen} onOpenChange={setChatOpen} booking={booking} />
 		</Card>
 	);
 }
-

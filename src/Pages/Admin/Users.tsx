@@ -6,12 +6,16 @@ import UserStats from '@/Components/Admin/Users/UserStats';
 import AddUserModal from '@/Components/Admin/Users/AddUserModal';
 import { mockUsers } from '@/Components/Admin/data/mockData';
 import type { User } from '@/types/auth.types';
+import UserDetailsModal from '@/Components/Admin/Users/UserDetailsModal';
 
 const AdminUsers: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>(mockUsers);
 
  
@@ -29,6 +33,14 @@ const AdminUsers: React.FC = () => {
   const handleUserAdded = (newUser: User) => {
     setUsers(prev => [newUser, ...prev]);
   };
+
+  const pagedUsers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredUsers.slice(start, start + pageSize);
+  }, [filteredUsers, currentPage]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const onViewUser = (user: User) => { setSelectedUser(user); setDetailsOpen(true); };
 
   return (
     <>
@@ -65,12 +77,12 @@ const AdminUsers: React.FC = () => {
       </div>
 
       {/* User Table */}
-      <UserTable users={filteredUsers} />
+      <UserTable users={pagedUsers} onView={onViewUser} />
 
       {/* Table Footer/Pagination */}
       <div className="flex flex-col sm:flex-row justify-between items-center pt-4 mt-4">
         <p className="text-sm text-gray-400 mb-2 sm:mb-0">
-          Showing 1 to {filteredUsers.length} of {filteredUsers.length} users
+          Page {currentPage} of {totalPages} · {filteredUsers.length} total users
         </p>
         <div className="flex">
           <button 
@@ -82,12 +94,14 @@ const AdminUsers: React.FC = () => {
           </button>
           <button 
             className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-xl hover:bg-indigo-600 transition-colors"
-            onClick={() => setCurrentPage(currentPage + 1)}
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
           >
             Next
           </button>
         </div>
       </div>
+
+      <UserDetailsModal open={detailsOpen} onOpenChange={setDetailsOpen} user={selectedUser} />
     </>
   );
 };

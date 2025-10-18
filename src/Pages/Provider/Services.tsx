@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Wrench } from 'lucide-react';
 import ServiceCard, { type Service } from '../../Components/ProviderDashboard/ServiceCard';
 import ListServiceModal from '../../Components/ProviderDashboard/ListServiceModal';
+import ServiceDetailsModal from '../../Components/ProviderDashboard/ServiceDetailsModal';
+import ServiceEditModal from '../../Components/ProviderDashboard/ServiceEditModal';
 
 // --- Dummy Data for Services ---
 const dummyServices: Service[] = [
@@ -14,9 +16,26 @@ const dummyServices: Service[] = [
 
 const Services = () => {
   const [services, setServices] = useState<Service[]>(dummyServices);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   const handleServiceAdded = (newService: Service) => {
     setServices(prev => [newService, ...prev]);
+  };
+
+  const handleViewService = (service: Service) => {
+    setSelectedService(service);
+    setDetailsOpen(true);
+  };
+
+  const handleEditService = (service: Service) => {
+    setSelectedService(service);
+    setEditOpen(true);
+  };
+
+  const handleSaveService = (updated: Service) => {
+    setServices((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
   };
 
   return (
@@ -33,7 +52,7 @@ const Services = () => {
       {services.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {services.map(service => (
-            <ServiceCard key={service.id} service={service} />
+            <ServiceCard key={service.id} service={service} onView={handleViewService} onEdit={handleEditService} />
           ))}
         </div>
       ) : (
@@ -41,6 +60,19 @@ const Services = () => {
           <p className="font-medium">You have not listed any services yet.</p>
         </div>
       )}
+
+      <ServiceDetailsModal
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        service={selectedService}
+      />
+
+      <ServiceEditModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        service={selectedService}
+        onSave={handleSaveService}
+      />
     </div>
   );
 };

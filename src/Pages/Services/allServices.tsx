@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useCallback } from "react";
+import { listingApi as api } from "@/Api/baseurl";
 import Sidebar from "@/Components/Services/sidebar";
 import ServiceCard from "@/Components/Services/serviceCard";
 import SearchBar from "@/Components/Services/searchBar";
@@ -34,16 +34,43 @@ export default function ServiceListingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const extractServicesArray = useCallback((data: unknown): Array<Record<string, unknown>> => {
+    if (Array.isArray(data)) return data as Array<Record<string, unknown>>;
+    if (data && typeof data === "object") {
+      const d = data as Record<string, unknown>;
+      if (Array.isArray(d.services)) return d.services as Array<Record<string, unknown>>;
+      if (Array.isArray(d.data)) return d.data as Array<Record<string, unknown>>;
+      if (Array.isArray(d.results)) return d.results as Array<Record<string, unknown>>;
+    }
+    return [];
+  }, []);
+
+  interface Photo { photo_url?: string; is_primary?: boolean }
+  const extractPhotosArray = useCallback((data: unknown): Photo[] => {
+    if (Array.isArray(data)) return data as Photo[];
+    if (data && typeof data === "object") {
+      const d = data as Record<string, unknown>;
+      const nested = d.data;
+      if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+        const photos = (nested as Record<string, unknown>).photos as unknown;
+        if (Array.isArray(photos)) return photos as Photo[];
+      }
+      if (Array.isArray(nested as unknown[])) return nested as Photo[];
+      if (Array.isArray(d.photos as unknown[])) return d.photos as Photo[];
+    }
+    return [];
+  }, []);
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        let url = filters.categoryId
-          ? `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
-          : "https://back-end-service-listing.onrender.com/api/services";
+        const url = filters.categoryId
+          ? `/api/services/category/${filters.categoryId}`
+          : "/api/services";
 
-        const res = await axios.get(url);
-        let apiServices = extractServicesArray(res.data);
+        const res = await api.get(url);
+        const apiServices = extractServicesArray(res.data);
 
         if (!Array.isArray(apiServices)) {
           setError("Invalid data format received");
@@ -51,38 +78,60 @@ export default function ServiceListingPage() {
           return;
         }
 
-        const servicesWithImages = await Promise.all(
-          apiServices.map(async (service: any) => {
-            const serviceId = service.service_id;
+        const servicesWithImages: Service[] = await Promise.all(
+          apiServices.map(async (service: Record<string, unknown>) => {
+            const serviceId = (service as { service_id?: number; id?: number }).service_id ?? (service as { id?: number }).id ?? 0;
+            const title = (service as { title?: string; name?: string }).title ?? (service as { name?: string }).name ?? "Untitled";
+            const description = (service as { description?: string }).description ?? "";
+            const priceRaw = (service as { price?: number | string }).price;
+            const price = typeof priceRaw === 'number' ? priceRaw : parseFloat(String(priceRaw ?? 0)) || 0;
+            const ratingRaw = (service as { rating?: number | string }).rating;
+            const rating = typeof ratingRaw === 'number' ? ratingRaw : parseFloat(String(ratingRaw ?? 0)) || 0;
+            const categoryId = (service as { category_id?: number }).category_id ?? 0;
+            const locationText = (service as { location_text?: string; location?: string }).location_text ?? (service as { location?: string }).location ?? "Unknown location";
             if (!serviceId) {
               return {
-                ...service,
-                id: serviceId,
-                location: service.location_text,
+                id: 0,
+                title: String(title),
+                description: String(description),
+                price: Number(price),
+                rating: Number(rating),
+                category_id: Number(categoryId),
+                location: String(locationText),
                 image: "",
+                isFeatured: false,
               };
             }
 
             try {
-              const photoRes = await axios.get(
-                `https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`
+              const photoRes = await api.get(
+                `/api/photoservices/${serviceId}/photos`
               );
               const photos = extractPhotosArray(photoRes.data);
-              const primaryPhoto =
-                photos.find((p: any) => p.is_primary) || photos[0];
+              const primaryPhoto = photos.find((p) => p.is_primary) || photos[0];
 
               return {
-                ...service,
-                id: serviceId,
-                location: service.location_text,
-                image: primaryPhoto?.photo_url || "",
+                id: Number(serviceId),
+                title: String(title),
+                description: String(description),
+                price: Number(price),
+                rating: Number(rating),
+                category_id: Number(categoryId),
+                location: String(locationText),
+                image: (primaryPhoto?.photo_url as string) || "",
+                isFeatured: false,
               };
-            } catch (err) {
+            } catch {
               return {
-                ...service,
-                id: serviceId,
-                location: service.location_text,
+                id: Number(serviceId),
+                title: String(title),
+                description: String(description),
+                price: Number(price),
+                rating: Number(rating),
+                category_id: Number(categoryId),
+                location: String(locationText),
                 image: "",
+                isFeatured: false,
               };
             }
           })
@@ -95,7 +144,7 @@ export default function ServiceListingPage() {
         );
         setServices(filteredServices);
         setError("");
-      } catch (err) {
+      } catch {
         setError("Failed to load services");
         setServices([]);
       } finally {
@@ -105,31 +154,16 @@ export default function ServiceListingPage() {
 
     const timeoutId = setTimeout(fetchServices, 300);
     return () => clearTimeout(timeoutId);
-  }, [filters, searchText]);
+  }, [filters, searchText, extractPhotosArray, extractServicesArray]);
 
-  const extractServicesArray = (data: any): any[] => {
-    if (Array.isArray(data)) return data;
-    if (data?.services && Array.isArray(data.services)) return data.services;
-    if (data?.data && Array.isArray(data.data)) return data.data;
-    if (data?.results && Array.isArray(data.results)) return data.results;
-    return [];
-  };
-
-  const extractPhotosArray = (data: any): any[] => {
-    if (data?.data?.photos && Array.isArray(data.data.photos))
-      return data.data.photos;
-    if (data?.data && Array.isArray(data.data)) return data.data;
-    if (Array.isArray(data)) return data;
-    if (data?.photos && Array.isArray(data.photos)) return data.photos;
-    return [];
-  };
+  
 
   const applyFilters = (
-    services: any[],
+    services: Service[],
     filters: Filters,
     searchText: string
   ) => {
-    let filtered = services.filter((s: any) => {
+    let filtered = services.filter((s) => {
       const price = Number(s.price) || 0;
       const rating = Number(s.rating) || 0;
 
@@ -142,10 +176,9 @@ export default function ServiceListingPage() {
 
     if (searchText.trim()) {
       const text = searchText.toLowerCase();
-      filtered = filtered.filter(
-        (s: any) =>
-          (s.title && s.title.toLowerCase().includes(text)) ||
-          (s.description && s.description.toLowerCase().includes(text))
+      filtered = filtered.filter((s) =>
+        (s.title && s.title.toLowerCase().includes(text)) ||
+        (s.description && s.description.toLowerCase().includes(text))
       );
     }
 

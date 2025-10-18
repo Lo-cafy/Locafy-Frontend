@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Bell, Menu } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import NotificationsModal from '@/Components/Admin/NotificationsModal';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -8,7 +9,8 @@ interface AdminHeaderProps {
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   const { user } = useAuthStore();
-  
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-20 bg-gray-900/90 backdrop-blur-sm border-b border-gray-800 p-4 flex items-center justify-between">
       <div className="flex items-center flex-grow max-w-2xl">
@@ -30,7 +32,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       </div>
       
       <div className="flex items-center space-x-4 ml-4">
-        <button className="p-2 text-gray-400 hover:text-indigo-400 rounded-full transition-colors relative">
+        <button onClick={() => setNotificationsOpen(true)} className="p-2 text-gray-400 hover:text-indigo-400 rounded-full transition-colors relative">
           <Bell className="w-6 h-6" />
           <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full ring-2 ring-gray-900"></span>
         </button>
@@ -39,6 +41,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
           {user?.name?.charAt(0) || 'A'}
         </div>
       </div>
+      <NotificationsModal open={notificationsOpen} onOpenChange={setNotificationsOpen} />
     </header>
   );
 };

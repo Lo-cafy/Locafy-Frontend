@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 
 import Footer from "@/Components/Footer";
 import ImageCarousel from "@/Components/ServiceDetails/ImageCarousel";
@@ -16,7 +16,7 @@ export default function ServiceDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [service, setService] = useState<any>(null);
+  const [service, setService] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(1);
   const [reviewFilter, setReviewFilter] = useState("all");
@@ -25,10 +25,10 @@ export default function ServiceDetailPage() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`https://back-end-service-listing.onrender.com/api/services/${id}`);
+        const res = await api.get(`/api/services/${id}`);
         
         // Handle different response structures
-        let data = res.data.service || res.data.data || res.data;
+        const data: Record<string, unknown> = (res.data.service || res.data.data || res.data) as Record<string, unknown>;
         
         if (!data) {
           console.error("No service data found");
@@ -37,7 +37,7 @@ export default function ServiceDetailPage() {
         }
 
         // Use service_id instead of id for photo API call
-        const serviceId = data.service_id || data.id;
+        const serviceId = (data as { service_id?: number; id?: number }).service_id || (data as { id?: number }).id;
         
         if (!serviceId) {
           console.error("Service ID not found in response:", data);
@@ -46,32 +46,32 @@ export default function ServiceDetailPage() {
         }
 
         // Fetch service photos
-        const photoRes = await axios.get(
-          `https://back-end-service-listing.onrender.com/api/photoservices/${serviceId}/photos`
+        const photoRes = await api.get(
+          `/api/photoservices/${serviceId}/photos`
         );
         
         // Handle different photo response structures
-        let photos = [];
+        let photos: Array<Record<string, unknown>> = [];
         if (photoRes.data.data && Array.isArray(photoRes.data.data.photos)) {
-          photos = photoRes.data.data.photos;
+          photos = photoRes.data.data.photos as Array<Record<string, unknown>>;
         } else if (Array.isArray(photoRes.data)) {
-          photos = photoRes.data;
+          photos = photoRes.data as Array<Record<string, unknown>>;
         } else if (photoRes.data.photos && Array.isArray(photoRes.data.photos)) {
-          photos = photoRes.data.photos;
+          photos = photoRes.data.photos as Array<Record<string, unknown>>;
         }
         
-        data.photos = photos;
+        (data as Record<string, unknown>).photos = photos;
 
         // Fetch related services
-        const categoryId = data.category_id;
+        const categoryId = (data as { category_id?: number }).category_id;
         if (categoryId) {
           try {
-            const relatedRes = await axios.get(
-              `https://back-end-service-listing.onrender.com/api/services/category/${categoryId}`
+            const relatedRes = await api.get(
+              `/api/services/category/${categoryId}`
             );
             
             // Handle different related services response structures
-            let relatedServices = [];
+            let relatedServices: unknown[] = [];
             if (relatedRes.data.services && Array.isArray(relatedRes.data.services)) {
               relatedServices = relatedRes.data.services;
             } else if (Array.isArray(relatedRes.data)) {
@@ -81,12 +81,13 @@ export default function ServiceDetailPage() {
             }
             
             // Filter out the current service from related services
-            data.relatedServices = relatedServices.filter((s: any) => 
-              (s.service_id || s.id) !== serviceId
-            );
+            (data as Record<string, unknown>).relatedServices = relatedServices.filter((s: unknown) => {
+              const obj = s as { service_id?: number; id?: number };
+              return (obj.service_id || obj.id) !== serviceId;
+            });
           } catch (err) {
             console.error("Error fetching related services:", err);
-            data.relatedServices = [];
+            (data as Record<string, unknown>).relatedServices = [];
           }
         } else {
           data.relatedServices = [];
@@ -112,7 +113,16 @@ export default function ServiceDetailPage() {
   if (loading) return <p className="text-center py-16">Loading...</p>;
   if (!service) return <p className="text-center py-16">Service not found</p>;
 
-  const avgRating = calculateAvgRating(service.reviews || []);
+  type Review = { rating: number };
+  const reviewsUnknown = Array.isArray((service as { reviews?: unknown }).reviews)
+    ? ((service as { reviews?: unknown[] }).reviews as unknown[])
+    : [];
+  const reviewsTyped: Review[] = reviewsUnknown.map((r) => {
+    const ratingVal = (r as { rating?: number | string })?.rating;
+    const rating = typeof ratingVal === "number" ? ratingVal : parseFloat(String(ratingVal ?? 0)) || 0;
+    return { rating };
+  });
+  const avgRating = calculateAvgRating(reviewsTyped);
   const serviceOptions = service.options || [{ id: 1, name: "Default", price: service.price }];
 
   return (
@@ -126,14 +136,14 @@ export default function ServiceDetailPage() {
           <ArrowLeft className="mr-2" size={20} /> Back to Services
         </button>
         <h1 className="ml-auto text-xl sm:text-2xl font-bold text-gray-900">
-          {service.title}
+          {String((service as { title?: string }).title ?? "")}
         </h1>
       </section>
 
       {/* Main Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7">
-          <ImageCarousel images={service.photos.map((p: any) => p.photo_url)} />
+          <ImageCarousel images={Array.isArray((service as { photos?: unknown }).photos) ? ((service as { photos?: Array<{ photo_url?: string; url?: string }> }).photos as Array<{ photo_url?: string; url?: string }>).map(p => String(p.photo_url ?? p.url ?? "")) : []} />
         </div>
 
         <div className="lg:col-span-5">
@@ -153,7 +163,7 @@ export default function ServiceDetailPage() {
         setReviewFilter={setReviewFilter}
       />
 
-      <RelatedServices related={service.relatedServices || []} />
+      <RelatedServices related={Array.isArray((service as { relatedServices?: unknown }).relatedServices) ? ((service as { relatedServices?: unknown[] }).relatedServices as unknown[]) : []} />
 
       <Footer />
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, User, Settings, Home, Wrench, CalendarCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, User, Settings, Home, Wrench, CalendarCheck, LogOut, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "@/store/authStore";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/ui/tooltip";
@@ -14,6 +14,7 @@ const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'services', label: 'My Services', icon: Wrench },
   { id: 'bookings', label: 'Bookings', icon: CalendarCheck },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

@@ -1,13 +1,24 @@
 import axios from 'axios';
 
+// API Gateway client (default)
 const api = axios.create({
-  baseURL: ' https://locafy-apigateway-production-b9cb.up.railway.app/api',
- 
+  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+  
+});
+
+// Service Listing microservice client
+export const listingApi = axios.create({
+  baseURL: 'https://back-end-servicelisting.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
+
 
 api.interceptors.request.use(
   (config) => {
@@ -33,11 +44,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-export const BASE_URL = "https://back-end-servicelisting.onrender.com";
-
-export const API_ENDPOINTS = {
-  SERVICES: "/api/services",
-  SERVICES_BY_CATEGORY: (categoryId: number) => `/api/services/category/${categoryId}`,
-  CATEGORIES: "/api/categories",
-  PHOTOS: (serviceId: number) => `/api/photoservices/${serviceId}/photos`,
-} as const;

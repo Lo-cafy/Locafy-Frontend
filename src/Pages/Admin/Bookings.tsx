@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
 import { Button } from '@/ui/button';
 import { Download, Calendar } from 'lucide-react';
@@ -10,13 +11,20 @@ import TodaySchedule from '@/Components/Admin/TodaySchedule';
 import PerformanceMetrics from '@/Components/Admin/PerformanceMetrics';
 import type { Booking } from '@/types/Bookings.types';
 import { mockBookings } from '@/Components/Admin/data/mockData';
+import BookingDetailsModal from '@/Components/Admin/BookingDetailsModal';
+import ChatModal from '@/Components/Admin/ChatModal';
 
 const Bookings: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('all');
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
   useEffect(() => {
     setBookings(mockBookings);
   }, []);
@@ -38,6 +46,15 @@ const Bookings: React.FC = () => {
     return true;
   });
 
+  const pagedBookings = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredBookings.slice(start, start + pageSize);
+  }, [filteredBookings, currentPage]);
+  const totalPages = Math.max(1, Math.ceil(filteredBookings.length / pageSize));
+
+  const handleView = (b: Booking) => { setSelectedBooking(b); setDetailsOpen(true); };
+  const handleChat = (b: Booking) => { setSelectedBooking(b); setChatOpen(true); };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -45,7 +62,10 @@ const Bookings: React.FC = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Booking Management</h1>
           <p className="text-base sm:text-lg text-gray-400 mt-1">Monitor and manage all service bookings</p>
+          <BookingDetailsModal open={detailsOpen} onOpenChange={setDetailsOpen} booking={selectedBooking} />
+          <ChatModal open={chatOpen} onOpenChange={setChatOpen} booking={selectedBooking} />
         </div>
+
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Button variant="outline" className="bg-gray-800/30 backdrop-blur border-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-700/50 w-full sm:w-auto">
             <Download className="w-4 h-4 mr-2" />
@@ -95,7 +115,14 @@ const Bookings: React.FC = () => {
         </div>
 
         <TabsContent value={activeTab} className="mt-4 sm:mt-6">
-          <BookingTable bookings={filteredBookings} />
+          <BookingTable bookings={pagedBookings} onView={handleView} onChat={handleChat} />
+          <div className="flex flex-col sm:flex-row justify-between items-center pt-4">
+            <p className="text-sm text-gray-400 mb-2 sm:mb-0">Page {currentPage} of {totalPages} · {filteredBookings.length} bookings</p>
+            <div className="flex">
+              <Button variant="outline" className="mr-2 bg-gray-800/30 border-gray-700/50 text-gray-300 hover:text-white" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Previous</Button>
+              <Button className="bg-indigo-500 hover:bg-indigo-600" onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}>Next</Button>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 

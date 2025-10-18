@@ -1,6 +1,6 @@
 "use client";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 import { useEffect, useState } from "react";
 import { Star, MapPin, Heart, Sparkles } from "lucide-react";
 import type { Service, ServiceCard } from "@/types/serviceTypes"; // ✅ type-only import
@@ -102,8 +102,8 @@ export default function FeaturedServices() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(
-          "https://back-end-servicelisting.onrender.com/api/services"
+        const { data } = await api.get(
+          "/api/services"
         );
 
         const arr = Array.isArray(data)
@@ -113,13 +113,13 @@ export default function FeaturedServices() {
         const limited = arr.slice(0, 4);
 
         const withPhotos: Service[] = await Promise.all(
-          limited.map(async (service: any) => {
+          limited.map(async (service: Record<string, unknown>) => {
             const id = service.service_id || service.id;
             let image = service.image || "/api/placeholder/400/300";
 
             try {
-              const { data: photosData } = await axios.get(
-                `https://back-end-service-listing.onrender.com/api/photoservices/${id}/photos`
+              const { data: photosData } = await api.get(
+                `/api/photoservices/${id}/photos`
               );
               const photos =
                 photosData?.data?.photos ||
@@ -127,22 +127,28 @@ export default function FeaturedServices() {
                 photosData ||
                 [];
               image = photos[0]?.photo_url || photos[0]?.url || image;
-            } catch { }
+            } catch { void 0; }
 
             const numericRating =
-              typeof service.rating === "number"
-                ? service.rating
-                : parseFloat(service.rating) || 0;
+              typeof (service as { rating?: number | string }).rating === "number"
+                ? ((service as { rating?: number | string }).rating as number)
+                : parseFloat(String((service as { rating?: number | string }).rating)) || 0;
 
             const numericPrice =
-              typeof service.price === "number"
-                ? service.price
-                : parseFloat(service.price) || 0;
+              typeof (service as { price?: number | string }).price === "number"
+                ? ((service as { price?: number | string }).price as number)
+                : parseFloat(String((service as { price?: number | string }).price)) || 0;
 
             return {
               id,
-              name: service.name || service.title || "Untitled Service",
-              location: service.location_text || service.location || "Unknown",
+              name:
+                (service as { name?: string }).name ||
+                (service as { title?: string }).title ||
+                "Untitled Service",
+              location:
+                (service as { location_text?: string }).location_text ||
+                (service as { location?: string }).location ||
+                "Unknown",
               price: numericPrice,
               rating: numericRating,
               image,

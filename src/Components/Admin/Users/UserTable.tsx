@@ -1,14 +1,15 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Eye } from 'lucide-react';
 import type { User } from '@/types/auth.types';
 
 // Props interface remains the same
 interface UserTableProps {
   users: User[];
   onStatusUpdate?: (userId: string, isActive: boolean) => void;
+  onView?: (user: User) => void;
 }
 
-const UserTable: React.FC<UserTableProps> = ({ users = [] }) => {
+const UserTable: React.FC<UserTableProps> = ({ users = [], onView }) => {
   // Helper function for status chip styling remains the same
   const getStatusChipClass = (status: User['status']) => {
     switch(status) {
@@ -91,9 +92,18 @@ const UserTable: React.FC<UserTableProps> = ({ users = [] }) => {
                 </div>
                 <div className="hidden md:block col-span-3 text-sm text-gray-300">{user.joinDate}</div>
                 <div className="hidden md:block col-span-1 text-right">
-                  <button className="text-gray-400 hover:text-white p-1 rounded-full">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      className="text-gray-300 hover:text-white p-1 rounded-full"
+                      onClick={() => onView?.(user)}
+                      title="View details"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button className="text-gray-400 hover:text-white p-1 rounded-full">
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import axios from "axios";
+import { listingApi as api } from "@/Api/baseurl";
 import {
   SlidersHorizontal,
   X,
@@ -19,7 +19,7 @@ type Filters = {
   minPrice?: number;
   maxPrice?: number;
   rating?: number | null;
-  [key: string]: any; // Allows for other potential filter properties
+  [key: string]: unknown; // Allows for other potential filter properties
 };
 
 // Use the correct React types for the state setter
@@ -38,7 +38,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState("");
-  const [categoryServices, setCategoryServices] = useState<any[]>([]);
+  const [categoryServices, setCategoryServices] = useState<unknown[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
   const [servicesError, setServicesError] = useState("");
 
@@ -55,8 +55,8 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setCategoriesLoading(true);
         setCategoriesError("");
-        const res = await axios.get(
-          "https://back-end-service-listing.onrender.com/api/categories"
+        const res = await api.get(
+          "/api/categories"
         );
         let categoriesData = res.data;
 
@@ -73,13 +73,17 @@ export default function Sidebar({ filters, setFilters }: Props) {
         }
 
         setCategories(
-          categoriesData.map((cat: any) => ({
-            id: cat.category_id || cat.id,
-            name: cat.name || cat.category_name || "Unnamed Category",
+          categoriesData.map((cat: Record<string, unknown>) => ({
+            id: (cat as { category_id?: number; id?: number }).category_id ?? (cat as { id?: number }).id ?? 0,
+            name:
+              (cat as { name?: string }).name ??
+              (cat as { category_name?: string }).category_name ??
+              "Unnamed Category",
           }))
         );
-      } catch (err: any) {
-        setCategoriesError(`Failed to load categories: ${err.message}`);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        setCategoriesError(`Failed to load categories: ${message}`);
         setCategories([]);
       } finally {
         setCategoriesLoading(false);
@@ -94,17 +98,18 @@ export default function Sidebar({ filters, setFilters }: Props) {
       try {
         setServicesLoading(true);
         setServicesError("");
-        const res = await axios.get(
-          `https://back-end-service-listing.onrender.com/api/services/category/${filters.categoryId}`
+        const res = await api.get(
+          `/api/services/category/${filters.categoryId}`
         );
         let servicesData = res.data;
         if (res.data.services && Array.isArray(res.data.services))
           servicesData = res.data.services;
         else if (res.data.data && Array.isArray(res.data.data))
           servicesData = res.data.data;
-        setCategoryServices(Array.isArray(servicesData) ? servicesData : []);
-      } catch (err: any) {
-        setServicesError(`Failed to load services: ${err.message}`);
+        setCategoryServices(Array.isArray(servicesData) ? (servicesData as unknown[]) : []);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        setServicesError(`Failed to load services: ${message}`);
         setCategoryServices([]);
       } finally {
         setServicesLoading(false);

@@ -37,11 +37,13 @@ export function UrlVerification() {
           setStatus("error");
           setMessage(res.message || "An unexpected error occurred.");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         setStatus("error");
+        type ApiError = { response?: { data?: { message?: string } } };
+        const apiErr = err as ApiError;
+        const messageOverride = apiErr.response?.data?.message;
         setMessage(
-          err.response?.data?.message ||
-            "Verification failed. The link may be invalid or expired."
+          messageOverride ?? "Verification failed. The link may be invalid or expired."
         );
       }
     };
@@ -68,7 +70,7 @@ export function UrlVerification() {
             </h2>
             <p className="text-base text-slate-600">{message}</p>
             <Button
-              onClick={()=>navigate('/')}
+              onClick={()=>navigate('/provider')}
               className="w-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 mt-4 py-3 rounded-lg transition-all hover:shadow-lg hover:-translate-y-1"
             >
               Continue

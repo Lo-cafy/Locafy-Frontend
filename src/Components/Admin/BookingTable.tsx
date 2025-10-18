@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/ui/table';
 import { Badge } from '@/ui/badge';
 import { Button } from '@/ui/button';
@@ -16,9 +17,12 @@ import type { Booking } from '@/types/Bookings.types';
 
 interface BookingTableProps {
   bookings: Booking[];
+  onView?: (booking: Booking) => void;
+  onChat?: (booking: Booking) => void;
 }
 
-const BookingTable: React.FC<BookingTableProps> = ({ bookings }) => {
+const BookingTable: React.FC<BookingTableProps> = ({ bookings, onView, onChat }) => {
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
@@ -112,6 +116,7 @@ const BookingTable: React.FC<BookingTableProps> = ({ bookings }) => {
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 hover:text-white"
+                    onClick={() => onView?.(booking)}
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
@@ -119,6 +124,7 @@ const BookingTable: React.FC<BookingTableProps> = ({ bookings }) => {
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8 bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 hover:text-white"
+                    onClick={() => onChat?.(booking)}
                   >
                     <MessageSquare className="w-4 h-4" />
                   </Button>

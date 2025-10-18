@@ -1,6 +1,5 @@
- 
-import React from 'react';
-import { LayoutDashboard, User,  Home, CalendarCheck } from 'lucide-react';
+ import React from 'react';
+import { LayoutDashboard, User,  Home, CalendarCheck, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface BottomBarProps {
@@ -8,11 +7,11 @@ interface BottomBarProps {
   setActivePage: (page: string) => void;
 }
 
- 
 const bottomItems = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'bookings', label: 'Bookings', icon: CalendarCheck },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
   { id: 'profile', label: 'Profile', icon: User },
 ];
 

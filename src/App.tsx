@@ -1,5 +1,6 @@
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Home from "@/Pages/LandingPage";
 import UserLayout from "./Pages/Provider/User";
 import AllServicesPage from "./Pages/Services/allServices";
@@ -14,18 +15,52 @@ import ServiceDetailPage from "./Pages/Services/Servicedetail";
 import BookingPage from "./Pages/Services/Booking";
 import { UrlVerification } from "./Auth/UrlVerification";
   import { ToastContainer } from 'react-toastify';
+import RoleGuard from "@/Auth/RoleGuard";
+import SuperAdminLayout from "@/Pages/SuperAdmin/SuperAdminLayout";
+import SuperAdminDashboard from "@/Pages/SuperAdmin/Dashboard";
+import Tenants from "@/Pages/SuperAdmin/Tenants";
+import UsersRoles from "@/Pages/SuperAdmin/UsersRoles";
+import AuditLogs from "@/Pages/SuperAdmin/AuditLogs";
+import SystemSettings from "@/Pages/SuperAdmin/SystemSettings";
+import TrackBooking from "@/Pages/Services/TrackBooking.tsx";
+import { useAuthStore } from "@/store/authStore";
 
 function App() {
+  const { isLoggedIn, hydrateFromStorage } = useAuthStore();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    hydrateFromStorage();
+    setHydrated(true);
+  }, [hydrateFromStorage]);
+
+  if (!hydrated) {
+    return null;
+  }
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/user/*" element={<UserLayout />} />
+        <Route path="/superadmindashboard" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/superadmin" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/super-admin-dashboard" element={<Navigate to="/super-admin/dashboard" replace />} />
+      
+        <Route path="/" element={isLoggedIn ? <Navigate to="/provider" replace /> : <Home />} />
+        {/* Provider Routes */}
+        <Route
+          path="/provider/*"
+          element={
+            <RoleGuard requiredRoles={["provider", "user"]} fallback="/">
+              <UserLayout />
+            </RoleGuard>
+          }
+        />
+        {/* Backward compatibility redirect from /user to /provider */}
+        <Route path="/user/*" element={<Navigate to="/provider" replace />} />
         <Route path="/all-services" element={<AllServicesPage />} />
          <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/services/:id/booking" element={<BookingPage />} />
+          <Route path="/track-booking/:bookingId" element={<TrackBooking />} />
            <Route path="/finalize-registration" element={<UrlVerification/>}/>
 
         {/* Admin Routes */}
@@ -37,6 +72,35 @@ function App() {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="bookings" element={<Bookings />} />
+        </Route>
+
+        {/* Super Admin Routes (full access) */}
+        <Route
+          path="/super-admin"
+          element={
+            <RoleGuard requiredRoles={["superadmin"]} fallback="/">
+              <SuperAdminLayout />
+            </RoleGuard>
+          }
+        >
+          <Route index element={<SuperAdminDashboard />} />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="tenants" element={<Tenants />} />
+          <Route path="services" element={<Services />} />
+          <Route path="users" element={<UsersRoles />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="system-settings" element={<SystemSettings />} />
+        </Route>
+
+        {/* Super Admin Test Routes (unguarded, for QA only) */}
+        <Route path="/super-admin-test" element={<SuperAdminLayout />}>
+          <Route index element={<SuperAdminDashboard />} />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="tenants" element={<Tenants />} />
+          <Route path="services" element={<Services />} />
+          <Route path="users" element={<UsersRoles />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="system-settings" element={<SystemSettings />} />
         </Route>
       </Routes>
       <ToastContainer/>
