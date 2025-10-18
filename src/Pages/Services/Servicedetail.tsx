@@ -123,7 +123,46 @@ export default function ServiceDetailPage() {
     return { rating };
   });
   const avgRating = calculateAvgRating(reviewsTyped);
-  const serviceOptions = service.options || [{ id: 1, name: "Default", price: service.price }];
+  type Option = { id: number | string; name: string; price: number; description?: string };
+  const rawOptions = (service as { options?: unknown }).options;
+  const serviceOptions: Option[] = Array.isArray(rawOptions)
+    ? (rawOptions as unknown[]).map((o, idx) => ({
+        id: (o as { id?: number | string }).id ?? idx + 1,
+        name: String((o as { name?: unknown }).name ?? `Option ${idx + 1}`),
+        price: Number((o as { price?: unknown }).price ?? 0),
+        description:
+          (o as { description?: unknown }).description !== undefined
+            ? String((o as { description?: unknown }).description as unknown)
+            : undefined,
+      }))
+    : [
+        {
+          id: 1,
+          name: "Default",
+          price: Number((service as { price?: unknown }).price ?? 0),
+        },
+      ];
+
+  const typedService = {
+    id: (service as { id?: number | string }).id,
+    service_id: (service as { service_id?: number | string }).service_id,
+    type: (service as { type?: string }).type,
+    tags: Array.isArray((service as { tags?: unknown }).tags)
+      ? ((service as { tags?: string[] }).tags as string[])
+      : undefined,
+    title: String((service as { title?: unknown }).title ?? ""),
+    price: Number((service as { price?: unknown }).price ?? (serviceOptions[0]?.price ?? 0)),
+    reviews: Array.isArray((service as { reviews?: unknown }).reviews)
+      ? ((service as { reviews?: unknown[] }).reviews as unknown[])
+      : [],
+    description:
+      typeof (service as { description?: unknown }).description === "string"
+        ? ((service as { description?: string }).description as string)
+        : undefined,
+    whatsIncluded: Array.isArray((service as { whatsIncluded?: unknown }).whatsIncluded)
+      ? ((service as { whatsIncluded?: string[] }).whatsIncluded as string[])
+      : [],
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
@@ -148,10 +187,10 @@ export default function ServiceDetailPage() {
 
         <div className="lg:col-span-5">
           <ServiceInfo
-            service={service}
+            service={typedService}
             serviceOptions={serviceOptions}
             selectedOption={selectedOption}
-            setSelectedOption={setSelectedOption}
+            setSelectedOption={(id) => setSelectedOption(Number(id))}
             avgRating={avgRating}
           />
         </div>
