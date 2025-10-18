@@ -25,7 +25,7 @@ export default function ServiceDetailPage() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/api/services/${id}`);
+        const res = await api.get(`/api/services/services/${id}`);
         
         // Handle different response structures
         const data: Record<string, unknown> = (res.data.service || res.data.data || res.data) as Record<string, unknown>;
