@@ -5,7 +5,7 @@ import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/ui/select";
 import { Badge } from "@/ui/badge";
-import { Mail, Shield, Building2, CheckCircle2 } from "lucide-react";
+import { Mail, Shield, CheckCircle2 } from "lucide-react";
 
 interface InviteUserModalProps {
   onInvited?: (payload: { email: string; role: "user" | "provider" | "admin" | "superadmin"; tenant?: string }) => void;
@@ -71,7 +71,10 @@ export default function InviteUserModal({ onInvited, triggerClassName }: InviteU
 
             <div className="space-y-2">
               <Label>Role</Label>
-              <Select value={role} onValueChange={(v) => setRole(v as any)}>
+              <Select
+                value={role}
+                onValueChange={(v: "user" | "provider" | "admin" | "superadmin") => setRole(v)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>

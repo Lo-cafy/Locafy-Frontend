@@ -9,7 +9,6 @@ import FeaturedServices from "@/Components/ServiceSection";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/ui/button";
 import { useAuthStore } from "@/store/authStore";
-import GoogleLoginButton from "@/Auth/Google";
 
 function Home() {
   const [loading, setLoading] = useState(true);
