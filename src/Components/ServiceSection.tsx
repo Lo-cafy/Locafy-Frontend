@@ -23,7 +23,7 @@ const ServiceCard = ({
 
   return (
     <div
-      onClick={() => navigate(`/services/${id}`)}
+      onClick={() => navigate(`/services/services/${id}`)}
       className="cursor-pointer group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
       <div className="relative h-48 overflow-hidden">

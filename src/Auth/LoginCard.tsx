@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { isAxiosError } from "axios";
 import { Input } from "@/ui/input";
 import { Button } from "@/ui/button";
 import { Eye, EyeOff } from "lucide-react";
@@ -35,57 +34,27 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
     setError("");
 
     try {
-      const resp = await api.post("/Auth/login", loginData);
-      const data = resp.data as Record<string, any>;
-
-      const isSuccess = resp.status === 200 && (data.success === true || data.sucess === true || !!data.user);
-
-      if (isSuccess && data.user) {
-        toast.success("Login successful");
-        const rawRole =
-          data.user.role ?? data.role ?? data.user.roles?.[0] ?? data.roles?.[0] ?? "user";
-        const roleStr = String(rawRole || "user").toLowerCase();
-        const mappedRole: "user" | "provider" | "admin" | "superadmin" =
-          roleStr === "provider"
-            ? "provider"
-            : roleStr === "admin"
-            ? "admin"
-            : roleStr === "superadmin"
-            ? "superadmin"
-            : "user";
-
+      
+      const response = (await api.post("/Auth/login",loginData)).data;
+    if(response.sucess){
+      toast.success("Login successful")
         const userData = {
-          id: data.user.userId || data.user.email,
-          name: `${data.firstname ?? data.user.firstname ?? ""} ${data.lastname ?? data.user.lastname ?? ""}`.trim(),
-          email: data.user.email,
-          role: mappedRole,
+          id: response.user.userId || response.user.email, 
+          name: `${response.firstname} ${response.lastname}`,
+          email: response.user.email,
         };
-        setUser(userData);  
-        const destination = mappedRole === "provider" ? "/provider" : "/all-services";
-        console.info("Login successful for:", userData.email, "role:", mappedRole, "->", destination);
-        navigate(destination);
+         setUser(userData); 
+         navigate("/all-services")
+
       } else {
-        console.warn("Login rejected:", data);
-        toast.error(String(data.message || "Invalid email or password"));
+        console.log(response);
+        
+        toast.error(response.message)
       }
     } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        const status = error.response?.status;
-        const apiMsg = (error.response?.data as any)?.message;
-        if (status === 401) {
-          setError("Invalid email or password");
-          toast.error("Invalid email or password");
-        } else {
-          setError(apiMsg || error.message || "Login failed. Please try again.");
-          toast.error(apiMsg || "Login failed. Please try again.");
-        }
-        console.error("Login error (axios):", { status, data: error.response?.data });
-      } else {
-        const message = error instanceof Error ? error.message : "Login failed. Please try again.";
-        setError(message);
-        toast.error(message);
-        console.error("Login error:", error);
-      }
+      const message = error instanceof Error ? error.message : "Login failed. Please try again.";
+      setError(message);
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
