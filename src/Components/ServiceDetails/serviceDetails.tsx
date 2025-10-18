@@ -3,16 +3,47 @@
 import { CheckCircle, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+type Id = string | number;
+
+interface ServiceOption {
+  id: Id;
+  name: string;
+  price: number;
+  description?: string;
+}
+
+interface Service {
+  id?: Id;
+  service_id?: Id;
+  type?: string;
+  tags?: string[];
+  title: string;
+  price: number;
+  reviews?: unknown[];
+  description?: string;
+  whatsIncluded?: string[];
+}
+
+interface Props {
+  service: Service;
+  serviceOptions: ServiceOption[];
+  selectedOption: Id;
+  setSelectedOption: (id: Id) => void;
+  avgRating: number;
+}
+
 export default function ServiceInfo({
   service,
   serviceOptions,
   selectedOption,
   setSelectedOption,
   avgRating,
-}: any) {
+}: Props) {
   const navigate = useNavigate();
   const price =
-    serviceOptions.find((o: any) => o.id === selectedOption)?.price ?? service.price;
+    serviceOptions.find((o: ServiceOption) => o.id === selectedOption)?.price ?? service.price;
+
+  const whatsIncluded = service.whatsIncluded ?? [];
 
   return (
     <div className="space-y-4">
@@ -48,7 +79,7 @@ export default function ServiceInfo({
 
       {/* Options */}
       <div className="space-y-2">
-        {serviceOptions.map((o: any) => (
+        {serviceOptions.map((o: ServiceOption) => (
           <div
             key={o.id}
             className={`p-3 rounded-lg border cursor-pointer transition ${
@@ -69,9 +100,9 @@ export default function ServiceInfo({
       {service.description && <p className="text-gray-700 text-sm leading-relaxed">{service.description}</p>}
 
       {/* What's Included */}
-      {service.whatsIncluded?.length > 0 && (
+      {whatsIncluded.length > 0 && (
         <ul className="text-sm space-y-1">
-          {service.whatsIncluded.map((i: string, idx: number) => (
+          {whatsIncluded.map((i: string, idx: number) => (
             <li key={idx} className="flex items-center gap-1">
               <CheckCircle size={14} className="text-green-500" /> {i}
             </li>
