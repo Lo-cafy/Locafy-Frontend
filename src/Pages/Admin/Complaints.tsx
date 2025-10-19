@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/card';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Badge } from '@/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
 import { 
   Search, 
-  Filter, 
   MoreVertical, 
   AlertTriangle, 
-  CheckCircle, 
   Clock, 
   XCircle,
   MessageSquare,
   Phone,
-  Mail,
   Calendar,
   User,
   FileText,
@@ -63,7 +58,7 @@ const Complaints: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  const [selectedComplaint, setSelectedComplaint] = useState<string | null>(null);
+  const [, setSelectedComplaint] = useState<string | null>(null);
 
   // Mock data - replace with actual API calls
   const complaints: Complaint[] = [
