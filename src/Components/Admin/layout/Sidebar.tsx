@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutGrid, Users, Settings, Calendar, BarChart, 
-  Package, AlignJustify
+  Package, AlignJustify, MessageSquare, AlertTriangle
 } from 'lucide-react';
 
 interface NavItemData {
@@ -25,6 +25,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onItemClick }) => {
     { id: '/admin/users', icon: Users, label: 'Users', badge: '2.4k' },
     { id: '/admin/services', icon: AlignJustify, label: 'Services' },
     { id: '/admin/bookings', icon: Calendar, label: 'Bookings', badge: '12' },
+    { id: '/admin/chat', icon: MessageSquare, label: 'Chat', badge: '4' },
+    { id: '/admin/complaints', icon: AlertTriangle, label: 'Complaints', badge: '23' },
     { id: '/admin/reports', icon: BarChart, label: 'Analytics' },
     { id: '/admin/settings', icon: Settings, label: 'Settings' },
   ];

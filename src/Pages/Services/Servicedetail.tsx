@@ -27,7 +27,7 @@ export default function ServiceDetailPage() {
         setLoading(true);
         const res = await api.get(`/api/services/services/${id}`);
         
-        // Handle different response structures
+       
         const data: Record<string, unknown> = (res.data.service || res.data.data || res.data) as Record<string, unknown>;
         
         if (!data) {
@@ -36,7 +36,7 @@ export default function ServiceDetailPage() {
           return;
         }
 
-        // Use service_id instead of id for photo API call
+     
         const serviceId = (data as { service_id?: number; id?: number }).service_id || (data as { id?: number }).id;
         
         if (!serviceId) {
@@ -45,12 +45,12 @@ export default function ServiceDetailPage() {
           return;
         }
 
-        // Fetch service photos
+      
         const photoRes = await api.get(
           `/api/photoservices/${serviceId}/photos`
         );
         
-        // Handle different photo response structures
+        
         let photos: Array<Record<string, unknown>> = [];
         if (photoRes.data.data && Array.isArray(photoRes.data.data.photos)) {
           photos = photoRes.data.data.photos as Array<Record<string, unknown>>;
@@ -62,7 +62,7 @@ export default function ServiceDetailPage() {
         
         (data as Record<string, unknown>).photos = photos;
 
-        // Fetch related services
+        
         const categoryId = (data as { category_id?: number }).category_id;
         if (categoryId) {
           try {
@@ -70,7 +70,7 @@ export default function ServiceDetailPage() {
               `/api/services/category/${categoryId}`
             );
             
-            // Handle different related services response structures
+           
             let relatedServices: unknown[] = [];
             if (relatedRes.data.services && Array.isArray(relatedRes.data.services)) {
               relatedServices = relatedRes.data.services;
@@ -80,7 +80,7 @@ export default function ServiceDetailPage() {
               relatedServices = relatedRes.data.data;
             }
             
-            // Filter out the current service from related services
+          
             (data as Record<string, unknown>).relatedServices = relatedServices.filter((s: unknown) => {
               const obj = s as { service_id?: number; id?: number };
               return (obj.service_id || obj.id) !== serviceId;
@@ -165,36 +165,44 @@ export default function ServiceDetailPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
-      {/* Navigation */}
-      <section className="flex items-center mb-4">
-        <button
-          className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="mr-2" size={20} /> Back to Services
-        </button>
-        <h1 className="ml-auto text-xl sm:text-2xl font-bold text-gray-900">
-          {String((service as { title?: string }).title ?? "")}
-        </h1>
-      </section>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+        
+        <section className="flex items-center justify-between mb-6">
+          <button
+            className="flex items-center gap-3 text-emerald-600 hover:text-emerald-700 transition-all duration-200 font-medium bg-white/80 backdrop-blur-sm px-5 py-3 rounded-xl shadow-sm border border-emerald-100 hover:shadow-md"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Services</span>
+          </button>
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-emerald-100 px-6 py-3">
+            <h1 className="text-xl sm:text-2xl font-bold text-emerald-900">
+              {String((service as { title?: string }).title ?? "")}
+            </h1>
+          </div>
+        </section>
 
-      {/* Main Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-7">
-          <ImageCarousel images={Array.isArray((service as { photos?: unknown }).photos) ? ((service as { photos?: Array<{ photo_url?: string; url?: string }> }).photos as Array<{ photo_url?: string; url?: string }>).map(p => String(p.photo_url ?? p.url ?? "")) : []} />
-        </div>
+        
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-7">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100 overflow-hidden">
+              <ImageCarousel images={Array.isArray((service as { photos?: unknown }).photos) ? ((service as { photos?: Array<{ photo_url?: string; url?: string }> }).photos as Array<{ photo_url?: string; url?: string }>).map(p => String(p.photo_url ?? p.url ?? "")) : []} />
+            </div>
+          </div>
 
-        <div className="lg:col-span-5">
-          <ServiceInfo
-            service={typedService}
-            serviceOptions={serviceOptions}
-            selectedOption={selectedOption}
-            setSelectedOption={(id) => setSelectedOption(Number(id))}
-            avgRating={avgRating}
-          />
-        </div>
-      </section>
+          <div className="lg:col-span-5">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100 p-6">
+              <ServiceInfo
+                service={typedService}
+                serviceOptions={serviceOptions}
+                selectedOption={selectedOption}
+                setSelectedOption={(id) => setSelectedOption(Number(id))}
+                avgRating={avgRating}
+              />
+            </div>
+          </div>
+        </section>
 
       <ReviewSection
         reviews={service.reviews || []}
@@ -204,7 +212,8 @@ export default function ServiceDetailPage() {
 
       <RelatedServices related={Array.isArray((service as { relatedServices?: unknown }).relatedServices) ? ((service as { relatedServices?: unknown[] }).relatedServices as unknown[]) : []} />
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 }

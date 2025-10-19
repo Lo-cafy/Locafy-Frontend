@@ -11,6 +11,8 @@ import Services from "@/Pages/Admin/Services";
 import Reports from "@/Pages/Admin/Reports";
 import Settings from "@/Pages/Admin/Settings";
 import Bookings from "@/Pages/Admin/Bookings";
+import Chat from "@/Pages/Admin/Chat";
+import Complaints from "@/Pages/Admin/Complaints";
 import ServiceDetailPage from "./Pages/Services/Servicedetail";
 import BookingPage from "./Pages/Services/Booking";
 import { UrlVerification } from "./Auth/UrlVerification";
@@ -22,7 +24,10 @@ import Tenants from "@/Pages/SuperAdmin/Tenants";
 import UsersRoles from "@/Pages/SuperAdmin/UsersRoles";
 import AuditLogs from "@/Pages/SuperAdmin/AuditLogs";
 import SystemSettings from "@/Pages/SuperAdmin/SystemSettings";
+import SuperAdminChat from "@/Pages/SuperAdmin/SuperAdminChat";
+import ComplaintsReport from "@/Pages/SuperAdmin/ComplaintsReport";
 import TrackBooking from "@/Pages/Services/TrackBooking.tsx";
+import MyBookingsPage from "@/Pages/Services/MyBookings";
 import { useAuthStore } from "@/store/authStore";
 
 function App() {
@@ -58,6 +63,7 @@ function App() {
         {/* Backward compatibility redirect from /user to /provider */}
         <Route path="/user/*" element={<Navigate to="/provider" replace />} />
         <Route path="/all-services" element={<AllServicesPage />} />
+        <Route path="/my-bookings" element={<MyBookingsPage />} />
          <Route path="/services/:id" element={<ServiceDetailPage />} />
           <Route path="/services/:id/booking" element={<BookingPage />} />
           <Route path="/track-booking/:bookingId" element={<TrackBooking />} />
@@ -69,9 +75,11 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="services" element={<Services />} />
+          <Route path="bookings" element={<Bookings />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="complaints" element={<Complaints />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="bookings" element={<Bookings />} />
         </Route>
 
         {/* Super Admin Routes (full access) */}
@@ -88,6 +96,8 @@ function App() {
           <Route path="tenants" element={<Tenants />} />
           <Route path="services" element={<Services />} />
           <Route path="users" element={<UsersRoles />} />
+          <Route path="chat" element={<SuperAdminChat />} />
+          <Route path="complaints" element={<ComplaintsReport />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="system-settings" element={<SystemSettings />} />
         </Route>
@@ -99,6 +109,8 @@ function App() {
           <Route path="tenants" element={<Tenants />} />
           <Route path="services" element={<Services />} />
           <Route path="users" element={<UsersRoles />} />
+          <Route path="chat" element={<SuperAdminChat />} />
+          <Route path="complaints" element={<ComplaintsReport />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="system-settings" element={<SystemSettings />} />
         </Route>

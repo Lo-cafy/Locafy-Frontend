@@ -11,7 +11,7 @@ class AdminService {
     try {
       const response = await fetch(`${this.baseUrl}/stats`);
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch dashboard stats');
     }
   }
@@ -31,7 +31,7 @@ class AdminService {
 
       const response = await fetch(`${this.baseUrl}/users?${queryParams}`);
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch users');
     }
   }
@@ -46,7 +46,7 @@ class AdminService {
         body: JSON.stringify({ isActive }),
       });
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to update user status');
     }
   }
@@ -64,7 +64,7 @@ class AdminService {
 
       const response = await fetch(`${this.baseUrl}/services?${queryParams}`);
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch services');
     }
   }
@@ -75,7 +75,7 @@ class AdminService {
         method: 'POST',
       });
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to approve service');
     }
   }
@@ -90,12 +90,12 @@ class AdminService {
         body: JSON.stringify({ reason }),
       });
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to reject service');
     }
   }
 
-  async updateSettings(settings: any): Promise<ApiResponse<any>> {
+  async updateSettings(settings: Record<string, unknown>): Promise<ApiResponse<Record<string, unknown>>> {
     try {
       const response = await fetch(`${this.baseUrl}/settings`, {
         method: 'PUT',
@@ -105,7 +105,7 @@ class AdminService {
         body: JSON.stringify(settings),
       });
       return await response.json();
-    } catch (error) {
+    } catch {
       throw new Error('Failed to update settings');
     }
   }

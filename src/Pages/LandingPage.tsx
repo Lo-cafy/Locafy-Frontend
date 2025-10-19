@@ -48,32 +48,50 @@ function Home() {
   }
 
   return (
-    <div  className="bg-gradient-to-br from-emerald-50 to-green-0 min-h-screen pt-20">
-      
+    <div className="bg-gradient-to-br from-emerald-50 via-white to-green-50 min-h-screen">
       <Navbar />
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col sm:flex-row gap-2 items-end">
-        <span className="text-xs text-gray-600 px-2 py-1 bg-white/70 rounded">Just for testing</span>
-        <Button 
-          onClick={handleProviderDashboardClick}
-          variant="outline" 
-          className="bg-white/80"
-        >
-          Provider Dashboard
-        </Button>
-        <Link to="/admin/dashboard">
-          <Button variant="outline" className="bg-white/80">Admin Dashboard</Button>
-        </Link>
-        <Link to="/super-admin-test/dashboard">
-          <Button className="bg-emerald-600 text-white hover:bg-emerald-700">Super Admin Dashboard</Button>
+      
+      {/* Professional Test Dashboard Access */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-end">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-emerald-100 p-4">
+          <p className="text-xs text-emerald-700 font-medium mb-3 text-center">Development Access</p>
+          <div className="flex flex-col gap-2">
+            <Button 
+              onClick={handleProviderDashboardClick}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all duration-200 text-sm px-4 py-2"
+            >
+              Provider Dashboard
+            </Button>
+            <Link to="/admin/dashboard">
+              <Button variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-sm transition-all duration-200 text-sm px-4 py-2 w-full">
+                Admin Dashboard
+              </Button>
+            </Link>
+            <Link to="/super-admin-test/dashboard">
+              <Button className="bg-emerald-800 hover:bg-emerald-900 text-white shadow-md transition-all duration-200 text-sm px-4 py-2">
+                Super Admin
+              </Button>
+            </Link>
+          </div>
+        </div>
+        
+        {/* My Bookings Quick Access */}
+        <Link to="/my-bookings">
+          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg transition-all duration-200 px-6 py-3 rounded-xl font-semibold">
+            My Bookings
+          </Button>
         </Link>
       </div>
-      <HeroSection />
-      <BrowseCategories />
-      <WhyChooseLocafy />
-      <FeaturedServices />
-      <TrustedByThousands />
-      <Footer />
 
+      {/* Main Content */}
+      <div className="pt-20">
+        <HeroSection />
+        <BrowseCategories />
+        <WhyChooseLocafy />
+        <FeaturedServices />
+        <TrustedByThousands />
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -207,13 +207,21 @@ export default function ServiceListingPage() {
 
         <div className="flex-1 min-w-0">
           <div className="mb-4 sm:mb-6">
-            <button
-              onClick={handleGoBack}
-              className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-3 sm:mb-4 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="font-medium">Back</span>
-            </button>
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <button
+                onClick={handleGoBack}
+                className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                <span className="font-medium">Back</span>
+              </button>
+              <button
+                onClick={() => window.location.href = '/my-bookings'}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+              >
+                My Bookings
+              </button>
+            </div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
               Services
             </h1>

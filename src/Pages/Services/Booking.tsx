@@ -37,6 +37,14 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(!serviceData);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingId, setBookingId] = useState<string>("");
+  const [bookingSummary, setBookingSummary] = useState<{
+    serviceName: string;
+    date: string;
+    time: string;
+    address: string;
+    total: number;
+  } | null>(null);
   
   // Main booking state
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -143,6 +151,16 @@ export default function BookingPage() {
     // Simulate booking API call with all booking data
     console.log("Booking data:", bookingData);
     setTimeout(() => {
+      const pricing = calculateTotal();
+      const newId = String(Date.now());
+      setBookingId(newId);
+      setBookingSummary({
+        serviceName: String((service as { title?: unknown }).title ?? "Your Service"),
+        date: bookingData.selectedDate,
+        time: bookingData.selectedTimeSlot || "TBD",
+        address: bookingData.selectedAddress || "Saved address",
+        total: Number(pricing.total) || 0,
+      });
       setBookingSuccess(true);
       setIsBooking(false);
     }, 2000);
@@ -153,26 +171,28 @@ export default function BookingPage() {
 
   if (bookingSuccess) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-black mb-4">Booking Confirmed!</h1>
-          <p className="text-gray-600 mb-6">Your service has been successfully booked. You'll receive a confirmation email shortly.</p>
-          <div className="space-y-3">
-            <button 
-              onClick={() => navigate("/user/dashboard")}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-            >
-              Track Booking
-            </button>
-            <button 
-              onClick={() => navigate("/all-services")}
-              className="w-full bg-white text-green-600 border border-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
-            >
-              Book Another Service
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-lg">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-emerald-100 p-8 sm:p-12">
+            <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <Check className="w-12 h-12 text-white" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-emerald-900 mb-4">Booking Confirmed!</h1>
+            <p className="text-emerald-700/80 mb-8 text-lg leading-relaxed">Your service has been successfully booked. You'll receive a confirmation email shortly with all the details.</p>
+            <div className="space-y-4">
+              <button 
+                onClick={() => bookingId && navigate(`/track-booking/${bookingId}`, { state: { booking: bookingSummary } })}
+                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Track Your Booking
+              </button>
+              <button 
+                onClick={() => navigate("/all-services")}
+                className="w-full bg-white text-emerald-600 border-2 border-emerald-200 py-4 rounded-xl font-semibold hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Book Another Service
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -182,19 +202,19 @@ export default function BookingPage() {
   const pricing = calculateTotal();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
+        <div className="flex items-center justify-between bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-100">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-3 text-emerald-600 hover:text-emerald-700 transition-all duration-200 font-medium bg-emerald-50 px-4 py-2 rounded-xl hover:bg-emerald-100"
           >
-            <ArrowLeft className="mr-2" size={20} />
-            Back to Service
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Service</span>
           </button>
-          <h1 className="text-xl font-bold text-black">Book Service</h1>
-          <div className="w-24"></div>
+          <h1 className="text-2xl font-bold text-emerald-900">Book Your Service</h1>
+          <div className="w-32"></div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
@@ -246,16 +266,16 @@ export default function BookingPage() {
         </div>
 
         {/* Sticky Bottom CTA */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-emerald-200 p-4 shadow-2xl">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="hidden sm:block">
-              <div className="text-sm text-gray-600">Estimated completion: Within 48 hours</div>
-              <div className="text-lg font-bold text-green-600">${pricing.total.toFixed(2)}</div>
+              <div className="text-sm text-emerald-600 font-medium">Estimated completion: Within 48 hours</div>
+              <div className="text-2xl font-bold text-emerald-700">${pricing.total.toFixed(2)}</div>
             </div>
             <button
               onClick={handleBooking}
               disabled={!bookingData.selectedTimeSlot || isBooking}
-              className="w-full sm:w-auto bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-10 py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
             >
               {isBooking ? (
                 <>

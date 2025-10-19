@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutGrid, Users, Building2, Wrench, FileText, Settings } from "lucide-react";
+import { LayoutGrid, Users, Building2, Wrench, FileText, Settings, MessageSquare, AlertTriangle } from "lucide-react";
 
 export default function SuperAdminSidebar() {
   const linkBase = "text-gray-300 hover:text-white flex items-center gap-3 px-4 py-2 rounded-md";
@@ -24,6 +24,14 @@ export default function SuperAdminSidebar() {
         <NavLink to="services" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : ""}`}>
           <Wrench className="w-5 h-5" />
           <span>Services</span>
+        </NavLink>
+        <NavLink to="chat" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : ""}`}>
+          <MessageSquare className="w-5 h-5" />
+          <span>Admin Chat</span>
+        </NavLink>
+        <NavLink to="complaints" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : ""}`}>
+          <AlertTriangle className="w-5 h-5" />
+          <span>Complaints Report</span>
         </NavLink>
         <NavLink to="audit-logs" className={({ isActive }) => `${linkBase} ${isActive ? activeBase : ""}`}>
           <FileText className="w-5 h-5" />

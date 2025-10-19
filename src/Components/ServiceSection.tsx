@@ -24,7 +24,7 @@ const ServiceCard = ({
   return (
     <div
       onClick={() => navigate(`/services/${id}`)}
-      className="cursor-pointer group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="cursor-pointer group bg-white/90 backdrop-blur-sm rounded-2xl border border-emerald-100 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
     >
       <div className="relative h-48 overflow-hidden">
         <img
@@ -183,20 +183,20 @@ export default function FeaturedServices() {
     );
 
   return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 bg-slate-50">
-      <div className="max-w-7xl mx-auto text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+    <section className="py-20 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-emerald-50 via-white to-green-50">
+      <div className="max-w-7xl mx-auto text-center mb-16">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-sm">
           <Sparkles className="h-4 w-4" /> Premium Services
         </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-emerald-900 mb-6">
           Featured Local Services
         </h2>
-        <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-          Discover hand-picked professionals with top ratings and customer satisfaction.
+        <p className="text-emerald-700/80 text-xl max-w-3xl mx-auto leading-relaxed">
+          Discover hand-picked professionals with exceptional ratings and proven customer satisfaction.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         {services.map((s) => (
           <ServiceCard
             key={s.id}
@@ -214,7 +214,7 @@ export default function FeaturedServices() {
       <div className="text-center">
         <button
           onClick={() => navigate("/all-services")}
-          className="bg-white text-emerald-600 border border-emerald-600 px-8 py-3 rounded-xl hover:bg-emerald-50 transition-all font-semibold"
+          className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-10 py-4 rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           View All Services
         </button>

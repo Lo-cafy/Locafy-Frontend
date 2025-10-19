@@ -103,6 +103,12 @@ const Reports: React.FC = () => {
             >
               Bookings
             </TabsTrigger>
+            <TabsTrigger 
+              value="complaints" 
+              className="flex-1 data-[state=active]:bg-gray-700/50 data-[state=active]:text-white text-gray-400 px-4 py-2"
+            >
+              Complaints
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -121,7 +127,38 @@ const Reports: React.FC = () => {
               <CardDescription className="text-gray-400">Service performance metrics</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Add services content here */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="bg-gray-700/30 p-4 rounded-lg">
+                  <h4 className="text-white font-semibold mb-2">Top Services</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-300">Plumbing</span>
+                      <span className="text-green-400">245 bookings</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-300">Electrical</span>
+                      <span className="text-green-400">198 bookings</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-300">Cleaning</span>
+                      <span className="text-green-400">156 bookings</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg">
+                  <h4 className="text-white font-semibold mb-2">Service Ratings</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-300">Average Rating</span>
+                      <span className="text-yellow-400">4.7/5</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-300">Total Reviews</span>
+                      <span className="text-blue-400">1,234</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -133,7 +170,136 @@ const Reports: React.FC = () => {
               <CardDescription className="text-gray-400">Booking trends and statistics</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Add bookings content here */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-green-400">1,234</h4>
+                  <p className="text-gray-300 text-sm">Total Bookings</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-blue-400">89%</h4>
+                  <p className="text-gray-300 text-sm">Completion Rate</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-yellow-400">45</h4>
+                  <p className="text-gray-300 text-sm">Pending</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-red-400">12</h4>
+                  <p className="text-gray-300 text-sm">Cancelled</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="complaints">
+          <Card className="bg-gray-800/30 backdrop-blur-xl border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-white text-lg sm:text-xl">Complaints & Issues</CardTitle>
+              <CardDescription className="text-gray-400">Customer complaints and resolution tracking</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-red-400">23</h4>
+                  <p className="text-gray-300 text-sm">Open Complaints</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-green-400">156</h4>
+                  <p className="text-gray-300 text-sm">Resolved</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-yellow-400">8</h4>
+                  <p className="text-gray-300 text-sm">In Progress</p>
+                </div>
+                <div className="bg-gray-700/30 p-4 rounded-lg text-center">
+                  <h4 className="text-2xl font-bold text-blue-400">87%</h4>
+                  <p className="text-gray-300 text-sm">Resolution Rate</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-white font-semibold">Recent Complaints</h4>
+                <div className="space-y-3">
+                  <div className="bg-gray-700/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h5 className="text-white font-medium">Service Quality Issue</h5>
+                        <p className="text-gray-400 text-sm">Customer: John Doe</p>
+                      </div>
+                      <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full">Open</span>
+                    </div>
+                    <p className="text-gray-300 text-sm mb-2">Provider arrived late and work quality was below expectations.</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Provider: Mike Wilson</span>
+                      <span>2 hours ago</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-700/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h5 className="text-white font-medium">Billing Dispute</h5>
+                        <p className="text-gray-400 text-sm">Customer: Sarah Johnson</p>
+                      </div>
+                      <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">In Progress</span>
+                    </div>
+                    <p className="text-gray-300 text-sm mb-2">Overcharged for additional services not requested.</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Provider: Emma Davis</span>
+                      <span>5 hours ago</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-700/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h5 className="text-white font-medium">No Show</h5>
+                        <p className="text-gray-400 text-sm">Customer: Alex Brown</p>
+                      </div>
+                      <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Resolved</span>
+                    </div>
+                    <p className="text-gray-300 text-sm mb-2">Provider did not show up for scheduled appointment.</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Provider: John Smith</span>
+                      <span>1 day ago</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h4 className="text-white font-semibold mb-3">Complaint Categories</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="bg-gray-700/30 p-4 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Service Quality</span>
+                        <span className="text-red-400 font-semibold">45%</span>
+                      </div>
+                      <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+                        <div className="bg-red-400 h-2 rounded-full" style={{ width: '45%' }}></div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700/30 p-4 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Billing Issues</span>
+                        <span className="text-yellow-400 font-semibold">25%</span>
+                      </div>
+                      <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+                        <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '25%' }}></div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700/30 p-4 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">No Show</span>
+                        <span className="text-orange-400 font-semibold">20%</span>
+                      </div>
+                      <div className="w-full bg-gray-600 rounded-full h-2 mt-2">
+                        <div className="bg-orange-400 h-2 rounded-full" style={{ width: '20%' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
