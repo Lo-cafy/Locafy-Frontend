@@ -1,78 +1,73 @@
-import { useState } from "react";
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Save, Edit2 } from "lucide-react";
+import { Save, Edit2, X, Landmark } from "lucide-react";
+import { Alert } from "@/ui/AlertProps";
+import BankForm from "./BankForm";
+import { useBankAccount } from "./useBankAccount";
 
 export default function BankDetails() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [bankName, setBankName] = useState("HDFC Bank");
-  const [accountNumber, setAccountNumber] = useState("1234567890");
-  const [ifscCode, setIfscCode] = useState("HDFC0001234");
+  const {
+    data,
+    account,
+    edit,
+    loading,
+    err,
+    success,
+    errors,
+    change,
+    submit,
+    handleCancel,
+    setEdit,
+  } = useBankAccount();
 
   return (
-    <Card className="bg-white shadow-sm border border-gray-100 p-6">
+    <Card className="bg-white shadow-sm border p-8 rounded-2xl relative">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Bank Account Details
-        </h2>
-        {/* Edit Button */}
-        <Button
-          variant="ghost"
-          onClick={() => setIsEditing(!isEditing)}
-          className="p-1"
-        >
-          <Edit2 className="h-5 w-5 text-gray-600" />
-        </Button>
+        <div className="flex items-center">
+          <Landmark className="h-6 w-6 text-emerald-600 mr-3" />
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">Bank Account Details</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {account
+                ? "Manage your bank account for payouts"
+                : "Add a bank account to receive payouts"}
+            </p>
+          </div>
+        </div>
+        {!edit && account && (
+          <Button size="icon" onClick={() => setEdit(true)} variant="ghost">
+            <Edit2 className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
-      <div className="space-y-6">
-        {/* Bank Name */}
-        <div>
-          <label className="block font-medium text-gray-900 mb-2">Bank Name</label>
-          <Input
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
-            placeholder="Enter bank name"
-            className="bg-gray-50 border-gray-200"
-            readOnly={!isEditing} // make read-only if not editing
-          />
-        </div>
+      {success && <Alert type="success" message={success} />}
+      {err && <Alert type="error" message={err} />}
 
-        {/* Account Number */}
-        <div>
-          <label className="block font-medium text-gray-900 mb-2">Account Number</label>
-          <Input
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
-            placeholder="Enter account number"
-            className="bg-gray-50 border-gray-200"
-            readOnly={!isEditing}
-          />
-        </div>
+      <BankForm data={data} edit={edit} errors={errors} change={change} />
 
-        {/* IFSC Code */}
-        <div>
-          <label className="block font-medium text-gray-900 mb-2">IFSC Code</label>
-          <Input
-            value={ifscCode}
-            onChange={(e) => setIfscCode(e.target.value)}
-            placeholder="Enter IFSC code"
-            className="bg-gray-50 border-gray-200"
-            readOnly={!isEditing}
-          />
-        </div>
-      </div>
-
-      {isEditing && (
-        <div className="mt-8 flex justify-end space-x-3">
-             <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+      {edit && (
+        <div className="mt-8 pt-6 border-t flex justify-end gap-3">
           <Button
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            onClick={() => setIsEditing(false)}
+            variant="outline"
+            onClick={handleCancel}
+            disabled={loading}
+            className="px-6"
           >
-            <Save className="h-4 w-4 mr-2" />
-            Save Bank Details
+            <X className="h-4 w-4 mr-2" />Cancel
+          </Button>
+          <Button
+            onClick={submit}
+            disabled={loading}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6"
+          >
+            {loading ? (
+              "Saving..."
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />Save Bank Details
+              </>
+            )}
           </Button>
         </div>
       )}

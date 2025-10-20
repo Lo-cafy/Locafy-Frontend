@@ -1,167 +1,173 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Save, Shield, Upload, ChevronDown, Check, Edit2 } from "lucide-react";
+import { Edit2, Shield } from "lucide-react";
+import api from "@/Api/baseurl";
+import { FileUpload } from "@/ui/fileupload";
+import { StatusCard } from "./StatusCard";
+import { Alert } from "@/ui/AlertProps";
 
-const proofOptions = [
-  { value: "", label: "-- Select Proof Type --" },
-  { value: "pan", label: "PAN Card" },
-  { value: "aadhaar", label: "Aadhaar Card" },
-  { value: "license", label: "Driving License" }
-];
 
-const statusConfig = {
-  pending: { text: "Pending Verification", class: "bg-yellow-100 text-yellow-700" },
-  verified: { text: "Verified", class: "bg-green-100 text-green-700" },
-  rejected: { text: "Rejected", class: "bg-red-100 text-red-700" }
-};
+type KycStatus = "Pending" | "Verified" | "Rejected";
+type DocumentType = "Passport" | "DriversLicense" | "NationalID";
 
-function Dropdown({ value, onChange, disabled }: { value: string; onChange: (v: string) => void; disabled?: boolean }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const selected = proofOptions.find(o => o.value === value)?.label || "-- Select Proof Type --";
-
-  useEffect(() => {
-    const close = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => !disabled && setOpen(!open)}
-        className={`w-full p-2.5 border border-gray-200 rounded-lg flex justify-between items-center ${
-          disabled ? "bg-gray-100 cursor-not-allowed" : "bg-gray-50"
-        }`}
-      >
-        <span className={value ? "text-gray-900" : "text-gray-500"}>{selected}</span>
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && !disabled && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-          {proofOptions.map(opt => (
-            <div
-              key={opt.value}
-              onClick={() => { onChange(opt.value); setOpen(false); }}
-              className={`px-4 py-2 cursor-pointer flex justify-between items-center hover:bg-gray-50 ${
-                value === opt.value ? "bg-emerald-50 text-emerald-700" : "text-gray-900"
-              }`}
-            >
-              {opt.label}
-              {value === opt.value && <Check className="h-4 w-4 text-emerald-600" />}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+interface KycSubmission {
+  id: number;
+  documentType: DocumentType;
+  documentFrontUrl: string;
+  documentBackUrl?: string;
+  status: KycStatus;
+  submittedAt: string;
+  reviewerNotes?: string;
 }
 
+const docOptions = [
+  { v: "Passport", l: "Passport" },
+  { v: "DriversLicense", l: "Drivers License" },
+  { v: "NationalID", l: "National ID" }
+];
+
 export default function KYC() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [kycType, setKycType] = useState("");
-  const [kycNumber, setKycNumber] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"pending" | "verified" | "rejected">("pending");
+  const [submission, setSubmission] = useState<KycSubmission | null>(null);
+  const [loading, setLoading] = useState(true); // For initial data fetch
+  const [submitting, setSubmitting] = useState(false); // For form submission
+  const [edit, setEdit] = useState(false);
+  const [err, setErr] = useState("");
 
-  const validateNumber = () =>
-    (kycType === "pan" && /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(kycNumber)) ||
-    (kycType === "aadhaar" && /^[0-9]{12}$/.test(kycNumber)) ||
-    (kycType === "license" && /^[A-Z0-9]{6,15}$/.test(kycNumber)) ||
-    true;
+  // Form state
+  const [docType, setDocType] = useState("");
+  const [front, setFront] = useState<File | null>(null);
+  const [back, setBack] = useState<File | null>(null);
 
-  const handleSave = () => {
-    if (!kycType || !kycNumber || !file) return alert("Please complete all fields before saving.");
-    if (!validateNumber()) return alert("Please enter a valid proof number.");
+  const fetchSubmissions = async () => {
     setLoading(true);
-    setTimeout(() => { setStatus("verified"); setLoading(false); setIsEditing(false); }, 1500);
+    try {
+      const res = await api.get("/kyc/my-submissions",{withCredentials:true});
+      // The API returns an array, we'll take the most recent one
+      if (res.data.success && res.data.data.length > 0) {
+        setSubmission(res.data.data[0]);
+      } else {
+        setSubmission(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch KYC status:", error);
+      setErr("Could not load your KYC status.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
+
+  useEffect(() => {
+    if (submission) {
+      setDocType(String(submission.documentType));
+      if (submission.status === "Rejected") {
+        setEdit(true); // Automatically open form if rejected
+      } else {
+        setEdit(false);
+      }
+    } else {
+      setEdit(true); // If no submission exists, open form by default
+    }
+  }, [submission]);
+
+  const submit = async () => {
+    setErr("");
+    if (!docType || !front) {
+      setErr("Document type and front side image are required.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const fd = new FormData();
+      fd.append("DocumentType", docType);
+      fd.append("FrontSide", front);
+      if (back) fd.append("BackSide", back);
+
+      const res = await api.post("/kyc/submit", fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      ,withCredentials:true},);
+
+      if (res.data.success) {
+        await fetchSubmissions(); // Refresh data to show the new "Pending" status
+      }
+    } catch (error) {
+      console.error("Submission failed:", error);
+      setErr("Submission failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  
+  const handleCancel = () => {
+      setEdit(false);
+      setErr('');
+      // Reset files to null
+      setFront(null);
+      setBack(null);
+      // Reset doc type if submission exists
+      if (submission) {
+          setDocType(String(submission.documentType));
+      }
+  }
+
+  if (loading) {
+    return <Card className="p-8"><p>Loading KYC Status...</p></Card>;
+  }
+
+  const showForm = edit || !submission;
+  const isVerified = submission?.status ==="Verified";
+
   return (
-    <Card className="bg-white shadow-sm border p-6 rounded-2xl relative">
-      {/* Edit2 Button */}
-      {!isEditing && (
-        <Button
-          size="icon"
-          onClick={() => setIsEditing(true)}
-          className="absolute top-4 right-4 text-black"
-        >
-          <Edit2 className="h-4 w-4" />
-        </Button>
-      )}
+    <Card className="bg-white shadow-sm border p-8 rounded-2xl relative">
+        {!isVerified && submission && submission.status !== "Rejected" && !edit && (
+             <Button size="icon" onClick={() => setEdit(true)} className="absolute top-6 right-6 hover:bg-gray-100" variant="ghost">
+                <Edit2 className="h-4 w-4 text-gray-600" />
+            </Button>
+        )}
 
-      <h2 className="text-xl font-semibold mb-6">KYC Verification</h2>
-
-      {/* Status */}
-      <div className="mb-6">
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusConfig[status].class}`}>
-          {statusConfig[status].text}
-        </span>
-      </div>
-
-      <div className="space-y-6">
-        {/* Proof Type */}
-        <div>
-          <label className="block font-medium mb-2">Select Proof Type</label>
-          <Dropdown value={kycType} onChange={setKycType} disabled={!isEditing} />
+        <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">KYC Verification</h2>
+            <p className="text-sm text-gray-600">Upload your identity documents for verification</p>
         </div>
+        
+        {err && <Alert type="error" message={err} />}
 
-        {/* Proof Number */}
-        <div>
-          <label className="block font-medium mb-2">Proof Number</label>
-          <Input
-            value={kycNumber}
-            onChange={(e) => setKycNumber(e.target.value.toUpperCase())}
-            placeholder="Enter proof number"
-            className={`border-gray-200 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-gray-50"}`}
-            disabled={!isEditing}
-          />
-          {!validateNumber() && kycNumber && (
-            <p className="text-sm text-red-500 mt-1">Invalid format for {kycType.toUpperCase()}.</p>
-          )}
+        {submission?.status === "Verified" && <StatusCard status="Verified" />}
+        {submission?.status === "Pending" && <StatusCard status="Pending" />}
+        {submission?.status === "Rejected" && <StatusCard status="Rejected" notes={submission.reviewerNotes} />}
+
+        {showForm && !isVerified && (
+            <div className="space-y-6">
+                <select value={docType} onChange={(e) => setDocType(e.target.value)} disabled={submitting} className="w-full px-4 py-3 border border-gray-300 rounded-xl ...">
+                    <option value="">Select your document type</option>
+                    {docOptions.map((d) => <option key={d.v} value={d.v}>{d.l}</option>)}
+                </select>
+
+                <FileUpload file={front} onChange={setFront} label="Front Side" required disabled={submitting} id="front-upload" />
+                <FileUpload file={back} onChange={setBack} label="Back Side" disabled={submitting} id="back-upload" />
+
+                <div className="mt-8 flex justify-end gap-3">
+                    {edit && submission && (
+                         <Button variant="outline" onClick={handleCancel} disabled={submitting} className="px-6">Cancel</Button>
+                    )}
+                    <Button onClick={submit} disabled={submitting || !docType || !front} className="bg-emerald-600 hover:bg-emerald-700 ...">
+"                        {submitting ? 'Submitting...' : submission?.status === "Rejected" ? 'Resubmit for Verification' : 'Submit for Verification'}
+"                    </Button>
+                </div>
+            </div>
+        )}
+        
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-500 flex items-center">
+            <Shield className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+            Your documents are encrypted and will only be used for verification.
+          </p>
         </div>
-
-        {/* File Upload */}
-        <div>
-          <label className="block font-medium mb-2">Upload Proof Document</label>
-          <Input
-            type="file"
-            accept="image/*,application/pdf"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className={`border-gray-200 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-gray-50"}`}
-            disabled={!isEditing}
-          />
-          {file && (
-            <p className="text-sm text-emerald-600 mt-1 flex items-center">
-              <Upload className="h-4 w-4 mr-1" /> {file.name}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Save Button */}
-      {isEditing && (
-        <div className="mt-8 flex justify-end space-x-3">
-            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-          <Button
-            onClick={handleSave}
-            disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
-            {loading ? "Saving..." : (<><Save className="h-4 w-4 mr-2" /> Save KYC Details</>)}
-          </Button>
-        </div>
-      )}
-
-      {/* Security Note */}
-      <p className="text-xs text-gray-500 mt-6 flex items-center">
-        <Shield className="h-3 w-3 mr-1 text-emerald-500" />
-        Your documents are encrypted and stored securely.
-      </p>
     </Card>
   );
 }
