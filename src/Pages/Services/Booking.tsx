@@ -1,7 +1,5 @@
 "use client";
 
-import  { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ServiceSummary from "@/Components/Booking/ServiceSummary";
 import DateAndTimeSelection from "@/Components/Booking/DateAndTimeSelection";
 import AddressAndLocation from "@/Components/Booking/AddressAndLocation";
@@ -9,244 +7,70 @@ import CustomerInformation from "@/Components/Booking/CustomerInformation";
 import ExtrasAndAddons from "@/Components/Booking/ExtrasAndAddons";
 import PaymentMethod from "@/Components/Booking/PaymentMethod";
 import PricingSummary from "@/Components/Booking/PricingSummary";
-import { ArrowLeft, Check } from "lucide-react";
-import { listingApi as api } from "@/Api/baseurl";
-
-export interface BookingData {
-  selectedDate: string;
-  selectedTimeSlot: string;
-  selectedAddress: string;
-  customerInfo: {
-    name: string;
-    phone: string;
-    email: string;
-  };
-  specialInstructions: string;
-  selectedAddons: string[];
-  paymentMethod: string;
-  promoCode: string;
-}
+import BookingHeader from "@/Components/Booking/BookingHeader";
+import BookingSuccess from "@/Components/Booking/BookingSuccess";
+import BookingCTA from "@/Components/Booking/BookingCTA";
+import { useBookingData } from "@/hooks/useBookingData";
+import { useBookingPricing } from "@/hooks/useBookingPricing";
 
 export default function BookingPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const serviceData = location.state?.service;
+  const {
+    service,
+    loading,
+    isBooking,
+    bookingSuccess,
+    bookingData,
+    updateBookingData,
+    updateCustomerInfo,
+    handleBooking
+  } = useBookingData();
 
-  const [service, setService] = useState<Record<string, unknown> | null>(serviceData ?? null);
-  const [loading, setLoading] = useState(!serviceData);
-  const [isBooking, setIsBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingId, setBookingId] = useState<string>("");
-  const [bookingSummary, setBookingSummary] = useState<{
-    serviceName: string;
-    date: string;
-    time: string;
-    address: string;
-    total: number;
-  } | null>(null);
-  
-  // Main booking state
-  const [bookingData, setBookingData] = useState<BookingData>({
-    selectedDate: "",
-    selectedTimeSlot: "",
-    selectedAddress: "home",
-    customerInfo: {
-      name: "John Doe",
-      phone: "+1 234 567 8900",
-      email: "john@example.com"
-    },
-    specialInstructions: "",
-    selectedAddons: [],
-    paymentMethod: "upi",
-    promoCode: ""
-  });
-
-  // Update individual booking data fields
-  const updateBookingData = (field: keyof BookingData, value: BookingData[keyof BookingData]) => {
-    setBookingData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  // Update nested customer info
-  const updateCustomerInfo = (field: string, value: string) => {
-    setBookingData(prev => ({
-      ...prev,
-      customerInfo: {
-        ...prev.customerInfo,
-        [field as keyof BookingData['customerInfo']]: value
-      }
-    }));
-  };
-
-  useEffect(() => {
-    if (!serviceData && id) {
-      const fetchService = async () => {
-        try {
-          setLoading(true);
-          const res = await api.get(`/api/services/${id}`);
-          const data = res.data.service || res.data.data || res.data;
-          setService(data);
-        } catch (err) {
-          console.error("Error fetching service:", err);
-          navigate("/all-services");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchService();
-    }
-  }, [id, serviceData, navigate]);
-
-  useEffect(() => {
-    // Set default date to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    updateBookingData("selectedDate", tomorrow.toISOString().split('T')[0]);
-  }, []);
-
-  const calculateTotal = () => {
-    if (!service) {
-      return {
-        basePrice: 0,
-        addonPrice: 0,
-        expressPrice: 0,
-        subtotal: 0,
-        tax: 0,
-        total: 0
-      };
-    }
-
-    const addons = [
-      { id: "express", name: "Express Delivery", price: 200, description: "Get your service within 24 hours" },
-      { id: "ironing", name: "Ironing Service", price: 100, description: "Professional ironing included" },
-      { id: "eco", name: "Eco-friendly Detergent", price: 50, description: "Environmentally safe cleaning" },
-      { id: "fragrance", name: "Premium Fragrance", price: 75, description: "Add your favorite scent" }
-    ];
-
-    const basePrice = Number(service?.price) || 0;
-    const addonPrice = bookingData.selectedAddons.reduce((total, addonId) => {
-      const addon = addons.find(a => a.id === addonId);
-      return total + (Number(addon?.price) || 0);
-    }, 0);
-    const expressPrice = bookingData.selectedTimeSlot === "asap" ? 150 : 0;
-    const subtotal = basePrice + addonPrice + expressPrice;
-    const tax = subtotal * 0.1;
-    const total = subtotal + tax;
-    
-    return {
-      basePrice,
-      addonPrice,
-      expressPrice,
-      subtotal,
-      tax,
-      total
-    };
-  };
-
-  const handleBooking = async () => {
-    setIsBooking(true);
-    // Simulate booking API call with all booking data
-    console.log("Booking data:", bookingData);
-    setTimeout(() => {
-      const pricing = calculateTotal();
-      const newId = String(Date.now());
-      setBookingId(newId);
-      setBookingSummary({
-        serviceName: String((service as { title?: unknown }).title ?? "Your Service"),
-        date: bookingData.selectedDate,
-        time: bookingData.selectedTimeSlot || "TBD",
-        address: bookingData.selectedAddress || "Saved address",
-        total: Number(pricing.total) || 0,
-      });
-      setBookingSuccess(true);
-      setIsBooking(false);
-    }, 2000);
-  };
+  const pricing = useBookingPricing(service, bookingData);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!service) return <div className="min-h-screen flex items-center justify-center">Service not found</div>;
 
   if (bookingSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 flex items-center justify-center p-4">
-        <div className="text-center max-w-lg">
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-emerald-100 p-8 sm:p-12">
-            <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-              <Check className="w-12 h-12 text-white" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-emerald-900 mb-4">Booking Confirmed!</h1>
-            <p className="text-emerald-700/80 mb-8 text-lg leading-relaxed">Your service has been successfully booked. You'll receive a confirmation email shortly with all the details.</p>
-            <div className="space-y-4">
-              <button 
-                onClick={() => bookingId && navigate(`/track-booking/${bookingId}`, { state: { booking: bookingSummary } })}
-                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                Track Your Booking
-              </button>
-              <button 
-                onClick={() => navigate("/all-services")}
-                className="w-full bg-white text-emerald-600 border-2 border-emerald-200 py-4 rounded-xl font-semibold hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                Book Another Service
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <BookingSuccess />;
   }
 
-  const pricing = calculateTotal();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-100">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-3 text-emerald-600 hover:text-emerald-700 transition-all duration-200 font-medium bg-emerald-50 px-4 py-2 rounded-xl hover:bg-emerald-100"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Service</span>
-          </button>
-          <h1 className="text-2xl font-bold text-emerald-900">Book Your Service</h1>
-          <div className="w-32"></div>
-        </div>
+        <BookingHeader />
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
           {/* Left Column - Booking Form */}
           <div className="xl:col-span-3 space-y-6">
             <ServiceSummary service={service} />
-            
-            <DateAndTimeSelection 
+
+            <DateAndTimeSelection
+              serviceId={service.service_id}
               selectedDate={bookingData.selectedDate}
               selectedTimeSlot={bookingData.selectedTimeSlot}
               onDateChange={(date) => updateBookingData("selectedDate", date)}
               onTimeSlotChange={(slot) => updateBookingData("selectedTimeSlot", slot)}
             />
 
-            <AddressAndLocation 
+            <AddressAndLocation
               selectedAddress={bookingData.selectedAddress}
               onAddressChange={(address) => updateBookingData("selectedAddress", address)}
             />
 
-            <CustomerInformation 
+            <CustomerInformation
               customerInfo={bookingData.customerInfo}
               specialInstructions={bookingData.specialInstructions}
               onCustomerInfoChange={updateCustomerInfo}
               onSpecialInstructionsChange={(instructions) => updateBookingData("specialInstructions", instructions)}
             />
 
-            <ExtrasAndAddons 
+            <ExtrasAndAddons
               selectedAddons={bookingData.selectedAddons}
               onAddonsChange={(addons) => updateBookingData("selectedAddons", addons)}
             />
 
-            <PaymentMethod 
+            <PaymentMethod
               paymentMethod={bookingData.paymentMethod}
               promoCode={bookingData.promoCode}
               onPaymentMethodChange={(method) => updateBookingData("paymentMethod", method)}
@@ -256,7 +80,7 @@ export default function BookingPage() {
 
           {/* Right Column - Pricing Summary */}
           <div className="xl:col-span-1">
-            <PricingSummary 
+            <PricingSummary
               pricing={pricing}
               service={service}
               selectedAddons={bookingData.selectedAddons}
@@ -266,29 +90,13 @@ export default function BookingPage() {
         </div>
 
         {/* Sticky Bottom CTA */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-emerald-200 p-4 shadow-2xl">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="hidden sm:block">
-              <div className="text-sm text-emerald-600 font-medium">Estimated completion: Within 48 hours</div>
-              <div className="text-2xl font-bold text-emerald-700">${pricing.total.toFixed(2)}</div>
-            </div>
-            <button
-              onClick={handleBooking}
-              disabled={!bookingData.selectedTimeSlot || isBooking}
-              className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-10 py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
-            >
-              {isBooking ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                "Confirm Booking"
-              )}
-            </button>
-          </div>
-        </div>
-        
+        <BookingCTA
+          pricing={pricing}
+          isBooking={isBooking}
+          onBooking={handleBooking}
+          isDisabled={!bookingData.selectedTimeSlot}
+        />
+
         <div className="h-24"></div>
       </div>
     </div>
