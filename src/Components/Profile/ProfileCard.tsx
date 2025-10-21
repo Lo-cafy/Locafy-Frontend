@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Camera, Edit, MapPin, Calendar, Shield, Linkedin, Instagram, X, Plus, Save, Phone, Mail } from "lucide-react";
+import {Camera,Edit,MapPin,Calendar,Shield,Linkedin,Instagram,X,Plus,Save, Phone, Mail} from "lucide-react";
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
@@ -47,14 +47,19 @@ export default function ProfileCard() {
   };
 
   const getGenderLabel = (gender: string) => {
-    const map: any = { M: "Male", F: "Female", O: "Other", N: "Non-binary" };
+    const map: Record<string, string> = {
+      M: "Male",
+      F: "Female",
+      O: "Other",
+      N: "Non-binary",
+    };
     return map[gender] || gender;
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", { 
-      year: "numeric", 
-      month: "long" 
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
     });
   };
 
@@ -66,19 +71,30 @@ export default function ProfileCard() {
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="relative group shrink-0">
             <ImageWithFallback
-              src={profileImg || profile?.avatarUrl || `https://ui-avatars.com/api/?name=${profile?.fullName}&size=200`}
+              src={
+                profileImg ||
+                profile?.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${profile?.fullName}&size=200`
+              }
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform border-4 border-white"
             />
             <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 shadow-lg flex justify-center items-center cursor-pointer ring-2 ring-white">
               <Camera className="h-4 w-4 text-white" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleProfileUpload} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleProfileUpload}
+              />
             </label>
           </div>
 
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-x-3 gap-y-1 mb-2">
-              <h1 className="text-3xl font-bold text-gray-900">{profile?.fullName}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {profile?.fullName}
+              </h1>
               {profile?.isEmailVerified && (
                 <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1.5 py-1 px-2.5">
                   <Shield className="h-4 w-4" /> Verified
@@ -112,6 +128,13 @@ export default function ProfileCard() {
                   <span>{profile.email}</span>
                 </div>
               )}
+              {/* ✅ Gender label added here */}
+              {profile?.gender && (
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-emerald-600" />
+                  <span>{getGenderLabel(profile.gender)}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -124,10 +147,15 @@ export default function ProfileCard() {
         </div>
 
         <div className="pt-6 mt-6 border-t border-white/40 flex flex-col sm:flex-row items-center gap-4">
-          <h3 className="text-sm font-semibold text-gray-700 shrink-0">Skills:</h3>
+          <h3 className="text-sm font-semibold text-gray-700 shrink-0">
+            Skills:
+          </h3>
           <div className="flex flex-wrap gap-2 justify-center">
             {skills.map((skill) => (
-              <Badge key={skill} className="bg-emerald-50 text-emerald-800 border-emerald-200">
+              <Badge
+                key={skill}
+                className="bg-emerald-50 text-emerald-800 border-emerald-200"
+              >
                 {skill}
               </Badge>
             ))}
@@ -135,14 +163,22 @@ export default function ProfileCard() {
           <div className="flex gap-3 sm:ml-auto">
             {linkedin && (
               <a href={linkedin} target="_blank" rel="noopener noreferrer">
-                <Button size="icon" variant="ghost" className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-600">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="bg-gray-200 hover:bg-blue-600 hover:text-white text-gray-600"
+                >
                   <Linkedin className="h-4 w-4" />
                 </Button>
               </a>
             )}
             {instagram && (
               <a href={instagram} target="_blank" rel="noopener noreferrer">
-                <Button size="icon" variant="ghost" className="bg-gray-200 hover:bg-pink-500 hover:text-white text-gray-600">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="bg-gray-200 hover:bg-pink-500 hover:text-white text-gray-600"
+                >
                   <Instagram className="h-4 w-4" />
                 </Button>
               </a>
@@ -153,11 +189,18 @@ export default function ProfileCard() {
 
       {isEditing && (
         <div className="fixed inset-0 flex justify-center items-center z-50 p-4">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsEditing(false)} />
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setIsEditing(false)}
+          />
           <Card className="relative bg-white/80 backdrop-blur-xl p-6 rounded-2xl w-full max-w-md shadow-2xl border border-white/50">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Edit Profile</h2>
-              <Button size="icon" variant="ghost" onClick={() => setIsEditing(false)}>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setIsEditing(false)}
+              >
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -167,11 +210,16 @@ export default function ProfileCard() {
                 <label className="block text-sm font-medium mb-1">Skills</label>
                 <div className="flex gap-2 flex-wrap mb-2 p-2 bg-gray-50 rounded-md border">
                   {skills.map((skill) => (
-                    <Badge key={skill} className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1.5">
+                    <Badge
+                      key={skill}
+                      className="bg-emerald-100 text-emerald-800 border-emerald-200 flex items-center gap-1.5"
+                    >
                       {skill}
                       <X
                         className="h-3 w-3 cursor-pointer hover:text-red-500"
-                        onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                        onClick={() =>
+                          setSkills(skills.filter((s) => s !== skill))
+                        }
                       />
                     </Badge>
                   ))}
@@ -183,19 +231,35 @@ export default function ProfileCard() {
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
                   />
-                  <Button onClick={handleAddSkill} className="bg-gray-700 hover:bg-black text-white">
+                  <Button
+                    onClick={handleAddSkill}
+                    className="bg-gray-700 hover:bg-black text-white"
+                  >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">LinkedIn URL</label>
-                <Input placeholder="https://linkedin.com/in/..." value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
+                <label className="block text-sm font-medium mb-1">
+                  LinkedIn URL
+                </label>
+                <Input
+                  placeholder="https://linkedin.com/in/..."
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                />
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">Instagram URL</label>
-                <Input placeholder="https://instagram.com/..." value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+                <label className="block text-sm font-medium mb-1">
+                  Instagram URL
+                </label>
+                <Input
+                  placeholder="https://instagram.com/..."
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                />
               </div>
             </div>
 
@@ -203,7 +267,10 @@ export default function ProfileCard() {
               <Button onClick={() => setIsEditing(false)} variant="outline">
                 Cancel
               </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => setIsEditing(false)}>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={() => setIsEditing(false)}
+              >
                 <Save className="h-4 w-4 mr-2" /> Save Changes
               </Button>
             </div>
