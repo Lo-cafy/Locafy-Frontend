@@ -35,7 +35,7 @@ export default function RoleGuard({ children, requiredRoles, fallback = "/" }: R
 
   const normalizeRole = (r: unknown): "user" | "provider" | "admin" | "superadmin" => {
     const v = typeof r === "string" ? r.toLowerCase() : "user";
-    if (v === "customer" || v === "user") return "user";
+    if (v === "Customer" || v === "user") return "user";
     if (v === "provider") return "provider";
     if (v === "admin") return "admin";
     if (v === "superadmin" || v === "super-admin") return "superadmin";
