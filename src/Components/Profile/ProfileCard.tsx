@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Camera, Edit, MapPin, Calendar, Shield, Linkedin, Instagram, X, Plus, Save, Phone, Mail } from "lucide-react";
+import { Camera, Edit, MapPin, Calendar, Shield, Linkedin, Instagram, X, Plus, Save, Phone, Mail, Loader2 } from "lucide-react";
+import api from "@/Api/baseurl"; // Added
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
@@ -8,13 +9,18 @@ import { ImageWithFallback } from "../../Components/fallback";
 import { useProfile } from "./useProfileStore";
 
 export default function ProfileCard() {
-  const { profile, loading, primaryPhone, primaryAddress } = useProfile();
+  // Added 'refetch' from the store
+  const { profile, loading, primaryPhone, primaryAddress, refetch } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [skills, setSkills] = useState(["React", "MERN", "UI/UX"]);
   const [newSkill, setNewSkill] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [profileImg, setProfileImg] = useState("");
+  
+  const [profileImg, setProfileImg] = useState(""); 
+  
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   if (loading) {
     return (
@@ -37,12 +43,40 @@ export default function ProfileCard() {
     }
   };
 
-  const handleProfileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setProfileImg(reader.result as string);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => setProfileImg(reader.result as string);
+    reader.readAsDataURL(file);
+
+    setUploading(true);
+    setUploadError(null);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await api.patch('/users/avatar', formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (res.data.success) {
+        await refetch();
+        setProfileImg(""); 
+      } else {
+        setUploadError(res.data.message || 'Upload failed');
+        setProfileImg("");
+      }
+    } catch (err: any) {
+      console.error('Avatar upload error:', err);
+      setUploadError(err.response?.data?.message || 'An error occurred');
+      setProfileImg(""); // Revert local preview
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -64,16 +98,32 @@ export default function ProfileCard() {
         <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-2xl bg-gradient-to-r from-emerald-400 to-green-500" />
 
         <div className="flex flex-col md:flex-row items-center gap-6">
-          <div className="relative group shrink-0">
+          
+          <div className="relative group shrink-0 text-center">
             <ImageWithFallback
-              src={profileImg || profile?.avatarUrl || `https://ui-avatars.com/api/?name=${profile?.fullName}&size=200`}
+              src={profileImg || profile?.avatarUrl ||""}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform border-4 border-white"
             />
             <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 shadow-lg flex justify-center items-center cursor-pointer ring-2 ring-white">
-              <Camera className="h-4 w-4 text-white" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleProfileUpload} />
+              {uploading ? (
+                <Loader2 className="h-4 w-4 text-white animate-spin" />
+              ) : (
+                <Camera className="h-4 w-4 text-white" />
+              )}
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleProfileUpload} 
+                disabled={uploading} 
+              />
             </label>
+            {uploadError && (
+              <p className="text-xs text-red-600 mt-1.5">
+                {uploadError}
+              </p>
+            )}
           </div>
 
           <div className="flex-1 text-center md:text-left">
