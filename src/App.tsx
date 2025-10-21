@@ -62,10 +62,27 @@ function App() {
         />
         {/* Backward compatibility redirect from /user to /provider */}
         <Route path="/user/*" element={<Navigate to="/provider" replace />} />
-        <Route path="/all-services" element={<AllServicesPage />} />
-        <Route path="/my-bookings" element={<MyBookingsPage />} />
-         <Route path="/services/:id" element={<ServiceDetailPage />} />
-          <Route path="/services/:id/booking" element={<BookingPage />} />
+        {/* Customer Routes - Protected */}
+        <Route path="/all-services" element={
+          <RoleGuard requiredRoles={["customer"]} fallback="/">
+            <AllServicesPage />
+          </RoleGuard>
+        } />
+        <Route path="/my-bookings" element={
+          <RoleGuard requiredRoles={["customer"]} fallback="/">
+            <MyBookingsPage />
+          </RoleGuard>
+        } />
+        <Route path="/services/:id" element={
+          <RoleGuard requiredRoles={["customer"]} fallback="/">
+            <ServiceDetailPage />
+          </RoleGuard>
+        } />
+        <Route path="/services/:id/booking" element={
+          <RoleGuard requiredRoles={["customer"]} fallback="/">
+            <BookingPage />
+          </RoleGuard>
+        } />
           <Route path="/track-booking/:bookingId" element={<TrackBooking />} />
            <Route path="/finalize-registration" element={<UrlVerification/>}/>
 
