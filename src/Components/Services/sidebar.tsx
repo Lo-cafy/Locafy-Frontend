@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import { listingApi as api } from "@/Api/baseurl";
+import api  from "@/Api/baseurl";
 import {
   SlidersHorizontal,
   X,

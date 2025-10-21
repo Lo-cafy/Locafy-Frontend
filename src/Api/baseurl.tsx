@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // API Gateway client (default)
 const api = axios.create({
-  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
+  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,14 +10,14 @@ const api = axios.create({
   
 });
 
-// Service Listing microservice client
-export const listingApi = axios.create({
-  baseURL: 'https://back-end-servicelisting.onrender.com',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
+// // Service Listing microservice client
+// export const listingApi = axios.create({
+//   baseURL: 'https://back-end-servicelisting.onrender.com',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   withCredentials: true,
+// });
 
 
 api.interceptors.request.use(

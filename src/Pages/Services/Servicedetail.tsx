@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { listingApi as api } from "@/Api/baseurl";
+import api from "@/Api/baseurl";
 
 import Footer from "@/Components/Footer";
 import ImageCarousel from "@/Components/ServiceDetails/ImageCarousel";
@@ -25,7 +25,7 @@ export default function ServiceDetailPage() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/api/services/services/${id}`);
+        const res = await api.get(`/api/services/${id}`);
         
        
         const data: Record<string, unknown> = (res.data.service || res.data.data || res.data) as Record<string, unknown>;
