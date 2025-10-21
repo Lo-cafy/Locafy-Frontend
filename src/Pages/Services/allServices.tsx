@@ -72,8 +72,8 @@ export default function ServiceListingPage() {
       try {
         setLoading(true);
         const url = filters.categoryId
-          ? `/api/services/category/${filters.categoryId}`
-          : "/api/services";
+          ? `/services/category/${filters.categoryId}`
+          : "/services";
 
         const res = await api.get(url);
         const apiServices = extractServicesArray(res.data);
@@ -111,7 +111,7 @@ export default function ServiceListingPage() {
 
             try {
               const photoRes = await api.get(
-                `/api/photoservices/${serviceId}/photos`
+                `/photoservices/${serviceId}/photos`
               );
               const photos = extractPhotosArray(photoRes.data);
               const primaryPhoto = photos.find((p) => p.is_primary) || photos[0];

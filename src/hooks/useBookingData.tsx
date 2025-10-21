@@ -69,7 +69,7 @@ export function useBookingData() {
       const fetchService = async () => {
         try {
           setLoading(true);
-          const res = await axios.get(`${baseURL}/api/services/${id}`);
+          const res = await axios.get(`${baseURL}/services/${id}`);
           const data = res.data.service || res.data.data || res.data;
           setService(data);
         } catch (err) {

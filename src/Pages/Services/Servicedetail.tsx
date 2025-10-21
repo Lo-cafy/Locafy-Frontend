@@ -28,13 +28,13 @@ export default function ServiceDetailPage() {
     const fetchService = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/api/services/services/${id}`);
+        const res = await api.get(`/services/services/${id}`);
         const data: ServiceFull = res.data.service || res.data.data || res.data;
 
         if (!data) return setService(null);
 
         // Photos
-        const photoRes = await api.get(`/api/photoservices/${data.service_id}/photos`);
+        const photoRes = await api.get(`/photoservices/${data.service_id}/photos`);
         const photos = Array.isArray(photoRes.data?.data?.photos)
           ? photoRes.data.data.photos
           : Array.isArray(photoRes.data)
@@ -47,7 +47,7 @@ export default function ServiceDetailPage() {
         // Related services
         if (data.category_id) {
           try {
-            const relatedRes = await api.get(`/api/services/category/${data.category_id}`);
+            const relatedRes = await api.get(`/services/category/${data.category_id}`);
             const related: ServiceFull[] = Array.isArray(relatedRes.data.services)
               ? relatedRes.data.services
               : Array.isArray(relatedRes.data)

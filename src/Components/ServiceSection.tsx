@@ -104,7 +104,7 @@ export default function FeaturedServices() {
     (async () => {
       try {
         const { data } = await api.get(
-          "/api/services"
+          "/services"
         );
 
         const arr = Array.isArray(data)
@@ -120,7 +120,7 @@ export default function FeaturedServices() {
 
             try {
               const { data: photosData } = await api.get(
-                `/api/photoservices/${id}/photos`
+                `/photoservices/${id}/photos`
               );
               const photos =
                 photosData?.data?.photos ||

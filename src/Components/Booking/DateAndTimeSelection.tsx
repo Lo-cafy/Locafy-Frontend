@@ -21,7 +21,7 @@ export default function DateAndTimeSelection({
     const fetchSlots = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/api/services/availability/service/${serviceId}`);
+        const res = await api.get(`/services/availability/service/${serviceId}`);
         setAvailabilitySlots(res.data.data || []);
       } catch (err) {
         console.error(err);

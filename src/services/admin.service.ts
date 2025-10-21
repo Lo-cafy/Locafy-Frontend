@@ -5,7 +5,7 @@ import type { Service } from '@/types/service.types';
 import type { DashboardStats } from '@/types/admin.types';
 
 class AdminService {
-  private baseUrl = '/api/admin';
+  private baseUrl = '/admin';
 
   async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
     try {

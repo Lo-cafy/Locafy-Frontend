@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // API Gateway client (default)
 const api = axios.create({
-  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/',
+  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
