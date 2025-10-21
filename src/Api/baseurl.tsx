@@ -10,15 +10,8 @@ const api = axios.create({
   
 });
 
-// // Service Listing microservice client
-// export const listingApi = axios.create({
-//   baseURL: 'https://back-end-servicelisting.onrender.com',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   withCredentials: true,
-// });
 
+//   baseURL: 'https://back-end-servicelisting.onrender.com',
 
 api.interceptors.request.use(
   (config) => {
