@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Camera, Edit, MapPin, Calendar, Star, Shield, Linkedin, Instagram, X, Plus, Save, Phone, Mail } from "lucide-react";
+import { Camera, Edit, MapPin, Calendar, Shield, Linkedin, Instagram, X, Plus, Save, Phone, Mail } from "lucide-react";
 import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { Input } from "../../ui/input";
 import { ImageWithFallback } from "../../Components/fallback";
-import { useProfile } from "./useProfile";
+import { useProfile } from "./useProfileStore";
 
 export default function ProfileCard() {
   const { profile, loading, primaryPhone, primaryAddress } = useProfile();

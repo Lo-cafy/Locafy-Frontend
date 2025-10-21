@@ -3,7 +3,7 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Save, Edit2, X, MapPin } from "lucide-react";
 import { Alert } from "@/ui/AlertProps";
-import { useProfile } from "./useProfile";
+import { useProfile } from "./useProfileStore";
 import { AddressForm } from "./AddressForm";
 import { useAddressDetails } from "./useAddressDetails";
 import { initialDataState } from "./addressConstants";

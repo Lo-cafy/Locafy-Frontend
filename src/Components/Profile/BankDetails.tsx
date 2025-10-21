@@ -3,7 +3,7 @@ import { Button } from "../../ui/button";
 import { Save, Edit2, X, Landmark } from "lucide-react";
 import { Alert } from "@/ui/AlertProps";
 import BankForm from "./BankForm";
-import { useBankAccount } from "./useBankAccount";
+import { useBankAccount } from "./useBankAccountStore";
 
 export default function BankDetails() {
   const {

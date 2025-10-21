@@ -3,7 +3,7 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Save, Edit2, X } from "lucide-react";
 import api from "@/Api/baseurl";
-import { useProfile } from "./useProfile";
+import { useProfile } from "./useProfileStore";
 import { FormField } from "@/ui/formfield";
 import { Alert } from "@/ui/AlertProps";
 
