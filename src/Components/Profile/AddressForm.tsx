@@ -1,5 +1,5 @@
 import { FormField } from "@/ui/formfield";
-import { addressTypes } from "./addressConstants";
+import { addressTypes } from "../../types/addressConstants";
 
 export function AddressForm({ data, edit, change, errors }: any) {
   return (

@@ -116,14 +116,14 @@ export default function KYC() {
   }
 
   if (loading) {
-    return <Card className="p-8"><p>Loading KYC Status...</p></Card>;
+    return <Card className="bg-white shadow-sm border border-gray-100 p-6 relative"><p>Loading KYC Status...</p></Card>;
   }
 
   const showForm = edit || !submission;
   const isVerified = submission?.status ==="Verified";
 
   return (
-    <Card className="bg-white shadow-sm border p-8 rounded-2xl relative">
+    <Card className="bg-white shadow-sm border border-gray-100 p-6 relative">
         {!isVerified && submission && submission.status !== "Rejected" && !edit && (
              <Button size="icon" onClick={() => setEdit(true)} className="absolute top-6 right-6 hover:bg-gray-100" variant="ghost">
                 <Edit2 className="h-4 w-4 text-gray-600" />

@@ -3,7 +3,7 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Save, Edit2, X } from "lucide-react";
 import api from "@/Api/baseurl";
-import { useProfile } from "./useProfileStore";
+import { useProfile } from "../../hooks/useProfileStore";
 import { FormField } from "@/ui/formfield";
 import { Alert } from "@/ui/AlertProps";
 
@@ -110,7 +110,7 @@ export default function Personal() {
     }
 
     return (
-        <Card className="bg-white shadow-sm border p-8 rounded-2xl relative">
+    <Card className="bg-white shadow-sm border border-gray-100 p-6 relative">
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>

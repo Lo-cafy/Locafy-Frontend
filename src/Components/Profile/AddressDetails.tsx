@@ -3,10 +3,10 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Save, Edit2, X, MapPin } from "lucide-react";
 import { Alert } from "@/ui/AlertProps";
-import { useProfile } from "./useProfileStore";
+import { useProfile } from "../../hooks/useProfileStore";
 import { AddressForm } from "./AddressForm";
-import { useAddressDetails } from "./useAddressDetails";
-import { initialDataState } from "./addressConstants";
+import { useAddressDetails } from "../../hooks/useAddressDetails";
+import { initialDataState } from "../../types/addressConstants";
 
 export default function AddressDetails() {
   const { primaryAddress, refetch } = useProfile();
@@ -58,7 +58,7 @@ export default function AddressDetails() {
   };
 
   return (
-    <Card className="bg-white shadow-sm border p-8 rounded-2xl relative">
+    <Card className="bg-white shadow-sm border border-gray-100 p-6 relative">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
           <MapPin className="h-6 w-6 text-emerald-600 mr-2" />
