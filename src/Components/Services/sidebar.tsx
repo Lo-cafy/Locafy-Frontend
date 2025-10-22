@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import { listingApi as api } from "@/Api/baseurl";
+import api  from "@/Api/baseurl";
 import {
   SlidersHorizontal,
   X,
@@ -56,7 +56,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
         setCategoriesLoading(true);
         setCategoriesError("");
         const res = await api.get(
-          "/api/categories"
+          "/categories"
         );
         let categoriesData = res.data;
 
@@ -99,7 +99,7 @@ export default function Sidebar({ filters, setFilters }: Props) {
         setServicesLoading(true);
         setServicesError("");
         const res = await api.get(
-          `/api/services/category/${filters.categoryId}`
+          `/services/category/${filters.categoryId}`
         );
         let servicesData = res.data;
         if (res.data.services && Array.isArray(res.data.services))

@@ -123,3 +123,42 @@ export type ServiceReview = {
     createdAt: string;
   };
 };
+
+// src/Types/service.ts
+export interface Photo {
+  photo_url?: string;
+  url?: string;
+}
+
+export interface Review {
+  rating?: number;
+}
+
+export interface Option {
+  id: string | number;
+  name: string;
+  price: number; // must be number
+  description?: string;
+}
+
+export interface ServiceFull {
+  service_id: number;
+  id?: number;
+  title: string;
+  description?: string;
+  price: string; // API returns string
+  currency_code?: string;
+  reviews?: Review[];
+  photos?: Photo[];
+  tags?: string[];
+  type?: string;
+  whatsIncluded?: string[];
+  options?: { id?: number | string; name?: string; price?: number; description?: string }[];
+  relatedServices?: ServiceFull[];
+  availability?: string;
+  booking_count?: number;
+  service_radius_km?: number;
+  location_text?: string;
+  verification_status?: string;
+  category_id?: number;
+}

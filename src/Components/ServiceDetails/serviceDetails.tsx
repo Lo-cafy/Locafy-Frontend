@@ -2,33 +2,14 @@
 
 import { CheckCircle, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type  { Option, ServiceFull } from "@/types/service.types";
 
-type Id = string | number;
-
-interface ServiceOption {
-  id: Id;
-  name: string;
-  price: number;
-  description?: string;
-}
-
-interface Service {
-  id?: Id;
-  service_id?: Id;
-  type?: string;
-  tags?: string[];
-  title: string;
-  price: number;
-  reviews?: unknown[];
-  description?: string;
-  whatsIncluded?: string[];
-}
-
+// Use Omit<> to safely override price type for UI
 interface Props {
-  service: Service;
-  serviceOptions: ServiceOption[];
-  selectedOption: Id;
-  setSelectedOption: (id: Id) => void;
+  service: Omit<ServiceFull, "price"> & { price: number };
+  serviceOptions: Option[];
+  selectedOption: string | number;
+  setSelectedOption: (id: string | number) => void;
   avgRating: number;
 }
 
@@ -40,24 +21,16 @@ export default function ServiceInfo({
   avgRating,
 }: Props) {
   const navigate = useNavigate();
-  const price =
-    serviceOptions.find((o: ServiceOption) => o.id === selectedOption)?.price ?? service.price;
-
+  const price = serviceOptions.find(o => o.id === selectedOption)?.price ?? service.price;
   const whatsIncluded = service.whatsIncluded ?? [];
 
   return (
     <div className="space-y-4">
       {/* Tags */}
       <div className="flex flex-wrap items-center gap-2">
-        {service.type && (
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-            {service.type}
-          </span>
-        )}
-        {service.tags?.map((t: string, i: number) => (
-          <span key={i} className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
-            {t}
-          </span>
+        {service.type && <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{service.type}</span>}
+        {service.tags?.map((t, i) => (
+          <span key={i} className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">{t}</span>
         ))}
       </div>
 
@@ -74,17 +47,23 @@ export default function ServiceInfo({
             <Star key={i} size={16} fill={i < Math.round(avgRating) ? "currentColor" : "none"} />
           ))}
         </div>
-        <span>{avgRating.toFixed(1)} • {service.reviews?.length || 0} reviews</span>
+        <span>{avgRating.toFixed(1)} • {service.reviews?.length ?? 0} reviews</span>
+      </div>
+
+      {/* Extra info */}
+      <div className="text-sm text-gray-700 space-y-1">
+        {service.availability && <p>Availability: <b>{service.availability}</b></p>}
+        {service.booking_count !== undefined && <p>Bookings: <b>{service.booking_count}</b></p>}
+        {service.location_text && <p>Location: <b>{service.location_text}</b></p>}
+        {service.service_radius_km !== undefined && <p>Service Radius: <b>{service.service_radius_km} km</b></p>}
       </div>
 
       {/* Options */}
       <div className="space-y-2">
-        {serviceOptions.map((o: ServiceOption) => (
+        {serviceOptions.map(o => (
           <div
             key={o.id}
-            className={`p-3 rounded-lg border cursor-pointer transition ${
-              selectedOption === o.id ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:bg-gray-50"
-            }`}
+            className={`p-3 rounded-lg border cursor-pointer transition ${selectedOption === o.id ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:bg-gray-50"}`}
             onClick={() => setSelectedOption(o.id)}
           >
             <div className="flex justify-between">
@@ -102,7 +81,7 @@ export default function ServiceInfo({
       {/* What's Included */}
       {whatsIncluded.length > 0 && (
         <ul className="text-sm space-y-1">
-          {whatsIncluded.map((i: string, idx: number) => (
+          {whatsIncluded.map((i, idx) => (
             <li key={idx} className="flex items-center gap-1">
               <CheckCircle size={14} className="text-green-500" /> {i}
             </li>
@@ -111,7 +90,7 @@ export default function ServiceInfo({
       )}
 
       {/* CTA */}
-      <button 
+      <button
         onClick={() => navigate(`/services/${service.service_id || service.id}/booking`, { state: { service } })}
         className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
       >

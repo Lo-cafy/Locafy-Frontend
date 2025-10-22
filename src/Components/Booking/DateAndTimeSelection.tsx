@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Calendar } from "lucide-react";
-import type { AvailabilitySlot, DateAndTimeSelectionProps } from "../../types/bookingtime";
+import type {AvailabilitySlot,DateAndTimeSelectionProps,} from "../../types/bookingtime";
+import api from "@/Api/baseurl";
 
 export default function DateAndTimeSelection({
   serviceId,
@@ -16,14 +16,12 @@ export default function DateAndTimeSelection({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!serviceId) return; // make sure serviceId is present
+    if (!serviceId) return;
 
     const fetchSlots = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          `https://back-end-servicelisting.onrender.com/api/services/availability/service/${serviceId}`
-        );
+        const res = await api.get(`/services/availability/service/${serviceId}`);
         setAvailabilitySlots(res.data.data || []);
       } catch (err) {
         console.error(err);
@@ -36,14 +34,13 @@ export default function DateAndTimeSelection({
     fetchSlots();
   }, [serviceId]);
 
-  // If user selected a date, show filtered ones, else show all
   const displayedSlots = selectedDate
     ? availabilitySlots.filter(
         (slot) => slot.available_date.split("T")[0] === selectedDate
       )
     : availabilitySlots;
 
-    console.log("slots",availabilitySlots)
+  console.log("slots", availabilitySlots);
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">

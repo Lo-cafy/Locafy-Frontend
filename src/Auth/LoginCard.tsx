@@ -4,28 +4,26 @@ import { Button } from "@/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
 import GoogleLoginButton from "./Google"; 
-import { useAuthStore } from "@/store/authStore"; // Import your auth store
+import { useAuthStore } from "@/store/authStore";
 import api from "@/Api/baseurl";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: ""
-  });
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const cardStyles = "bg-white rounded-2xl shadow-lg p-6 w-[320px] min-h-[520px]";
-  
-  // Get the setUser function from your auth store
+
+  // Auth store
   const setUser = useAuthStore((state) => state.setUser);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
-    setError(""); // Clear error when user starts typing
+    setError("");
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,41 +32,59 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
     setError("");
 
     try {
-      
-      const response = (await api.post("/Auth/login",loginData)).data;
-    if(response.sucess){
-      toast.success("Login successful")
-        const userData = {
-          id: response.user.userId || response.user.email, 
-          name: `${response.firstname} ${response.lastname}`,
-          email: response.user.email,
-        };
-         setUser(userData); 
-         navigate("/all-services")
+      const response = (await api.post("/Auth/login", loginData)).data;
+      console.log("Login response:", response);
 
-      } else {
-        console.log(response);
-        
-        toast.error(response.message)
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Login failed. Please try again.";
+     if (response.accessToken) { 
+  toast.success("Login successful");
+
+  // Save access token in cookie
+  Cookies.set("accessToken", response.accessToken, {
+    expires: 1, // 1 day
+    sameSite: "strict",
+  });
+
+  const userData = {
+    id: response.user.userId || response.user.email,
+    name: `${response.user.firstName || ""} ${response.user.lastName || ""}`,
+    email: response.user.email,
+    role: response.user.role || "Customer", // Include role from backend
+  };
+
+  setUser(userData);
+  
+  // Role-based navigation for email/password login only
+  const userRole = (response.user.role || "Customer").toLowerCase();
+  if (userRole === "customer") {
+    navigate("/all-services");
+  } else if (userRole === "provider") {
+    navigate("/provider");
+  } else if (userRole === "admin") {
+    navigate("/admin");
+  } else {
+    navigate("/all-services"); // Default for unknown roles
+  }
+} else {
+  toast.error(response.message || "Login failed");
+}
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(message);
-      console.error("Login error:", error);
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-  <div className={cardStyles}>  
-    <h2 className="text-xl font-bold text-gray-800 mb-4">Login</h2>
+    <div className={cardStyles}>
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Login</h2>
 
       <form onSubmit={handleLogin} className="space-y-3">
-        <Input 
-          type="email" 
+        <Input
+          type="email"
           name="email"
-          placeholder="Email" 
+          placeholder="Email"
           value={loginData.email}
           onChange={handleChange}
           required
@@ -76,10 +92,10 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
         />
 
         <div className="relative">
-          <Input 
-            type={showPassword ? "text" : "password"} 
+          <Input
+            type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Password" 
+            placeholder="Password"
             value={loginData.password}
             onChange={handleChange}
             required
@@ -95,15 +111,11 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
           </button>
         </div>
 
-        {error && (
-          <div className="text-red-500 text-sm text-center">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
         <div className="flex justify-end">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="text-sm text-emerald-600 hover:underline"
             disabled={isLoading}
           >
@@ -111,17 +123,17 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
           </button>
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
           disabled={isLoading}
         >
           {isLoading ? "Logging in..." : "Login"}
         </Button>
-        
+
         <div className="flex flex-col space-y-2">
           <GoogleLoginButton />
-          
+
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2 text-blue-600"
@@ -134,8 +146,8 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
         {/* Switch to Sign Up */}
         <p className="text-sm text-gray-600 text-center mt-3">
           Don't have an account?{" "}
-          <button 
-            onClick={onSwitch} 
+          <button
+            onClick={onSwitch}
             className="text-emerald-600 hover:underline"
             disabled={isLoading}
           >

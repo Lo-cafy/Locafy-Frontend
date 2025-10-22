@@ -13,7 +13,7 @@ import type {
 } from '@/types/chat.types';
 
 class ChatService implements ChatServiceInterface {
-  private baseUrl = '/api/chat';
+  private baseUrl = '/chat';
   private wsConnection: WebSocket | null = null;
   private eventListeners: Map<string, ((data: unknown) => void)[]> = new Map();
 
