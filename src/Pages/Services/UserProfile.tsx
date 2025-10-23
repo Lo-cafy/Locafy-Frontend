@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  Calendar, 
-  Heart, 
-  Shield, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Edit2,
-  Camera,
+import {
+  User,
+  Calendar,
+  Heart,
+  Shield,
   CheckCircle,
   Clock,
   Star,
@@ -19,12 +14,11 @@ import {
 import { Card } from '@/ui/card';
 import { Button } from '@/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
-import { Badge } from '@/ui/badge';
-import { Avatar } from '@/ui/avatar';
 import KYCVerification from '@/Components/Profile/KYCVerification';
 import UserFavorites from '@/Components/Profile/UserFavorites';
 import MyBookingsPage from './MyBookings';
 import { EditProfileModal } from '@/Components/Profile/EditProfileModal';
+import ProfileCard from '@/Components/Profile/ProfileCard';
 
 interface UserProfile {
   name: string;
@@ -117,95 +111,40 @@ export default function UserProfile() {
           
           {/* Profile Header */}
           <Card className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
-            <div className="relative h-32 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500">
-              <div className="absolute -bottom-16 left-8 flex items-end gap-6">
-                <div className="relative">
-                  <Avatar className="w-32 h-32 border-4 border-white shadow-xl rounded-full overflow-hidden bg-white">
-                    <img 
-                      src={userData.avatar || '/api/placeholder/150/150'} 
-                      alt={userData.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </Avatar>
-                  <button className="absolute bottom-0 right-0 bg-emerald-600 text-white p-2 rounded-full shadow-lg hover:bg-emerald-700 transition-colors">
-                    <Camera className="w-4 h-4" />
-                  </button>
+            {/* FIX: Passed necessary props to ProfileCard.
+              It needs userData to display, onEdit to open the modal,
+              and the badge info since the logic is in this parent component.
+            */}
+            <ProfileCard/>
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 p-6"> {/* Added p-6 for consistency */}
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Package className="w-5 h-5 text-emerald-600" />
+                  <p className="text-2xl font-bold text-gray-900">{userData.stats.totalBookings}</p>
                 </div>
+                <p className="text-sm text-gray-600">Total Bookings</p>
               </div>
-            </div>
-
-            <div className="pt-20 px-8 pb-6">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold text-gray-900">{userData.name}</h1>
-                    <Badge className={getMembershipBadge(userData.membershipLevel)}>
-                      {userData.membershipLevel}
-                    </Badge>
-                    <Badge className={`${kycBadge.class} flex items-center gap-1`}>
-                      <KYCIcon className="w-3 h-3" />
-                      {userData.kycStatus === 'verified' ? 'Verified' : userData.kycStatus === 'pending' ? 'Pending' : 'Not Verified'}
-                    </Badge>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-emerald-600" />
-                      {userData.email}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-emerald-600" />
-                      {userData.phone}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-emerald-600" />
-                      {userData.location}
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-gray-500">Member since {userData.joinedDate}</p>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <p className="text-2xl font-bold text-gray-900">{userData.stats.completedServices}</p>
                 </div>
-
-                <Button
-                  onClick={() => setIsEditingProfile(!isEditingProfile)}
-                  variant="outline"
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                >
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
+                <p className="text-sm text-gray-600">Completed</p>
               </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Package className="w-5 h-5 text-emerald-600" />
-                    <p className="text-2xl font-bold text-gray-900">{userData.stats.totalBookings}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">Total Bookings</p>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  <p className="text-2xl font-bold text-gray-900">{userData.stats.favorites}</p>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <p className="text-2xl font-bold text-gray-900">{userData.stats.completedServices}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">Completed</p>
+                <p className="text-sm text-gray-600">Favorites</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                  <p className="text-2xl font-bold text-gray-900">{userData.stats.reviews}</p>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Heart className="w-5 h-5 text-red-500" />
-                    <p className="text-2xl font-bold text-gray-900">{userData.stats.favorites}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">Favorites</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    <p className="text-2xl font-bold text-gray-900">{userData.stats.reviews}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">Reviews</p>
-                </div>
+                <p className="text-sm text-gray-600">Reviews</p>
               </div>
             </div>
           </Card>
@@ -213,28 +152,28 @@ export default function UserProfile() {
           {/* Tabs Section */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-white rounded-xl shadow-sm border border-gray-200 p-1 mb-6">
-              <TabsTrigger 
-                value="overview" 
+              <TabsTrigger
+                value="overview"
                 className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
               >
                 <User className="w-4 h-4 mr-2" />
                 Overview
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="bookings"
                 className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 My Bookings
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="favorites"
                 className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Favorites
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="kyc"
                 className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
               >
