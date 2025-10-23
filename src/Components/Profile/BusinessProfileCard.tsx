@@ -22,7 +22,7 @@ export default function BusinessProfileCard() {
 
   const fetchProfile = async () => {
     try {
-      const res = await api.get("/api/users/business/");
+      const res = await api.get("/users/business/",{withCredentials:true});
       setProfile(res.data);
     } catch {
       setAlert({
@@ -42,7 +42,7 @@ export default function BusinessProfileCard() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await api.put("/api/users/business", profile);
+      await api.put("/users/business", profile,{withCredentials:true});
       setAlert({
         show: true,
         type: "success",

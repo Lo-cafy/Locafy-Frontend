@@ -61,24 +61,55 @@ export function usePaymentStore() {
     name: ''
   });
 
+  // --- FETCH BANK & UPI DETAILS ---
   const fetchBankDetails = async () => {
     try {
-      const response = await api.get('/payment/bank-account', { withCredentials: true });
-      if (response.data.success && response.data.data) {
-        setBank(response.data.data);
-        setDataBank({
-          accountHolderName: response.data.data.accountHolderName || '',
-          accountNumber: response.data.data.accountNumber || '',
-          bankName: response.data.data.bankName || '',
-          ifscCode: response.data.data.ifscCode || '',
-          accountType: response.data.data.accountType || 'Savings'
-        });
+      const response = await api.get('/bank-account', { withCredentials: true });
+      if (response.data.success && Array.isArray(response.data.data)) {
+        const rawArray = response.data.data;
+
+        // Find bank account
+const bankRaw = Array.isArray(rawArray) ? rawArray.find(item => item.methodType === 'bank_account') : undefined;
+        if (bankRaw) {
+          setBank({
+            id: bankRaw.paymentMethodId,
+            accountHolderName: bankRaw.displayName,
+            accountNumber: '',
+            bankName: '',
+            ifscCode: '',
+            accountType: 'Savings'
+          });
+          setDataBank({
+            accountHolderName: bankRaw.displayName,
+            accountNumber: '',
+            bankName: '',
+            ifscCode: '',
+            accountType: 'Savings'
+          });
+        }
+
+        // Find UPI account
+const upiRaw = Array.isArray(rawArray) ? rawArray.find(item => item.methodType === 'upi') : undefined;        if (upiRaw) {
+          setUpi({
+            id: upiRaw.paymentMethodId,
+            upiId: upiRaw.displayName,
+            name: upiRaw.displayName
+          });
+          setDataUPI({
+            upiId: upiRaw.displayName,
+            name: upiRaw.displayName
+          });
+        }
+
+        if (!bankRaw && !upiRaw) {
+          setEdit(true); // allow editing if nothing exists
+        }
       } else {
-        setEdit(true);  
+        setEdit(true);
       }
     } catch (error) {
       console.error('Failed to fetch bank details:', error);
-      setEdit(true);  
+      setEdit(true);
     }
   };
 
@@ -86,10 +117,11 @@ export function usePaymentStore() {
     fetchBankDetails();
   }, []);
 
+  // --- HANDLERS & VALIDATION ---
   const changeBank = (key: string, value: string) => {
     setDataBank(prev => ({ ...prev, [key]: value }));
     if (errors[key as keyof ValidationErrors]) {
-      setErrors((prev) => ({ ...prev, [key]: undefined }));
+      setErrors(prev => ({ ...prev, [key]: undefined }));
     }
   };
 
@@ -109,7 +141,7 @@ export function usePaymentStore() {
   const submitBank = async () => {
     setErr('');
     setSuccess('');
-    
+
     if (!validateBank()) {
       setErr('Please fix the validation errors');
       return;
@@ -117,7 +149,7 @@ export function usePaymentStore() {
 
     setLoading(true);
     try {
-      const response = await api.post('/payment/bank-account', dataBank, { withCredentials: true });
+      const response = await api.post('/bank-account', dataBank, { withCredentials: true });
       if (response.data.success) {
         setSuccess('Bank details saved successfully!');
         setEdit(false);
@@ -135,7 +167,7 @@ export function usePaymentStore() {
   const changeUPI = (key: string, value: string) => {
     setDataUPI(prev => ({ ...prev, [key]: value }));
     if (errors[key as keyof ValidationErrors]) {
-      setErrors((prev) => ({ ...prev, [key]: undefined }));
+      setErrors(prev => ({ ...prev, [key]: undefined }));
     }
   };
 
@@ -143,11 +175,11 @@ export function usePaymentStore() {
     setLoading(true);
     setErr('');
     setSuccess('');
-    
+
     const e: ValidationErrors = {};
     if (!dataUPI.upiId) e.upiId = 'UPI ID is required';
     if (!dataUPI.name) e.name = 'Name is required';
-    
+
     if (Object.keys(e).length > 0) {
       setErrors(e);
       setLoading(false);
@@ -155,11 +187,15 @@ export function usePaymentStore() {
     }
 
     try {
-      const response = await api.post('/payment/upi-account', dataUPI, { withCredentials: true });
+      const response = await api.post('/bank-account/upi', dataUPI, { withCredentials: true });
       if (response.data.success) {
         setSuccess('UPI details saved successfully!');
         setEdit(false);
-        setUpi(response.data.data);
+        setUpi({
+          id: response.data.data.paymentMethodId,
+          upiId: response.data.data.displayName,
+          name: response.data.data.displayName
+        });
         setTimeout(() => setSuccess(''), 3000);
       }
     } catch (error: unknown) {

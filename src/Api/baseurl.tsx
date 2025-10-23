@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // API Gateway client (default)
 const api = axios.create({
@@ -7,11 +8,16 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
-  
 });
 
 
 //   baseURL: 'https://back-end-servicelisting.onrender.com',
+
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 api.interceptors.request.use(
   (config) => {
@@ -24,6 +30,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 
 api.interceptors.response.use(
   (response) => {

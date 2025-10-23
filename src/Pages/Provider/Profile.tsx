@@ -4,12 +4,14 @@ import Personal from "@/Components/Profile/Personal";
 import Preference from "@/Components/Profile/Prefrence";
 import KYC from "@/Components/Profile/Kyc";
 import BankDetails from "@/Components/Profile/BankDetails";
+import BusinessProfileCard from "@/Components/Profile/BusinessProfileCard";
 
 export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50/30 pt-16">
       <div className="max-w-7xl mx-auto p-6">
         <ProfileCard />
+        <BusinessProfileCard/>
 
         <Tabs defaultValue="personal" className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-4 bg-white border">

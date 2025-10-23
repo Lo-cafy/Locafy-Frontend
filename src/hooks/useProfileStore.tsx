@@ -19,7 +19,7 @@ interface Address {
 }
 
 interface PhoneNumber {
-  id: number;
+  phoneId: number;
   phoneNumber: string;
   isPrimary: boolean;
 }
@@ -34,7 +34,7 @@ interface Profile {
   linkedin?: string;
   instagram?: string;
   addresses?: Address[];
-  phoneNumbers?: PhoneNumber[];
+  phones?: PhoneNumber[];
   // Additional fields for ProfileHeader compatibility
   fullName?: string;
   avatarUrl?: string;
@@ -51,7 +51,7 @@ export function useProfile() {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/users/profile', { withCredentials: true });
+      const response = await api.get('/users/me');
       if (response.data.success) {
         setProfile(response.data.data);
       }
@@ -72,7 +72,8 @@ export function useProfile() {
     fetchProfile();
   };
 
-  const primaryPhone = profile?.phoneNumbers?.find(p => p.isPrimary) || profile?.phoneNumbers?.[0];
+  const primaryPhone = profile?.phones?.find(p => p.isPrimary) || profile?.phones?.[0];
+
   const primaryAddress = profile?.addresses?.find(a => a.isPrimary) || profile?.addresses?.[0];
 
   return {
