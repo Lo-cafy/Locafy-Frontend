@@ -112,7 +112,7 @@ export const mockUsers: User[] = [
     id: '3', 
     name: 'Mike Johnson', 
     email: 'mike.j@example.com', 
-    role: 'Customer', 
+    role: 'customer', 
     status: 'Inactive', 
     joinDate: '2023-03-10' 
   },
@@ -120,7 +120,7 @@ export const mockUsers: User[] = [
     id: '4', 
     name: 'Emily Brown', 
     email: 'emily.b@example.com', 
-    role: 'Customer', 
+    role: 'customer', 
     status: 'Active', 
     joinDate: '2023-04-05' 
   },

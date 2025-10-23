@@ -3,10 +3,10 @@ import { Card } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Save, Edit2, X, MapPin } from "lucide-react";
 import { Alert } from "@/ui/AlertProps";
-import { useProfile } from "../../hooks/useProfileStore";
+import { useProfile } from "@/hooks/useProfileStore";
 import { AddressForm } from "./AddressForm";
-import { useAddressDetails } from "../../hooks/useAddressDetails";
-import { initialDataState } from "../../types/addressConstants";
+import { useAddressDetails } from "@/hooks/useAddressDetails";
+import { initialDataState } from "@/types/addressConstants";
 
 export default function AddressDetails() {
   const { primaryAddress, refetch } = useProfile();
@@ -32,11 +32,18 @@ export default function AddressDetails() {
       setData(initialDataState);
       setEdit(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryAddress]);
 
-  const change = (k: string, v: any) => {
+  const change = (k: string, v: string | boolean) => {
     setData(p => ({ ...p, [k]: v }));
-    if (errors[k]) setErrors((p: any) => ({ ...p, [k]: undefined }));
+    if (errors[k]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[k];
+        return updated;
+      });
+    }
   };
 
   const handleCancel = () => {

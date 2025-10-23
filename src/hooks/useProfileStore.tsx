@@ -2,13 +2,20 @@ import { useState, useEffect } from 'react';
 import api from '@/Api/baseurl';
 
 interface Address {
-  id: number;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  isPrimary: boolean;
+  id?: number;
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  isPrimary?: boolean;
+  // Additional fields used by AddressDetails
+  addressType?: string;
+  addressTitle?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  landmark?: string;
+  postalCode?: string;
 }
 
 interface PhoneNumber {
@@ -18,16 +25,22 @@ interface PhoneNumber {
 }
 
 interface Profile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
   dateOfBirth?: string;
   gender?: string;
   linkedin?: string;
   instagram?: string;
   addresses?: Address[];
   phoneNumbers?: PhoneNumber[];
+  // Additional fields for ProfileHeader compatibility
+  fullName?: string;
+  avatarUrl?: string;
+  isEmailVerified?: boolean;
+  externalUserId?: string;
+  createdAt?: string;
 }
 
 export function useProfile() {

@@ -31,7 +31,7 @@ function Home() {
         id: "test-user-123",
         name: "Test User",
         email: "test@user.com",
-        role: "user" as const,
+        role: "customer" as const,
       };
       const { setUser } = useAuthStore.getState();
       setUser(testUser);

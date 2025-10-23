@@ -1,7 +1,15 @@
 import { FormField } from "@/ui/formfield";
-import { addressTypes } from "../../types/addressConstants";
+import { addressTypes } from "@/types/addressConstants";
+import type { AddressData } from "@/types/addressConstants";
 
-export function AddressForm({ data, edit, change, errors }: any) {
+interface AddressFormProps {
+  data: AddressData;
+  edit: boolean;
+  change: (key: string, value: string | boolean) => void;
+  errors: Record<string, string>;
+}
+
+export function AddressForm({ data, edit, change, errors }: AddressFormProps) {
   return (
     <div className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">

@@ -9,12 +9,6 @@ import { Progress } from '@/ui/progress';
 type KYCStatus = 'not_started' | 'pending' | 'verified' | 'rejected';
 type DocumentType = 'passport' | 'drivers_license' | 'national_id';
 
-interface Document {
-  type: DocumentType;
-  frontImage: File | null;
-  backImage: File | null;
-}
-
 interface KYCData {
   status: KYCStatus;
   submittedDate?: string;
@@ -162,11 +156,11 @@ export default function KYCVerification() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Complete your verification</span>
                 <span className="text-sm font-medium text-gray-900">
-                  {kycData.status === 'pending' ? '50' : kycData.status === 'verified' ? '100' : '0'}%
+                  {kycData.status === 'pending' ? '50' : '0'}%
                 </span>
               </div>
               <Progress 
-                value={kycData.status === 'pending' ? 50 : kycData.status === 'verified' ? 100 : 0} 
+                value={kycData.status === 'pending' ? 50 : 0} 
               />
             </div>
           </div>
