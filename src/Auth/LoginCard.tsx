@@ -56,6 +56,7 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
   // Role-based navigation after successful login
   const userRole = (response.user.role || "customer").toLowerCase();
   
+  setTimeout(() => {
   switch(userRole) {
     case "customer":
       navigate("/all-services");
@@ -73,6 +74,7 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
     default:
       navigate("/all-services"); // Default fallback for unknown roles
   }
+},0);
 } else {
   toast.error(response.message || "Login failed");
 }
