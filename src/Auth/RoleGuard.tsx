@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 
 interface RoleGuardProps {
   children: ReactNode;
-  requiredRoles: Array<"customer" | "user" | "provider" | "admin" | "superadmin">;
+  requiredRoles: Array<"customer" | "provider" | "admin" | "superadmin">;
   fallback?: string; // path to redirect
 }
 
@@ -33,10 +33,9 @@ export default function RoleGuard({ children, requiredRoles, fallback = "/" }: R
     return <Navigate to={fallback} state={{ from: location }} replace />;
   }
 
-  const normalizeRole = (r: unknown): "customer" | "user" | "provider" | "admin" | "superadmin" => {
+  const normalizeRole = (r: unknown): "customer" | "provider" | "admin" | "superadmin" => {
     const v = typeof r === "string" ? r.toLowerCase() : "customer";
-    if (v === "customer") return "customer";
-    if (v === "user") return "user";
+    if (v === "customer" || v === "user") return "customer"; // Map both customer and user to customer
     if (v === "provider") return "provider";
     if (v === "admin") return "admin";
     if (v === "superadmin" || v === "super-admin") return "superadmin";

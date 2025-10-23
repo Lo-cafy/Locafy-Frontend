@@ -46,7 +46,14 @@ export function UserMenu() {
 
           {/* Profile */}
           <button
-            onClick={() => navigate("/user")}
+            onClick={() => {
+              // Navigate based on user role
+              if (user.role === 'customer') {
+                navigate("/user-profile");
+              } else {
+                navigate("/provider");
+              }
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors"
           >
             <User className="h-4 w-4" />
@@ -55,7 +62,14 @@ export function UserMenu() {
 
           {/* Settings */}
           <button
-            onClick={() => navigate("/User")}
+            onClick={() => {
+              // Navigate based on user role
+              if (user.role === 'customer') {
+                navigate("/user-profile");
+              } else {
+                navigate("/provider");
+              }
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors"
           >
             <Settings className="h-4 w-4" />

@@ -34,14 +34,14 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onUserAdded }) => {
     password: '',
     phone: '',
     address: '',
-    role: 'Customer',
+    role: 'customer',
     status: 'Active',
   });
 
   const roles: { value: UserRole; label: string; description: string; icon: string }[] = [
     { value: 'Admin', label: 'Administrator', description: 'Full system access', icon: '👑' },
     { value: 'Provider', label: 'Service Provider', description: 'Can offer services', icon: '🔧' },
-    { value: 'Customer', label: 'Customer', description: 'Can book services', icon: '👤' },
+    { value: 'customer', label: 'Customer', description: 'Can book services', icon: '👤' },
   ];
 
   const statuses: { value: UserStatus; label: string; color: string }[] = [
@@ -112,7 +112,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onUserAdded }) => {
         password: '',
         phone: '',
         address: '',
-        role: 'Customer',
+        role: 'customer',
         status: 'Active',
       });
     } catch (error) {

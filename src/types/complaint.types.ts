@@ -9,13 +9,13 @@ export interface Complaint {
     id: string;
     name: string;
     email: string;
-    role: 'user' | 'provider';
+    role: 'customer' | 'provider';
   };
   reportedAgainst?: {
     id: string;
     name: string;
     email: string;
-    role: 'user' | 'provider' | 'admin';
+    role: 'customer' | 'provider' | 'admin';
   };
   assignedTo?: {
     id: string;

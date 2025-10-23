@@ -8,14 +8,14 @@ import { Badge } from "@/ui/badge";
 import { Mail, Shield, CheckCircle2 } from "lucide-react";
 
 interface InviteUserModalProps {
-  onInvited?: (payload: { email: string; role: "user" | "provider" | "admin" | "superadmin"; tenant?: string }) => void;
+  onInvited?: (payload: { email: string; role: "customer" | "provider" | "admin" | "superadmin"; tenant?: string }) => void;
   triggerClassName?: string;
 }
 
 export default function InviteUserModal({ onInvited, triggerClassName }: InviteUserModalProps) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"user" | "provider" | "admin" | "superadmin">("user");
+  const [role, setRole] = useState<"customer" | "provider" | "admin" | "superadmin">("customer");
   const [tenant, setTenant] = useState<string>("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -34,7 +34,7 @@ export default function InviteUserModal({ onInvited, triggerClassName }: InviteU
       setOpen(false);
       setSent(false);
       setEmail("");
-      setRole("user");
+      setRole("customer");
       setTenant("");
     }, 800);
   };
@@ -73,13 +73,13 @@ export default function InviteUserModal({ onInvited, triggerClassName }: InviteU
               <Label>Role</Label>
               <Select
                 value={role}
-                onValueChange={(v: "user" | "provider" | "admin" | "superadmin") => setRole(v)}
+                onValueChange={(v: "customer" | "provider" | "admin" | "superadmin") => setRole(v)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="customer">Customer</SelectItem>
                   <SelectItem value="provider">Provider</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="superadmin">Super Admin</SelectItem>

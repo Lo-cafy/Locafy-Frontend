@@ -1,8 +1,29 @@
 import { Camera, Edit, MapPin, Calendar, Shield, Phone, Mail } from "lucide-react";
-import { Button } from "../../ui/button";
-import { Badge } from "../../ui/badge";
-import { ImageWithFallback } from "../../Components/fallback";
-import { getGenderLabel, formatDate } from "../../types/helpers";
+import { Button } from "@/ui/button";
+import { Badge } from "@/ui/badge";
+import { ImageWithFallback } from "@/Components/fallback";
+import { getGenderLabel, formatDate } from "@/types/helpers";
+
+interface ProfileHeaderProps {
+  profile?: {
+    fullName?: string;
+    avatarUrl?: string;
+    isEmailVerified?: boolean;
+    externalUserId?: string;
+    createdAt?: string;
+    email?: string;
+    gender?: string;
+  };
+  primaryAddress?: {
+    addressLine1?: string;
+  };
+  primaryPhone?: {
+    phoneNumber?: string;
+  };
+  onEdit: () => void;
+  profileImg?: string;
+  handleProfileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 export function ProfileHeader({
   profile,
@@ -11,7 +32,7 @@ export function ProfileHeader({
   onEdit,
   profileImg,
   handleProfileUpload,
-}: any) {
+}: ProfileHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row items-center gap-6">
       <div className="relative group shrink-0">

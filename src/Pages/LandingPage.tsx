@@ -74,13 +74,6 @@ function Home() {
             </Link>
           </div>
         </div>
-        
-        {/* My Bookings Quick Access */}
-        <Link to="/my-bookings">
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg transition-all duration-200 px-6 py-3 rounded-xl font-semibold">
-            My Bookings
-          </Button>
-        </Link>
       </div>
 
       {/* Main Content */}

@@ -215,12 +215,20 @@ export default function ServiceListingPage() {
                 <ArrowLeft className="h-5 w-5" />
                 <span className="font-medium">Back</span>
               </button>
-              <button
-                onClick={() => window.location.href = '/my-bookings'}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
-              >
-                My Bookings
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => window.location.href = '/user-profile'}
+                  className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => window.location.href = '/my-bookings'}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                >
+                  My Bookings
+                </button>
+              </div>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
               Services

@@ -1,7 +1,7 @@
 export interface ChatMessage {
   id: string;
   senderId: string;
-  senderType: 'admin' | 'provider' | 'user';
+  senderType: 'admin' | 'provider' | 'customer';
   receiverId: string;
   content: string;
   timestamp: Date;
@@ -34,7 +34,7 @@ export interface ChatParticipant {
   name: string;
   email: string;
   avatar?: string;
-  role: 'admin' | 'provider' | 'user';
+  role: 'admin' | 'provider' | 'customer';
   status: 'online' | 'offline' | 'away' | 'busy';
   lastSeen?: Date;
 }
@@ -89,7 +89,7 @@ export interface ChatSearchResult {
 export interface ChatFilter {
   conversationId?: string;
   senderId?: string;
-  senderType?: 'admin' | 'provider' | 'user';
+  senderType?: 'admin' | 'provider' | 'customer';
   messageType?: 'text' | 'image' | 'file' | 'system';
   dateFrom?: Date;
   dateTo?: Date;

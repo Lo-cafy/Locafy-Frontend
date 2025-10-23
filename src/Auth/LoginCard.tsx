@@ -48,21 +48,30 @@ export function LogIn({ onSwitch }: { onSwitch: () => void }) {
     id: response.user.userId || response.user.email,
     name: `${response.user.firstName || ""} ${response.user.lastName || ""}`,
     email: response.user.email,
-    role: response.user.role || "Customer", // Include role from backend
+    role: response.user.role || "customer", // Include role from backend
   };
 
   setUser(userData);
   
-  // Role-based navigation for email/password login only
-  const userRole = (response.user.role || "Customer").toLowerCase();
-  if (userRole === "customer") {
-    navigate("/all-services");
-  } else if (userRole === "provider") {
-    navigate("/provider");
-  } else if (userRole === "admin") {
-    navigate("/admin");
-  } else {
-    navigate("/all-services"); // Default for unknown roles
+  // Role-based navigation after successful login
+  const userRole = (response.user.role || "customer").toLowerCase();
+  
+  switch(userRole) {
+    case "customer":
+      navigate("/all-services");
+      break;
+    case "provider":
+      navigate("/provider");
+      break;
+    case "admin":
+      navigate("/admin");
+      break;
+    case "superadmin":
+    case "super_admin":
+      navigate("/superadmin");
+      break;
+    default:
+      navigate("/all-services"); // Default fallback for unknown roles
   }
 } else {
   toast.error(response.message || "Login failed");

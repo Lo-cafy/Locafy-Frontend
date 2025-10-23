@@ -1,4 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 import api from "@/Api/baseurl";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/ui/button";
@@ -11,6 +12,8 @@ interface GoogleTokenResponse {
 
 export default function GoogleLoginButton() {
     const setUser = useAuthStore((state) => state.setUser);
+    const navigate = useNavigate();
+    
     const handleGoogleLogin = async (tokenResponse: GoogleTokenResponse) => {
         console.log("Google Token Response:", tokenResponse);
 
@@ -24,6 +27,7 @@ export default function GoogleLoginButton() {
             name: res.data.name,
             email: res.data.email,
             picture: res.data.picture,
+            role: "customer" as const // Default role for Google login users
         };
 
         setUser(userObj);
@@ -33,6 +37,27 @@ export default function GoogleLoginButton() {
         api.post("/googleUsers", userObj)
             .then((r) => console.log("Saved to db.json:", r.data))
             .catch((err) => console.error("Failed to save to db.json:", err));
+        
+        // Role-based navigation (Google users default to customer)
+        const userRole = (userObj.role || "customer").toLowerCase();
+        
+        switch(userRole) {
+            case "customer":
+                navigate("/all-services");
+                break;
+            case "provider":
+                navigate("/provider");
+                break;
+            case "admin":
+                navigate("/admin");
+                break;
+            case "superadmin":
+            case "super_admin":
+                navigate("/superadmin");
+                break;
+            default:
+                navigate("/all-services");
+        }
     };
 
 

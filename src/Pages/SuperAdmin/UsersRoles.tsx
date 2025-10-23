@@ -20,7 +20,7 @@ export default function UsersRoles() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="user">User</SelectItem>
+            <SelectItem value="customer">Customer</SelectItem>
             <SelectItem value="provider">Provider</SelectItem>
             <SelectItem value="admin">Admin</SelectItem>
             <SelectItem value="superadmin">Super Admin</SelectItem>
@@ -37,7 +37,7 @@ export default function UsersRoles() {
               <Select>
                 <SelectTrigger className="w-44"><SelectValue placeholder="Change role" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="customer">Customer</SelectItem>
                   <SelectItem value="provider">Provider</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="superadmin">Super Admin</SelectItem>

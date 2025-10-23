@@ -87,7 +87,7 @@ const ComplaintsReport: React.FC = () => {
             id: 'user1',
             name: 'John Doe',
             email: 'john@example.com',
-            role: 'user'
+            role: 'customer'
           },
           reportedAgainst: {
             id: 'provider1',
