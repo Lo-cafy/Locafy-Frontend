@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
   };
 
   return (
-    <aside className="hidden md:flex flex-col fixed top-0 left-0 h-full w-20 bg-white/60 backdrop-blur-lg text-gray-700 p-3 border-r border-white/30 transition-all duration-300 hover:w-64 group z-50 shadow-sm peer">
+    <aside className="hidden md:flex md:sticky top-0 flex-col h-screen w-20 bg-white/60 backdrop-blur-lg text-gray-700 p-3 border-r border-white/30 transition-all duration-300 hover:w-64 group z-50 shadow-sm peer">
       <div className="flex items-center h-16 shrink-0 mb-6 px-2 justify-center group-hover:justify-start">
          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
             <span className="text-white font-bold text-xl">L</span>

@@ -58,7 +58,6 @@ export default function CategoryFilter({
 }: Props) {
   return (
     <div className="mb-4">
-      <h3 className="font-semibold mb-2">Categories</h3>
       
      {isLoading ? (
   <div className="space-y-2">

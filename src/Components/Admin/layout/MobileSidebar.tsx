@@ -23,7 +23,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
       />
 
       {/* Sidebar Container */}
-      <div className={`fixed inset-y-0 left-0 transform ${
+      <div className={`fixed top-0 bottom-0 left-0 transform ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0 transition-transform duration-300 ease-in-out w-64 bg-gray-900 border-r border-gray-800 flex flex-col z-40`}>
         

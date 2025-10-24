@@ -81,7 +81,10 @@ export function UserMenu() {
 
           {/* Logout */}
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut className="h-4 w-4" />

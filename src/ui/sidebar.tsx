@@ -32,7 +32,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       <div
         ref={ref}
         className={cn(
-          'h-screen bg-white border-r border-gray-200 transition-all duration-300',
+          'h-screen fixed top-0 left-0 bg-white border-r border-gray-200 transition-all duration-300',
           expanded ? 'w-64' : 'w-20',
           className
         )}

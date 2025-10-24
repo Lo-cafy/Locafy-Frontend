@@ -75,15 +75,6 @@ export default function UserProfile() {
     }
   }, [location.state]);
 
-  const getMembershipBadge = (level: string) => {
-    const configs = {
-      Basic: 'bg-gray-100 text-gray-800',
-      Premium: 'bg-gradient-to-r from-purple-500 to-blue-500 text-white',
-      Gold: 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
-    };
-    return configs[level as keyof typeof configs] || configs.Basic;
-  };
-
   const getKYCStatusBadge = (status: string) => {
     const configs = {
       verified: { class: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -92,9 +83,6 @@ export default function UserProfile() {
     };
     return configs[status as keyof typeof configs] || configs.not_verified;
   };
-
-  const kycBadge = getKYCStatusBadge(userData.kycStatus);
-  const KYCIcon = kycBadge.icon;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
@@ -115,7 +103,11 @@ export default function UserProfile() {
               It needs userData to display, onEdit to open the modal,
               and the badge info since the logic is in this parent component.
             */}
-            <ProfileCard/>
+            <ProfileCard
+              userData={userData}
+              onEdit={() => setIsEditingProfile(true)}
+              getKYCStatusBadge={getKYCStatusBadge}
+            />
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 p-6"> {/* Added p-6 for consistency */}
               <div className="text-center">

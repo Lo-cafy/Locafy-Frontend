@@ -3,7 +3,6 @@ import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import api  from "@/Api/baseurl";
 import {
   SlidersHorizontal,
-  X,
   ChevronDown,
   ChevronUp,
   ChevronRight,
@@ -26,6 +25,7 @@ type Filters = {
 interface Props {
   filters: Filters;
   setFilters: Dispatch<SetStateAction<Filters>>;
+  onClearFilters: () => void;
 }
 
 interface Category {
@@ -33,7 +33,7 @@ interface Category {
   name: string;
 }
 
-export default function Sidebar({ filters, setFilters }: Props) {
+export default function Sidebar({ filters, setFilters, onClearFilters }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
@@ -120,20 +120,23 @@ export default function Sidebar({ filters, setFilters }: Props) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const sidebar = document.getElementById("mobile-sidebar");
-      const toggle = document.getElementById("mobile-toggle");
+      const dropdown = document.querySelector('[data-mobile-filters]');
+      const toggle = document.getElementById('mobile-toggle');
       if (
         isMobileOpen &&
-        sidebar &&
-        !sidebar.contains(event.target as Node) &&
+        dropdown &&
+        !dropdown.contains(event.target as Node) &&
         toggle &&
         !toggle.contains(event.target as Node)
       ) {
         setIsMobileOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    if (isMobileOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
   }, [isMobileOpen]);
 
   const toggleSection = (section: keyof typeof collapsedSections) => {
@@ -263,74 +266,96 @@ export default function Sidebar({ filters, setFilters }: Props) {
   );
 
   return (
-    <>
-      <div className="lg:hidden sticky top-4 z-40 mb-4 px-4">
-        <button
-          id="mobile-toggle"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg"
-        >
-          <SlidersHorizontal className="h-5 w-5" />
-          Filters
-          {isMobileOpen ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-
-      <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:p-6 lg:bg-slate-50 lg:border lg:rounded-xl lg:shadow flex-shrink-0 sticky top-4 h-fit">
-        <h2 className="text-xl font-bold mb-4">Filters</h2>
-        <FilterContent />
-        <button
-          onClick={() => setFilters({})}
-          className="mt-4 w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
-        >
-          Reset Filters
-        </button>
+    <div className="h-full">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block h-full border-r">
+        <div className="h-full flex flex-col">
+          <div className="p-6 flex-shrink-0 bg-white">
+            <h2 className="text-xl font-bold mb-4">Filters</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto px-6 bg-white">
+            <FilterContent />
+          </div>
+          <div className="p-6 flex-shrink-0 border-t bg-white">
+            <button
+              onClick={onClearFilters}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
+            >
+              Reset Filters
+            </button>
+          </div>
+        </div>
       </aside>
 
-      {isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
+      {/* Mobile View */}
+      <div className="lg:hidden">
+        {/* Filter Button */}
+        <div className="sticky top-0 z-40">
+          <div className="p-4 bg-white/95 backdrop-blur-md shadow-sm">
+            <button
+              id="mobile-toggle"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className={`w-full bg-white/80 backdrop-blur-sm border py-2.5 px-4 rounded-lg font-medium flex items-center justify-between transition-all duration-300 ${
+                isMobileOpen 
+                  ? 'border-green-600 text-green-600 shadow-md' 
+                  : 'border-gray-200/80 text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4" />
+                <span>{isMobileOpen ? 'Hide Filters' : 'Show Filters'}</span>
+              </div>
+              {isMobileOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </div>
 
-      <div
-        id="mobile-sidebar"
-        className={`fixed inset-y-0 left-0 z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        } bg-white w-4/5 max-w-xs shadow-xl flex flex-col`}
-      >
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-bold">Filters</h2>
-          <button
-            onClick={() => setIsMobileOpen(false)}
-            className="p-2 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          <FilterContent />
-        </div>
-        <div className="p-4 border-t bg-white">
-          <button
-            onClick={() => setFilters({})}
-            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold mb-2 hover:bg-gray-200 transition-colors"
-          >
-            Reset Filters
-          </button>
-          <button
-            onClick={() => setIsMobileOpen(false)}
-            className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-colors"
-          >
-            Show Results
-          </button>
-        </div>
+        {/* Filter Panel */}
+        {isMobileOpen && (
+          <div className="fixed inset-x-0 top-[calc(4rem+65px)] z-50">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 backdrop-blur-sm bg-white/70"
+              onClick={() => setIsMobileOpen(false)}
+            />
+            
+            {/* Content */}
+            <div className="relative mx-4">
+              <div className="bg-white/95 rounded-lg shadow-lg flex flex-col max-h-[85vh]">
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto">
+                  <div className="p-4">
+                    <FilterContent />
+                  </div>
+                </div>
+
+                {/* Fixed Bottom Buttons */}
+                <div className="p-4 border-t bg-white/95 backdrop-blur-sm flex gap-2 sticky bottom-0 rounded-b-lg">
+                  <button
+                    onClick={() => {
+                      onClearFilters();
+                      setIsMobileOpen(false);
+                    }}
+                    className="flex-1 bg-white text-gray-700 py-2.5 px-4 rounded-lg font-medium border hover:bg-gray-50 transition-colors text-sm shadow-sm"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={() => setIsMobileOpen(false)}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-2.5 px-4 rounded-lg font-medium hover:from-green-700 hover:to-green-800 transition-colors text-sm shadow-sm"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

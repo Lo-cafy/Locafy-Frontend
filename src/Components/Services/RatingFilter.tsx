@@ -9,7 +9,6 @@ interface Props {
 export default function RatingFilter({ filters, setFilters }: Props) {
   return (
     <div className="mb-4">
-      <h3 className="font-semibold mb-2">Minimum Rating</h3>
       <div className="space-y-2">
         {[4, 3, 2, 1].map(r => (
           <div key={r} className="flex items-center gap-2">
