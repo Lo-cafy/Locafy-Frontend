@@ -1,24 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  User,
-  Calendar,
-  Heart,
-  Shield,
-  CheckCircle,
-  Clock,
-  Star,
-  Package,
-  ArrowLeft
-} from 'lucide-react';
-import { Card } from '@/ui/card';
-import { Button } from '@/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs';
-import KYCVerification from '@/Components/Profile/KYCVerification';
-import UserFavorites from '@/Components/Profile/UserFavorites';
-import MyBookingsPage from './MyBookings';
-import { EditProfileModal } from '@/Components/Profile/EditProfileModal';
-import ProfileCard from '@/Components/Profile/ProfileCard';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AddressDetails from "@/Components/Profile/AddressDetails";
+import PaymentDetails from "@/Components/Profile/BankDetails";
+import UPIDtails from "@/Components/Profile/UPIDtails";
+import { useProfile } from "@/hooks/useProfileStore";
+import { Home, Landmark, CreditCard, User, ArrowLeft } from "lucide-react";
+import { Card } from "@/ui/card";
+import OverviewTab from "@/Components/Profile/UserProfile/OverViwTab";
+import ConfirmProviderModal from "@/Components/Profile/UserProfile/ConfirmProviderModel";
+import KYCModal from "@/Components/Profile/UserProfile/KycModal";
+import ProfileSidebar from "@/Components/Profile/UserProfile/ProfileSideBar";
+import UserProfileHeader from "@/Components/Profile/UserProfile/UserProfileHeader";
+import { Navbar } from "@/Components/Navbar";
+import { useAvatarUpload } from "@/hooks/useAvatarUpload";
 
 interface UserProfile {
   name: string;
@@ -37,57 +31,117 @@ interface UserProfile {
   kycStatus: 'verified' | 'pending' | 'not_verified';
 }
 
-// Dummy user data
-const dummyUserData: UserProfile = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  phone: '+1 (555) 123-4567',
-  location: 'New York, NY',
-  avatar: '/api/placeholder/150/150',
-  joinedDate: 'Jan 2024',
-  membershipLevel: 'Premium',
-  stats: {
-    totalBookings: 12,
-    completedServices: 8,
-    favorites: 5,
-    reviews: 6
-  },
-  kycStatus: 'verified'
-};
+interface EnhancedUserProfileSectionProps {
+  userData?: UserProfile;
+}
 
-export default function UserProfile() {
-  const location = useLocation();
+export default function EnhancedUserProfileSection({ userData }: EnhancedUserProfileSectionProps) {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState<UserProfile>(dummyUserData);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const { profile, loading, error, primaryPhone, primaryAddress } = useProfile();
+  const [activeTab, setActiveTab] = useState("overview");
+  const [profileImg, setProfileImg] = useState(profile?.avatarUrl || "");
 
-  const handleSaveProfile = (updatedData: Pick<UserProfile, 'name' | 'email' | 'phone' | 'location' | 'avatar'>) => {
-    setUserData(prev => ({ ...prev, ...updatedData }));
-    // Here you would typically make an API call to update the profile
-    // Example: await updateUserProfile(updatedData);
-  };
+  // Avatar upload hook
+  const { uploadAvatar } = useAvatarUpload({
+    onSuccess: () =>"", 
+    onError: (msg) => console.error(msg),
+  });
 
-  // Handle tab navigation from state
-  useEffect(() => {
-    if (location.state?.tab) {
-      setActiveTab(location.state.tab);
+  // Provider request & KYC states
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [kycStatus, setKycStatus] = useState<'not_started' | 'pending' | 'verified'>('not_started');
+
+  // KYC form states
+  const [kycData, setKycData] = useState({
+    fullName: "",
+    idType: "aadhaar",
+    idNumber: "",
+    address: "",
+    idProof: null as File | null,
+    photo: null as File | null
+  });
+
+  // Handle profile image selection & upload
+  const handleProfileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setProfileImg(reader.result as string);
+      reader.readAsDataURL(file);
+
+      uploadAvatar(e);
+
+      
     }
-  }, [location.state]);
-
-  const getKYCStatusBadge = (status: string) => {
-    const configs = {
-      verified: { class: 'bg-green-100 text-green-800', icon: CheckCircle },
-      pending: { class: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      not_verified: { class: 'bg-gray-100 text-gray-800', icon: Shield }
-    };
-    return configs[status as keyof typeof configs] || configs.not_verified;
   };
+
+  // Handle KYC file uploads
+  const handleFileChange = (field: 'idProof' | 'photo') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setKycData(prev => ({ ...prev, [field]: file }));
+  };
+
+  const handleBecomeProvider = () => setShowConfirmModal(true);
+  const handleConfirmProvider = () => {
+    setShowConfirmModal(false);
+    setShowKYCModal(true);
+  };
+
+  const handleKYCSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("KYC Data submitted:", kycData);
+    setKycStatus('pending');
+    setShowKYCModal(false);
+    setKycData({ fullName: "", idType: "aadhaar", idNumber: "", address: "", idProof: null, photo: null });
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
+        <div className="text-gray-500 text-lg">Loading profile...</div>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
+        <div className="text-center text-red-500 bg-red-50 border border-red-200 rounded-xl p-6">
+          {error}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (!profile) return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
+        <div className="text-center text-gray-500 bg-gray-50 border border-gray-200 rounded-xl p-6">
+          No profile data available
+        </div>
+      </div>
+    </div>
+  );
+
+  const fullName = profile.fullName || `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
+  const stats = userData?.stats || { totalBookings: 0, completedServices: 0, favorites: 0, reviews: 0 };
+
+  const tabs = [
+    { id: "overview", label: "Overview", icon: User },
+    { id: "address", label: "Address", icon: Home },
+    { id: "bank", label: "Bank Details", icon: Landmark },
+    { id: "upi", label: "UPI", icon: CreditCard }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
-      <div className="py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 min-h-[calc(100vh-64px)]">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
           {/* Back Button */}
           <button
             onClick={() => navigate(-1)}
@@ -96,204 +150,69 @@ export default function UserProfile() {
             <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
             <span className="font-medium">Back</span>
           </button>
-          
-          {/* Profile Header */}
-          <Card className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
-            {/* FIX: Passed necessary props to ProfileCard.
-              It needs userData to display, onEdit to open the modal,
-              and the badge info since the logic is in this parent component.
-            */}
-            <ProfileCard
-              userData={userData}
-              onEdit={() => setIsEditingProfile(true)}
-              getKYCStatusBadge={getKYCStatusBadge}
+
+          <UserProfileHeader 
+            fullName={fullName}
+            avatarUrl={profileImg || profile.avatarUrl}
+            isVerified={profile.isEmailVerified}
+            membershipLevel={userData?.membershipLevel || "Basic"}
+          />
+
+          <div className="grid lg:grid-cols-12 gap-6">
+            <ProfileSidebar
+              profile={profile}
+              profileImg={profileImg}
+              fullName={fullName}
+              membershipLevel={userData?.membershipLevel || "Basic"}
+              kycStatus={kycStatus}
+              tabs={tabs}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              handleProfileUpload={handleProfileUpload}
+              handleBecomeProvider={handleBecomeProvider}
             />
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 p-6"> {/* Added p-6 for consistency */}
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Package className="w-5 h-5 text-emerald-600" />
-                  <p className="text-2xl font-bold text-gray-900">{userData.stats.totalBookings}</p>
-                </div>
-                <p className="text-sm text-gray-600">Total Bookings</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <p className="text-2xl font-bold text-gray-900">{userData.stats.completedServices}</p>
-                </div>
-                <p className="text-sm text-gray-600">Completed</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  <p className="text-2xl font-bold text-gray-900">{userData.stats.favorites}</p>
-                </div>
-                <p className="text-sm text-gray-600">Favorites</p>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Star className="w-5 h-5 text-yellow-500" />
-                  <p className="text-2xl font-bold text-gray-900">{userData.stats.reviews}</p>
-                </div>
-                <p className="text-sm text-gray-600">Reviews</p>
-              </div>
-            </div>
-          </Card>
 
-          {/* Tabs Section */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-white rounded-xl shadow-sm border border-gray-200 p-1 mb-6">
-              <TabsTrigger
-                value="overview"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
-              >
-                <User className="w-4 h-4 mr-2" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger
-                value="bookings"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                My Bookings
-              </TabsTrigger>
-              <TabsTrigger
-                value="favorites"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                Favorites
-              </TabsTrigger>
-              <TabsTrigger
-                value="kyc"
-                className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white rounded-lg transition-all"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                KYC
-              </TabsTrigger>
-            </TabsList>
+            <div className="lg:col-span-9">
+              <Card className="bg-white shadow-xl rounded-2xl border-0 overflow-hidden">
+                <div className="h-20 sm:h-24 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-500 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-black/5"></div>
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+                  <div className="absolute top-5 -left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+                </div>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Quick Actions */}
-                <Card className="bg-white border border-gray-200 p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <Button
-                      onClick={() => navigate('/all-services')}
-                      className="w-full bg-emerald-600 text-white hover:bg-emerald-700 justify-start"
-                    >
-                      <Package className="w-5 h-5 mr-3" />
-                      Browse Services
-                    </Button>
-                    <Button
-                      onClick={() => setActiveTab('bookings')}
-                      variant="outline"
-                      className="w-full justify-start border-gray-300 hover:bg-gray-50"
-                    >
-                      <Calendar className="w-5 h-5 mr-3" />
-                      View My Bookings
-                    </Button>
-                    <Button
-                      onClick={() => setActiveTab('favorites')}
-                      variant="outline"
-                      className="w-full justify-start border-gray-300 hover:bg-gray-50"
-                    >
-                      <Heart className="w-5 h-5 mr-3" />
-                      My Favorites
-                    </Button>
-                  </div>
-                </Card>
-
-                {/* Membership Benefits */}
-                <Card className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    {userData.membershipLevel} Benefits
-                  </h3>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5" />
-                      <span className="text-sm text-gray-700">Priority booking support</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5" />
-                      <span className="text-sm text-gray-700">Exclusive discounts up to 20%</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5" />
-                      <span className="text-sm text-gray-700">Free cancellation on select services</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600 mt-0.5" />
-                      <span className="text-sm text-gray-700">24/7 customer support</span>
-                    </li>
-                  </ul>
-                  {userData.membershipLevel !== 'Gold' && (
-                    <Button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-white">
-                      Upgrade to Gold
-                    </Button>
+                <div className="p-4 sm:p-8 -mt-10 relative">
+                  {activeTab === "overview" && (
+                    <OverviewTab
+                      profile={profile}
+                      primaryPhone={primaryPhone}
+                      primaryAddress={primaryAddress}
+                      stats={stats}
+                    />
                   )}
-                </Card>
-              </div>
-
-              {/* Recent Activity */}
-              <Card className="bg-white border border-gray-200 p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Service Completed</p>
-                      <p className="text-xs text-gray-600">Deep Home Cleaning - 2 days ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Added to Favorites</p>
-                      <p className="text-xs text-gray-600">Expert Plumbing - 5 days ago</p>
-                    </div>
-                  </div>
+                  {activeTab === "address" && <AddressDetails />}
+                  {activeTab === "bank" && <PaymentDetails />}
+                  {activeTab === "upi" && <UPIDtails />}
                 </div>
               </Card>
-            </TabsContent>
-
-            {/* My Bookings Tab */}
-            <TabsContent value="bookings">
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <MyBookingsPage />
-              </div>
-            </TabsContent>
-
-            {/* Favorites Tab */}
-            <TabsContent value="favorites">
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <UserFavorites />
-              </div>
-            </TabsContent>
-
-            {/* KYC Tab */}
-            <TabsContent value="kyc">
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <KYCVerification />
-              </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
-      <EditProfileModal
-        isOpen={isEditingProfile}
-        onClose={() => setIsEditingProfile(false)}
-        userData={userData}
-        onSave={handleSaveProfile}
+      {/* Modals */}
+      <ConfirmProviderModal
+        showConfirmModal={showConfirmModal}
+        setShowConfirmModal={setShowConfirmModal}
+        handleConfirmProvider={handleConfirmProvider}
+      />
+
+      <KYCModal
+        showKYCModal={showKYCModal}
+        setShowKYCModal={setShowKYCModal}
+        kycData={kycData}
+        setKycData={setKycData}
+        handleKYCSubmit={handleKYCSubmit}
+        handleFileChange={handleFileChange}
       />
     </div>
   );

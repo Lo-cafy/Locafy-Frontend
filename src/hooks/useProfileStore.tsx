@@ -72,6 +72,8 @@ export function useProfile() {
     fetchProfile();
   };
 
+console.log(profile?.addresses);
+
   const primaryPhone = profile?.phones?.find(p => p.isPrimary) || profile?.phones?.[0];
 
   const primaryAddress = profile?.addresses?.find(a => a.isPrimary) || profile?.addresses?.[0];
