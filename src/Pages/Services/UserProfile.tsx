@@ -39,9 +39,10 @@ interface EnhancedUserProfileSectionProps {
 
 export default function EnhancedUserProfileSection({ userData }: EnhancedUserProfileSectionProps) {
   const navigate = useNavigate();
-  const { profile, loading: profileLoading, error: profileError, primaryPhone, primaryAddress } = useProfile();
+  const { profile, loading: profileLoading, error: profileError, primaryPhone, primaryAddress ,refetch} = useProfile();
   const [activeTab, setActiveTab] = useState("overview");
   const [profileImg, setProfileImg] = useState(profile?.avatarUrl || "");
+
 
   // Avatar upload hook
   const { uploadAvatar } = useAvatarUpload({
@@ -180,6 +181,8 @@ export default function EnhancedUserProfileSection({ userData }: EnhancedUserPro
               setActiveTab={setActiveTab}
               handleProfileUpload={handleProfileUpload}
               handleBecomeProvider={handleBecomeProvider}
+              primaryPhone={primaryPhone}  // Add this
+              onProfileUpdate={() => refetch()}  // Add this - refetch from useProfile hook
             />
 
             <div className="lg:col-span-9">

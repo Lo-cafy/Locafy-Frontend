@@ -70,7 +70,7 @@ export function UrlVerification() {
             </h2>
             <p className="text-base text-slate-600">{message}</p>
             <Button
-              onClick={()=>navigate('/provider')}
+              onClick={()=>navigate('/')}
               className="w-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 mt-4 py-3 rounded-lg transition-all hover:shadow-lg hover:-translate-y-1"
             >
               Continue

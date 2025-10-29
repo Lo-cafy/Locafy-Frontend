@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/Api/baseurl';
+import { toast } from 'react-toastify';
 
 type KycStatus = "Pending" | "Verified" | "Rejected";
 type DocumentType = "Passport" | "DriversLicense" | "NationalId";
@@ -120,6 +121,7 @@ export function useKYC() {
           fetchSubmissions(); // Refresh submissions
         }, 2000);
       } else {
+        toast.error(response.data.message)
         throw new Error(response.data.message || 'Failed to submit KYC');
       }
 
