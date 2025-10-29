@@ -13,6 +13,8 @@ import ProfileSidebar from "@/Components/Profile/UserProfile/ProfileSideBar";
 import UserProfileHeader from "@/Components/Profile/UserProfile/UserProfileHeader";
 import { Navbar } from "@/Components/Navbar";
 import { useAvatarUpload } from "@/hooks/useAvatarUpload";
+import LiveCameraCapture from "@/Components/Profile/UserProfile/LiveCamaraCapture";
+import { useKYC } from "@/hooks/useKYC";
 
 interface UserProfile {
   name: string;
@@ -37,30 +39,46 @@ interface EnhancedUserProfileSectionProps {
 
 export default function EnhancedUserProfileSection({ userData }: EnhancedUserProfileSectionProps) {
   const navigate = useNavigate();
-  const { profile, loading, error, primaryPhone, primaryAddress } = useProfile();
+  const { profile, loading: profileLoading, error: profileError, primaryPhone, primaryAddress } = useProfile();
   const [activeTab, setActiveTab] = useState("overview");
   const [profileImg, setProfileImg] = useState(profile?.avatarUrl || "");
 
   // Avatar upload hook
   const { uploadAvatar } = useAvatarUpload({
-    onSuccess: () =>"", 
+    onSuccess: () => console.log("Avatar uploaded successfully"), 
     onError: (msg) => console.error(msg),
   });
 
   // Provider request & KYC states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showKYCModal, setShowKYCModal] = useState(false);
-  const [kycStatus, setKycStatus] = useState<'not_started' | 'pending' | 'verified'>('not_started');
 
-  // KYC form states
-  const [kycData, setKycData] = useState({
-    fullName: "",
-    idType: "aadhaar",
-    idNumber: "",
-    address: "",
-    idProof: null as File | null,
-    photo: null as File | null
-  });
+  const {
+    // Submission Data
+    submission,
+    // loading: kycLoading,
+    // error: kycError,
+
+    // Modal State
+    showKYCModal,
+    setShowKYCModal,
+    showCamera,
+    setShowCamera,
+
+    // Form Data
+    kycData,
+    setKycData,
+
+    // Handlers
+    handleFileChange,
+    handleCameraCapture,
+    handleKYCSubmit,
+    openCamera,
+
+    // Submission Status
+    isSubmitting,
+    submitStatus,
+    errorMessage
+  } = useKYC();
 
   // Handle profile image selection & upload
   const handleProfileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,32 +89,24 @@ export default function EnhancedUserProfileSection({ userData }: EnhancedUserPro
       reader.readAsDataURL(file);
 
       uploadAvatar(e);
-
-      
     }
   };
 
-  // Handle KYC file uploads
-  const handleFileChange = (field: 'idProof' | 'photo') => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setKycData(prev => ({ ...prev, [field]: file }));
-  };
-
   const handleBecomeProvider = () => setShowConfirmModal(true);
+  
   const handleConfirmProvider = () => {
     setShowConfirmModal(false);
     setShowKYCModal(true);
   };
 
-  const handleKYCSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("KYC Data submitted:", kycData);
-    setKycStatus('pending');
-    setShowKYCModal(false);
-    setKycData({ fullName: "", idType: "aadhaar", idNumber: "", address: "", idProof: null, photo: null });
-  };
+  // Determine KYC status from submission - map to ProfileSidebar expected values
+  const kycStatus: 'verified' | 'pending' | 'not_started' = submission 
+    ? (submission.status === 'Verified' ? 'verified' 
+      : submission.status === 'Pending' ? 'pending' 
+      : 'not_started')
+    : 'not_started';
 
-  if (loading) return (
+  if (profileLoading) return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
@@ -105,12 +115,12 @@ export default function EnhancedUserProfileSection({ userData }: EnhancedUserPro
     </div>
   );
 
-  if (error) return (
+  if (profileError) return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
         <div className="text-center text-red-500 bg-red-50 border border-red-200 rounded-xl p-6">
-          {error}
+          {profileError}
         </div>
       </div>
     </div>
@@ -213,7 +223,19 @@ export default function EnhancedUserProfileSection({ userData }: EnhancedUserPro
         setKycData={setKycData}
         handleKYCSubmit={handleKYCSubmit}
         handleFileChange={handleFileChange}
+        isSubmitting={isSubmitting}
+        submitStatus={submitStatus}
+        errorMessage={errorMessage}
+        onOpenCamera={openCamera}
       />
+
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <LiveCameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </div>
   );
 }

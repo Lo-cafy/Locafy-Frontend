@@ -1,5 +1,3 @@
-
-
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
 import { Badge } from "@/ui/badge";
@@ -28,7 +26,8 @@ export default function ProfileSidebar({
   activeTab,
   setActiveTab,
   handleProfileUpload,
-  handleBecomeProvider }: ProfileSidebarProps) {
+  handleBecomeProvider
+}: ProfileSidebarProps) {
   const quickActions = [
     { icon: Shield, label: "Security", color: "emerald" },
     { icon: Bell, label: "Notifications", color: "blue" },
@@ -142,8 +141,16 @@ export default function ProfileSidebar({
                 key={idx}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all text-gray-700"
               >
-                <div className={`w-8 h-8 rounded-lg bg-${action.color}-100 flex items-center justify-center flex-shrink-0`}>
-                  <Icon className={`h-4 w-4 text-${action.color}-600`} />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  action.color === 'emerald' ? 'bg-emerald-100' :
+                  action.color === 'blue' ? 'bg-blue-100' :
+                  action.color === 'purple' ? 'bg-purple-100' : 'bg-gray-100'
+                }`}>
+                  <Icon className={`h-4 w-4 ${
+                    action.color === 'emerald' ? 'text-emerald-600' :
+                    action.color === 'blue' ? 'text-blue-600' :
+                    action.color === 'purple' ? 'text-purple-600' : 'text-gray-600'
+                  }`} />
                 </div>
                 <span className="text-sm font-medium">{action.label}</span>
               </button>
