@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutGrid, Users, Settings, Calendar, BarChart, 
-  Package, AlignJustify, MessageSquare, AlertTriangle
+  Package, AlignJustify, MessageSquare, AlertTriangle,
+  Shield
 } from 'lucide-react';
 
 interface NavItemData {
@@ -22,11 +23,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ onItemClick }) => {
 
   const navItems: NavItemData[] = [
     { id: '/admin/dashboard', icon: LayoutGrid, label: 'Dashboard' },
-    { id: '/admin/users', icon: Users, label: 'Users', badge: '2.4k' },
-    { id: '/admin/services', icon: AlignJustify, label: 'Services' },
-    { id: '/admin/bookings', icon: Calendar, label: 'Bookings', badge: '12' },
-    { id: '/admin/chat', icon: MessageSquare, label: 'Chat', badge: '4' },
-    { id: '/admin/complaints', icon: AlertTriangle, label: 'Complaints', badge: '23' },
+    { id: '/admin/users', icon: Users, label: 'Users Management' },
+    { id: '/admin/kyc', icon: Shield, label: 'KYC Management'},
+    { id: '/admin/services', icon: AlignJustify, label: 'Services Management' },
+    { id: '/admin/bookings', icon: Calendar, label: 'Bookings Management'},
+    { id: '/admin/chat', icon: MessageSquare, label: 'Chat'},
+    { id: '/admin/complaints', icon: AlertTriangle, label: 'Complaints'},
     { id: '/admin/reports', icon: BarChart, label: 'Analytics' },
     { id: '/admin/settings', icon: Settings, label: 'Settings' },
   ];

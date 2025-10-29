@@ -29,6 +29,7 @@ import MyBookingsPage from "@/Pages/Services/MyBookings";
 import UserProfile from "@/Pages/Services/UserProfile";
 import { useAuthStore } from "@/store/authStore";
 import GuestGuard from "@/Auth/GuestGuard";
+import KYCAdminPanel from "./Pages/Admin/KycAdminPanel";
 
 function App() {
   const { hydrateFromStorage } = useAuthStore();
@@ -74,6 +75,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
+          <Route path="kyc" element={<KYCAdminPanel/>}/>
           <Route path="services" element={<Services />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="chat" element={<Chat />} />
