@@ -3,12 +3,14 @@ import Cookies from 'js-cookie';
 
 // API Gateway client (default)
 const api = axios.create({
-  baseURL: 'https://locafy-apigateway-production-b9cb.up.railway.app/api',
+  baseURL: 'https://locafy-apigateway-production-2631.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
+
+
 
 
 //   baseURL: 'https://back-end-servicelisting.onrender.com',
